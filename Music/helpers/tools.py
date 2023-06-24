@@ -1,21 +1,20 @@
 import asyncio
 import os
-import shlex
-from typing import Tuple
 
 
-async def runcmd(cmd: str) -> Tuple[str, str, int, int]:
-    args = shlex.split(cmd)
-    process = await asyncio.create_subprocess_exec(
-        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+async def runcmd(cmd: str):
+    process = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     stdout, stderr = await process.communicate()
-    return (
-        stdout.decode("utf-8", "replace").strip(),
-        stderr.decode("utf-8", "replace").strip(),
-        process.returncode,
-        process.pid,
-    )
+    if stderr:
+        if "unavailable videos are hidden" in (stderr.decode("utf-8")).lower():
+            return stdout.decode("utf-8")
+        else:
+            return stderr.decode("utf-8")
+    return stdout.decode("utf-8")
 
 
 async def absolute_paths(directory):

@@ -35,6 +35,6 @@ if Config.LOGGER_ID == 0:
 if not Config.OWNER_ID:
     LOGS.error("OWNER ID is missing! Kindly check again!")
     quit(1)
-if not Config.SESSION:
-    LOGS.error("SESSION is missing! Kindly check again!")
+if not Config.HELLBOT_SESSION:
+    LOGS.error("HELLBOT SESSION is missing! Kindly check again!")
     quit(1)

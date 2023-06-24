@@ -20,7 +20,7 @@ class HellClient(Client):
             "HellClient",
             api_id=Config.API_ID,
             api_hash=Config.API_HASH,
-            session_string=Config.SESSION,
+            session_string=Config.HELLBOT_SESSION,
             no_updates=True,
         )
 
@@ -34,7 +34,7 @@ class HellClient(Client):
             self.app.name = me.first_name
             self.app.username = me.username
             LOGS.info(f">> {self.app.name} is online now!")
-        if Config.SESSION:
+        if Config.HELLBOT_SESSION:
             await self.user.start()
             me = await self.user.get_me()
             self.user.id = me.id

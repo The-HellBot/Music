@@ -1,10 +1,12 @@
 import datetime
+import os
 import random
+import re
 import string
-from os.path import realpath
 import time
-import psutil
+
 import aiohttp
+import psutil
 import pytz
 from aiohttp import client_exceptions
 from html_telegraph_poster import TelegraphPoster
@@ -13,7 +15,7 @@ from config import Config
 from Music import __start_time__
 from Music.utils.exceptions import CarbonException
 
-from .tools import themes, colour
+from .tools import colour, themes
 
 
 class Formatters:
@@ -104,16 +106,26 @@ class Formatters:
     async def system_stats(self) -> dict:
         bot_uptime = int(time.time() - __start_time__)
         cpu = psutil.cpu_percent(interval=0.5)
+        core = psutil.cpu_count()
         disk = psutil.disk_usage("/").percent
         ram = psutil.virtual_memory().percent
         uptime = f"{self.get_readable_time((bot_uptime))}"
         context = {
             "cpu": f"{cpu}%",
+            "core": core,
             "disk": f"{disk}%",
             "ram": f"{ram}%",
             "uptime": uptime,
         }
         return context
+
+    def convert_telegraph_url(self, url: str) -> str:
+        try:
+            pattern = r"(https?://)(telegra\.ph)"
+            converted_url = re.sub(pattern, r"\1te.legra.ph", url)
+            return converted_url
+        except:
+            return url
 
     async def telegraph_paste(
         self,
@@ -130,7 +142,7 @@ class Formatters:
             author_url=url,
             text=text,
         )
-        return post_page["url"]
+        return self.convert_telegraph_url(post_page["url"])
 
     async def post(self, url: str, *args, **kwargs):
         async with aiohttp.ClientSession() as session:
@@ -176,7 +188,7 @@ class Formatters:
             file_name = self.gen_key(f"carbon{user_id}", 4)
             with open(f"cache/{file_name}.jpg", "wb") as f:
                 f.write(resp)
-            return realpath(f.name)
+            return os.path.realpath(f.name)
 
 
 formatter = Formatters()

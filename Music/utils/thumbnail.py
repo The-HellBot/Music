@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from Music.core.logger import LOGS
 from Music.helpers.formatters import formatter
 from Music.helpers.youtube import Hell_YTS
+from config import Config
 
 
 class Thumbnail:
@@ -543,7 +544,7 @@ class Thumbnail:
             draw = ImageDraw.Draw(base_image)
             draw.text(
                 (500, 740),
-                "\x40\x4d\x75\x73\x69\x63\x5f\x48\x65\x6c\x6c\x42\x6f\x74",
+                Config.BOT_NAME,
                 font=font_ext,
                 fill=(51, 255, 224),
             )

@@ -1,0 +1,67 @@
+{
+	"name": "HellMusic",
+	"description": "A telegram voice chat music player bot by The-Hellbot, coded in python using Pyrogram and PyTgCalls",
+	"logo": "https://te.legra.ph/file/7decf235312af8536e9aa.jpg",
+	"keywords": [
+		"telegram",
+		"musicbot",
+		"python",
+		"pyrogram",
+		"pytgcalls",
+		"hellbot",
+		"modular",
+		"productivity",
+		"music",
+		"hellbot"
+	],
+	"repository": "https://github.com/The-HellBot/HellMusic/",
+	"env": {
+        "API_HASH": {
+            "description": "Get this value from my.telegram.org",
+            "value": ""
+        },
+		"API_ID": {
+			"description": "Get this value from my.telegram.org",
+			"value": ""
+		},
+		"BOT_TOKEN": {
+			"description": "Make a bot from @BotFather and paste the bot token here.",
+			"value": ""
+		},
+        "DATABASE_URL": {
+            "description": "Paste the mongodb url.",
+            "value": ""
+        },
+		"LOGGER_ID": {
+			"description": "Channel/group id to log error/info messages.",
+			"value": ""
+		},
+        "OWNER_ID": {
+            "description": "Your telegram user id.",
+            "value": ""
+        },
+        "HELLBOT_SESSION": {
+            "description": "Paste pyrogram session string.",
+            "value": ""
+        },
+		"HEROKU_API": {
+			"description": "Go to https://dashboard.heroku.com/account, scroll down and press Reveal API. Required for updater to work.",
+			"value": ""
+		},
+		"HEROKU_APP": {
+			"description": "The Value of App Name you filled in right on top. Required for updater to work.",
+			"value": ""
+		}
+	},
+	"buildpacks": [
+		{
+			"url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+		},
+		{
+			"url": "https://github.com/HellBoy-OP/heroku-buildpack-nodejs"
+		},
+		{
+			"url": "heroku/python"
+		}
+	]
+}

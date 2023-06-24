@@ -1,10 +1,11 @@
 from .admins import get_admins, get_auth_users
 from .auto_cmds import autoclean, autoend
 from .exceptions import CarbonException, UserException
+from .pages import MakePages
 from .player import Player
 from .queue import Queue
-from .strings import TEXTS
 from .thumbnail import thumbnail
+from .youtube import ytube
 
 __all__ = [
     "get_admins",
@@ -13,8 +14,9 @@ __all__ = [
     "autoend",
     "CarbonException",
     "UserException",
+    "MakePages",
     "Player",
     "Queue",
-    "TEXTS",
-    "thumbnail"
+    "thumbnail",
+    "ytube",
 ]

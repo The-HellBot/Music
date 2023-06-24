@@ -15,13 +15,13 @@ from pytgcalls.types.input_stream.quality import MediumQualityAudio, MediumQuali
 from pytgcalls.types.stream import StreamAudioEnded
 
 from config import Config
-from Music import local_db
 from Music.helpers.buttons import MakeButtons
+from Music.helpers.strings import TEXTS
 from Music.utils.auto_cmds import autoclean, autoend
 from Music.utils.exceptions import UserException
 from Music.utils.queue import Queue
-from Music.utils.strings import TEXTS
 from Music.utils.thumbnail import thumbnail
+from Music.utils.youtube import ytube
 
 from .clients import hellbot
 from .database import db
@@ -39,12 +39,16 @@ class HellMusic(PyTgCalls):
 
     async def start(self):
         LOGS.info(">> Booting PyTgCalls Client...")
-        if Config.SESSION:
+        if Config.HELLBOT_SESSION:
             await self.music.start()
             LOGS.info(">> Booted PyTgCalls Client!")
         else:
             LOGS.error(">> PyTgCalls Client not booted!")
             quit(1)
+
+    async def ping(self):
+        pinged = await self.music.ping()
+        return pinged
 
     async def vc_participants(self, chat_id: int):
         users = await self.music.get_participants(chat_id)
@@ -110,6 +114,13 @@ class HellMusic(PyTgCalls):
         except:
             user = get[0]["user"]
         if queue:
+            tg = True if video_id == "telegram" else False
+            if tg:
+                to_stream = queue
+            else:
+                success, to_stream = await ytube.download(video_id, True)
+                if not success:
+                    raise UserException(f"[UserException - change_vc]: {to_stream}")
             if vc_type == "video":
                 input_stream = AudioVideoPiped(
                     queue, MediumQualityAudio(), MediumQualityVideo()
@@ -161,17 +172,22 @@ class HellMusic(PyTgCalls):
                 chat_id, input_stream, stream_type=StreamType().pulse_stream
             )
         except (NoActiveGroupCall, GroupCallNotFound):
-            peer = await hellbot.user.resolve_peer(chat_id)
-            await hellbot.user.send(
-                CreateGroupCall(
-                    peer=InputPeerChannel(
-                        channel_id=peer.channel_id,
-                        access_hash=peer.access_hash,
-                    ),
-                    random_id=hellbot.user.rnd_id() // 9000000000,
+            try:
+                peer = await hellbot.user.resolve_peer(chat_id)
+                await hellbot.user.send(
+                    CreateGroupCall(
+                        peer=InputPeerChannel(
+                            channel_id=peer.channel_id,
+                            access_hash=peer.access_hash,
+                        ),
+                        random_id=hellbot.user.rnd_id() // 9000000000,
+                    )
                 )
-            )
-            return await self.join_vc(chat_id, file_path, video)
+                return await self.join_vc(chat_id, file_path, video)
+            except:
+                raise UserException(
+                    f"[UserException - join_vc]: Assistant is having trouble starting the voice chat! Please start it manually!"
+                )
         except Exception as e:
             raise UserException(f"[UserException - join_vc]: {e}")
         await db.add_active_vc(chat_id, "video" if video else "voice")

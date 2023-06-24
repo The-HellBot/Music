@@ -6,7 +6,7 @@ from Music.core.clients import hellbot
 from Music.core.database import db
 from Music.core.logger import LOGS
 from Music.core.users import user_data
-from Music.utils.strings import TEXTS
+from Music.helpers.strings import TEXTS
 from Music.version import __version__
 
 
