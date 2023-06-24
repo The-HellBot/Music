@@ -10,7 +10,7 @@ class Config(object):
     BOT_TOKEN = environ.get("BOT_TOKEN", None)
     DATABASE_URL = environ.get("DATABASE_URL", None)
     LOGGER_ID = int(environ.get("LOGGER_ID", 0))
-    OWNER_ID = int(environ.get("OWNER_ID", 0))
+    OWNER_ID = environ.get("OWNER_ID", "")
     SESSION = environ.get("SESSION", None)
 
     # heroku variables only
@@ -27,13 +27,16 @@ class Config(object):
     TELEGRAM_IMG = environ.get("TELEGRAM_IMG", "")
     TG_AUDIO_SIZE_LIMIT = int(environ.get("TG_AUDIO_SIZE_LIMIT", 104857600))  # size in bytes. 0 for no limit
     TG_VIDEO_SIZE_LIMIT = int(environ.get("TG_VIDEO_SIZE_LIMIT", 1073741824))  # size in bytes. 0 for no limit
+    TZ = environ.get("TZ", "Asia/Kolkata") # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
     # do not edit these variables
+    ADMINS = {}
     BANNED_USERS = filters.user()
     CACHE = {}
     CACHE_DIR = "./cache/"
     DELETE_DICT = {}
     DWL_DIR = "./downloads/"
+    GOD_USERS = filters.user()
     SONG_CACHE = {}
     SUDO_USERS = filters.user()
 

@@ -16,7 +16,7 @@ from pytgcalls.types.stream import StreamAudioEnded
 
 from config import Config
 from Music import local_db
-from Music.helpers.buttons import player_markup
+from Music.helpers.buttons import MakeButtons
 from Music.utils.auto_cmds import autoclean, autoend
 from Music.utils.exceptions import UserException
 from Music.utils.strings import TEXTS
@@ -41,6 +41,9 @@ class HellMusic(PyTgCalls):
         if Config.SESSION:
             await self.music.start()
             LOGS.info(">> Booted PyTgCalls Client!")
+        else:
+            LOGS.error(">> PyTgCalls Client not booted!")
+            quit(1)
 
     async def vc_participants(self, chat_id: int):
         users = await self.music.get_participants(chat_id)
@@ -112,7 +115,7 @@ class HellMusic(PyTgCalls):
             try:
                 photo = thumbnail.generate((359), (297, 302), video_id)
                 await self.music.change_stream(int(chat_id), input_stream)
-                btns = player_markup(chat_id, "None" if video_id == "telegram" else video_id)
+                btns = MakeButtons.player_markup(chat_id, "None" if video_id == "telegram" else video_id)
                 if photo:
                     await hellbot.app.send_photo(
                         int(chat_id),

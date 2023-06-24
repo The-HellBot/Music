@@ -15,10 +15,11 @@ class Database(object):
 
         # mongo db collections
         self.authusers = self.db.authusers
-        self.banned_users = self.db.banned_users
+        self.authchats = self.db.authchats
         self.bl_chats = self.db.bl_chats
         self.blocked_users = self.db.blocked_users
         self.chats = self.db.chats
+        self.gban_db = self.db.gban_db
         self.gcast = self.db.gcast
         self.sudousers = self.db.sudousers
         self.users = self.db.users
@@ -148,6 +149,118 @@ class Database(object):
     async def get_loop(self, chat_id: int) -> int:
         loop = self.loop.get(chat_id)
         return loop or 0
+
+    # sudousers db #
+    async def get_sudo_users(self) -> list:
+        users = await self.sudousers.find_one({"sudo": "sudo"})
+        if not users:
+            return []
+        return users["user_ids"]
+
+    async def add_sudo(self, user_id: int) -> bool:
+        users = await self.get_sudo_users()
+        users.append(user_id)
+        await self.sudousers.update_one(
+            {"sudo": "sudo"}, {"$set": {"user_ids": users}}, upsert=True
+        )
+        return True
+
+    async def remove_sudo(self, user_id: int) -> bool:
+        users = await self.get_sudo_users()
+        users.remove(user_id)
+        await self.sudousers.update_one(
+            {"sudo": "sudo"}, {"$set": {"user_ids": users}}, upsert=True
+        )
+        return True
+
+    # blocked users db #
+    async def get_blocked_users(self) -> list:
+        users = await self.blocked_users.find_one({"blocked": "blocked"})
+        if not users:
+            return []
+        return users["user_ids"]
+
+    async def add_blocked_user(self, user_id: int) -> bool:
+        users = await self.get_blocked_users()
+        users.append(user_id)
+        await self.blocked_users.update_one(
+            {"blocked": "blocked"}, {"$set": {"user_ids": users}}, upsert=True
+        )
+        return True
+
+    async def remove_blocked_user(self, user_id: int) -> bool:
+        users = await self.get_blocked_users()
+        users.remove(user_id)
+        await self.blocked_users.update_one(
+            {"blocked": "blocked"}, {"$set": {"user_ids": users}}, upsert=True
+        )
+        return True
+
+    # gbanned users db #
+    async def get_gbanned_users(self) -> list:
+        users = await self.gban_db.find_one({"gbanned": "gbanned"})
+        if not users:
+            return []
+        return users["user_ids"]
+
+    async def add_gbanned_user(self, user_id: int) -> bool:
+        users = await self.get_gbanned_users()
+        users.append(user_id)
+        await self.gban_db.update_one(
+            {"gbanned": "gbanned"}, {"$set": {"user_ids": users}}, upsert=True
+        )
+        return True
+
+    async def remove_gbanned_users(self, user_id: int) -> bool:
+        users = await self.get_gbanned_users()
+        users.remove(user_id)
+        await self.gban_db.update_one(
+            {"gbanned": "gbanned"}, {"$set": {"user_ids": users}}, upsert=True
+        )
+        return True
+
+    # authusers db #
+    async def add_authusers(self, chat_id: int, user_id: int, details: dict):
+        context = {user_id: details}
+        await self.authusers.insert_one({chat_id: context})
+
+    async def is_authuser(self, chat_id: int, user_id: int) -> bool:
+        chat = await self.authusers.find_one({chat_id: {user_id: {}}})
+        return bool(chat)
+
+    async def get_authuser(self, chat_id: int, user_id: int):
+        chat = await self.authusers.find_one({chat_id: {user_id: {}}})
+        return chat if chat else {}
+
+    async def get_all_authusers(self, chat_id: int):
+        all_users = await self.authusers.find_one({chat_id: {}})
+        return all_users if all_users else {}
+
+    async def remove_authuser(self, chat_id: int, user_id: int):
+        await self.authusers.delete_one({chat_id: {user_id: {}}})
+
+    # authchats db #
+    async def get_authchats(self) -> list:
+        chats = await self.authchats.find_one({"authchats": "authchats"})
+        if not chats:
+            return []
+        return chats["chat_ids"]
+
+    async def add_authchat(self, chat_id: int) -> bool:
+        chats = await self.get_authchats()
+        chats.append(chat_id)
+        await self.authchats.update_one(
+            {"authchats": "authchats"}, {"$set": {"chat_ids": chats}}, upsert=True
+        )
+        return True
+
+    async def remove_authchat(self, chat_id: int) -> bool:
+        chats = await self.get_authchats()
+        chats.remove(chat_id)
+        await self.authchats.update_one(
+            {"authchats": "authchats"}, {"$set": {"chat_ids": chats}}, upsert=True
+        )
+        return True
 
 
 db = Database()

@@ -47,6 +47,16 @@ class HellClient(Client):
             except:
                 pass
             LOGS.info(f">> {self.user.name} is online now!")
+        LOGS.info(">> Booted up HellMusic!")
+
+    async def logit(self, hash: str, log: str):
+        log_text = f"#{hash.upper()} \n\n{log}"
+        try:
+            await self.app.send_message(
+                Config.LOGGER_ID, log_text, disable_web_page_preview=True
+            )
+        except Exception as e:
+            LOGS.warning(f"Error in Logger: {e}")
 
 
 hellbot = HellClient()
