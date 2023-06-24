@@ -19,6 +19,7 @@ from Music import local_db
 from Music.helpers.buttons import MakeButtons
 from Music.utils.auto_cmds import autoclean, autoend
 from Music.utils.exceptions import UserException
+from Music.utils.queue import Queue
 from Music.utils.strings import TEXTS
 from Music.utils.thumbnail import thumbnail
 
@@ -33,7 +34,7 @@ class HellMusic(PyTgCalls):
         self.audience = {}
 
     async def __clean__(self, chat_id: int):
-        local_db[chat_id] = []
+        Queue.clear_queue(chat_id)
         await db.remove_active_vc(chat_id)
 
     async def start(self):
@@ -83,7 +84,7 @@ class HellMusic(PyTgCalls):
             return
 
     async def change_vc(self, chat_id: int):
-        get = local_db.get(chat_id)
+        get = Queue.get_queue(chat_id)
         try:
             if not get:
                 return await self.leave_vc(chat_id)
@@ -96,15 +97,18 @@ class HellMusic(PyTgCalls):
                 await db.set_loop(chat_id, loop - 1)
         except:
             return await self.leave_vc(chat_id)
-
+        # get = Queue.get_queue(chat_id)
         chat_id = get[0]["chat_id"]
         duration = get[0]["duration"]
         queue = get[0]["file"]
         title = get[0]["title"]
-        user = get[0]["user"]
+        user_id = get[0]["user_id"]
         vc_type = get[0]["vc_type"]
         video_id = get[0]["video_id"]
-
+        try:
+            user = (await hellbot.app.get_users(user_id)).mention(style="md")
+        except:
+            user = get[0]["user"]
         if queue:
             if vc_type == "video":
                 input_stream = AudioVideoPiped(
@@ -115,7 +119,9 @@ class HellMusic(PyTgCalls):
             try:
                 photo = thumbnail.generate((359), (297, 302), video_id)
                 await self.music.change_stream(int(chat_id), input_stream)
-                btns = MakeButtons.player_markup(chat_id, "None" if video_id == "telegram" else video_id)
+                btns = MakeButtons.player_markup(
+                    chat_id, "None" if video_id == "telegram" else video_id
+                )
                 if photo:
                     await hellbot.app.send_photo(
                         int(chat_id),

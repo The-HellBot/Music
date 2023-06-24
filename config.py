@@ -27,7 +27,7 @@ class Config(object):
     TELEGRAM_IMG = environ.get("TELEGRAM_IMG", "")
     TG_AUDIO_SIZE_LIMIT = int(environ.get("TG_AUDIO_SIZE_LIMIT", 104857600))  # size in bytes. 0 for no limit
     TG_VIDEO_SIZE_LIMIT = int(environ.get("TG_VIDEO_SIZE_LIMIT", 1073741824))  # size in bytes. 0 for no limit
-    TZ = environ.get("TZ", "Asia/Kolkata") # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    TZ = environ.get("TZ", "Asia/Kolkata")  # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
     # do not edit these variables
     ADMINS = {}

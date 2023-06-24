@@ -16,6 +16,7 @@ class Database(object):
         # mongo db collections
         self.authusers = self.db.authusers
         self.authchats = self.db.authchats
+        self.autoend = self.db.autoend
         self.bl_chats = self.db.bl_chats
         self.blocked_users = self.db.blocked_users
         self.chats = self.db.chats
@@ -26,7 +27,6 @@ class Database(object):
 
         # local db collections
         self.active_vc = [{"chat_id": 0, "join_time": 0, "vc_type": "voice"}]
-        self.autoend = {}
         self.loop = {}
 
     # database connection #
@@ -72,7 +72,6 @@ class Database(object):
         context = {
             "chat_id": chat_id,
             "join_date": datetime.datetime.now(),
-            "autoend": True,
         }
         await self.chats.insert_one(context)
 
@@ -123,24 +122,26 @@ class Database(object):
                 self.active_vc.remove(x)
 
     # autoend db #
-    async def get_autoend(self, chat_id: int):
-        chat = await self.chats.find_one({"chat_id": chat_id})
-        if chat:
-            return chat["autoend"]
-        else:
+    async def get_autoend(self) -> bool:
+        try:
+            autoend = await self.autoend.find_one({"autoend": "autoend"})
+            if autoend:
+                return bool(autoend["status"])
+            else:
+                return False
+        except:
             return False
 
-    async def set_autoend(self, chat_id: int, autoend: bool):
-        chat = await self.chats.find_one({"chat_id": chat_id})
-        if chat:
-            await self.chats.update_one(
-                {"chat_id": chat_id}, {"$set": {"autoend": autoend}}
+    async def set_autoend(self, autoend: bool):
+        _db = await self.autoend.find_one({"autoend": "autoend"})
+        if autoend:
+            if _db:
+                return
+            await self.autoend.insert_one(
+                {"autoend": "autoend"}, {"$set": {"status": autoend}}
             )
         else:
-            await self.add_chat(chat_id)
-            await self.chats.update_one(
-                {"chat_id": chat_id}, {"$set": {"autoend": autoend}}
-            )
+            await self.autoend.delete_one({"autoend": "autoend"})
 
     # loop db #
     async def set_loop(self, chat_id: int, loop: int):
@@ -218,6 +219,13 @@ class Database(object):
             {"gbanned": "gbanned"}, {"$set": {"user_ids": users}}, upsert=True
         )
         return True
+
+    async def is_gbanned_user(self, user_id: int) -> bool:
+        users = await self.gban_db.find_one({"gbanned": "gbanned"})
+        if users and user_id in users["user_ids"]:
+            return True
+        else:
+            return False
 
     # authusers db #
     async def add_authusers(self, chat_id: int, user_id: int, details: dict):

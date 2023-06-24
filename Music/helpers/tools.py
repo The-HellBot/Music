@@ -32,7 +32,7 @@ async def aexec(code, client, message):
     return await locals()["__aexec"](client, message)
 
 
-formats = [
+vid_formats = [
     "3g2",
     "3gp",
     "amv",

@@ -1,3 +1,4 @@
+import os
 import time
 
 from config import Config
@@ -6,6 +7,13 @@ from Music.core.logger import LOGS
 
 local_db = {}
 __start_time__ = time.time()
+
+
+# make required directories
+if not os.path.isdir(Config.DWL_DIR):
+    os.makedirs(Config.DWL_DIR)
+if not os.path.isdir(Config.CACHE_DIR):
+    os.makedirs(Config.CACHE_DIR)
 
 
 # If any of the important variables are missing stop the bot from starting
