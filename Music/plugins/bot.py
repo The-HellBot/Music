@@ -5,13 +5,14 @@ from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardMarkup, Message
 
 from config import Config
-from Music.core import hellbot, hellmusic, check_mode
+from Music.core import UserWrapper, check_mode, hellbot, hellmusic
 from Music.helpers import TEXTS, Buttons, formatter
 from Music.utils import ytube
 
 
 @hellbot.app.on_message(filters.command(["start", "alive"]) & ~Config.BANNED_USERS)
 @check_mode
+@UserWrapper
 async def start(_, message: Message):
     if message.chat.type == ChatType.PRIVATE:
         if len(message.command) > 1:
@@ -50,6 +51,7 @@ async def start(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("help") & ~Config.BANNED_USERS)
+@UserWrapper
 async def help(_, message: Message):
     if message.chat.type == ChatType.PRIVATE:
         await message.reply_text(
@@ -59,11 +61,12 @@ async def help(_, message: Message):
     elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
         await message.reply_text(
             TEXTS.HELP_GC,
-            reply_markup=InlineKeyboardMarkup(Buttons.help_gc_markup()),
+            reply_markup=InlineKeyboardMarkup(Buttons.help_gc_markup(hellbot.app.username)),
         )
 
 
 @hellbot.app.on_message(filters.command("ping") & ~Config.BANNED_USERS)
+@UserWrapper
 async def ping(_, message: Message):
     start_time = datetime.datetime.now()
     calls_ping = await hellmusic.ping()
@@ -78,6 +81,7 @@ async def ping(_, message: Message):
 
 @hellbot.app.on_message(filters.command("sysinfo") & ~Config.BANNED_USERS)
 @check_mode
+@UserWrapper
 async def sysinfo(_, message: Message):
     stats = await formatter.system_stats()
     await message.reply_text(

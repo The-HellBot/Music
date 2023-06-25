@@ -1,7 +1,5 @@
 from pyrogram.types import InlineKeyboardButton
 
-from Music.core.clients import hellbot
-
 
 class MakeButtons:
     def __init__(self):
@@ -24,7 +22,20 @@ class MakeButtons:
             buttons = [[InlineKeyboardButton(text="🗑", callback_data="close")]]
         return buttons
 
-    def player_markup(self, chat_id, video_id):
+    def authusers_markup(self, count: int, page: int, rand_key: str):
+        if count != 1:
+            buttons = [
+                [
+                    InlineKeyboardButton(text="⪨", callback_data=f"authus|prev|{page}|{rand_key}"),
+                    InlineKeyboardButton(text="🗑", callback_data=f"authus|close|{page}|{rand_key}"),
+                    InlineKeyboardButton(text="⪩", callback_data=f"authus|next|{page}|{rand_key}"),
+                ]
+            ]
+        else:
+            buttons = [[InlineKeyboardButton(text="🗑", callback_data=f"authus|close|{page}|{rand_key}")]]
+        return buttons
+
+    def player_markup(self, chat_id, video_id, username):
         if video_id == "telegram":
             buttons = [
                 [
@@ -35,7 +46,7 @@ class MakeButtons:
         else:
             buttons = [
                 [
-                    InlineKeyboardButton("About Song", url=f"https://t.me/{hellbot.app.username}?start=song_{video_id}"),
+                    InlineKeyboardButton("About Song", url=f"https://t.me/{username}?start=song_{video_id}"),
                 ],
                 [
                     InlineKeyboardButton("❤️", callback_data=f"add_favorite|{video_id}"),
@@ -105,10 +116,10 @@ class MakeButtons:
         ]
         return buttons
 
-    def help_gc_markup(self):
+    def help_gc_markup(self, username: str):
         buttons = [
             [
-                InlineKeyboardButton(text="Get Help ❓", url=f"https://t.me/{hellbot.app.username}?start=help"),
+                InlineKeyboardButton(text="Get Help ❓", url=f"https://t.me/{username}?start=help"),
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ]
         ]

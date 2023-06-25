@@ -23,6 +23,7 @@ class Queue:
             "user": user,
             "video_id": video_id,
             "vc_type": vc_type,
+            "played": 0,
         }
         if forceplay:
             que = local_db.get(chat_id)
@@ -43,8 +44,11 @@ class Queue:
 
         return position
 
-    def get_queue(chat_id: int):
-        que = local_db.get(chat_id)
+    def get_queue(chat_id: int) -> dict:
+        try:
+            que = local_db.get(chat_id)
+        except KeyError:
+            que = {}
         return que
 
     def rm_queue(chat_id: int, index: int):
@@ -67,3 +71,12 @@ class Queue:
             return None
         except IndexError:
             return None
+
+    def update_duration(chat_id: int, seek_type: int, time: int):
+        try:
+            if seek_type == 0:
+                local_db[chat_id][0]["played"] -= time
+            else:
+                local_db[chat_id][0]["played"] += time
+        except IndexError:
+            pass

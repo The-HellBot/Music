@@ -28,6 +28,7 @@ class Database(object):
         # local db collections
         self.active_vc = [{"chat_id": 0, "join_time": 0, "vc_type": "voice"}]
         self.loop = {}
+        self.watcher = {}
 
     # database connection #
     async def connect(self):
@@ -150,6 +151,17 @@ class Database(object):
     async def get_loop(self, chat_id: int) -> int:
         loop = self.loop.get(chat_id)
         return loop or 0
+
+    # watcher db #
+    async def set_watcher(self, chat_id: int, key: str, watch: bool):
+        self.watcher[chat_id] = {key: watch}
+
+    async def get_watcher(self, chat_id: int, key: str) -> bool:
+        try:
+            watch = self.watcher[chat_id][key]
+        except KeyError:
+            watch = False
+        return watch
 
     # sudousers db #
     async def get_sudo_users(self) -> list:

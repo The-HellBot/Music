@@ -501,7 +501,7 @@ class Thumbnail:
 
     def generate(self, overlay_size, position, vidid) -> str:
         if vidid == "telegram":
-            return None
+            return Config.TELEGRAM_IMG
         try:
             xcb_svg = self.xcb_svg.replace(" ", "")
             xcb_tmx = base64.b64decode(xcb_svg)

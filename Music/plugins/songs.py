@@ -2,13 +2,14 @@ from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
 
 from config import Config
-from Music.core import check_mode, hellbot
+from Music.core import UserWrapper, check_mode, hellbot
 from Music.helpers import formatter
 from Music.utils import MakePages, ytube
 
 
 @hellbot.app.on_message(filters.command("song") & ~Config.BANNED_USERS)
 @check_mode
+@UserWrapper
 async def songs(_, message: Message):
     if len(message.command) != 2:
         return await message.reply_text("Nothing given to search.")
@@ -26,6 +27,7 @@ async def songs(_, message: Message):
 
 @hellbot.app.on_message(filters.command("lyrics") & ~Config.BANNED_USERS)
 @check_mode
+@UserWrapper
 async def lyrics(_, message: Message):
     if not Config.LYRICS_API:
         return await message.reply_text("Lyrics module is disabled!")

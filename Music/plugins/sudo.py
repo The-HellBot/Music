@@ -7,11 +7,12 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import Message
 
 from config import Config
-from Music.core import db, hellbot, hellmusic, user_data
+from Music.core import UserWrapper, db, hellbot, hellmusic, user_data
 from Music.helpers import formatter
 
 
 @hellbot.app.on_message(filters.command("autoend") & Config.SUDO_USERS)
+@UserWrapper
 async def auto_end_stream(_, message: Message):
     if len(message.command) != 2:
         return await message.reply_text(
@@ -40,6 +41,7 @@ async def auto_end_stream(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("gban") & Config.SUDO_USERS)
+@UserWrapper
 async def gban(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:
@@ -88,6 +90,7 @@ async def gban(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("ungban") & Config.SUDO_USERS)
+@UserWrapper
 async def gungabn(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:
@@ -130,6 +133,7 @@ async def gungabn(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("listgban") & Config.SUDO_USERS)
+@UserWrapper
 async def gbanned_list(_, message: Message):
     users = await db.get_gbanned_users()
     if len(users) == 0:
@@ -153,6 +157,7 @@ async def gbanned_list(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("logs") & Config.SUDO_USERS)
+@UserWrapper
 async def log_(_, message: Message):
     try:
         if os.path.exists("Mello.log"):
@@ -176,6 +181,7 @@ async def log_(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("restart") & Config.SUDO_USERS)
+@UserWrapper
 async def restart_(_, message: Message):
     hell = await message.reply_text("Notifying Chats about restart....")
     active_chats = await db.get_active_vc()
@@ -203,6 +209,7 @@ async def restart_(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("sudolist") & Config.SUDO_USERS)
+@UserWrapper
 async def sudoers_list(_, message: Message):
     text = "**⍟ God Users:**\n"
     gods = 0

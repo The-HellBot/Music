@@ -78,6 +78,23 @@ class HellMusic(PyTgCalls):
             input_stream = AudioPiped(file_path, MediumQualityAudio())
         await self.music.change_stream(chat_id, input_stream)
 
+    async def seek_vc(self, context: dict):
+        chat_id, file_path, duration, to_seek, video = context.values()
+        if video:
+            input_stream = AudioVideoPiped(
+                file_path,
+                MediumQualityAudio(),
+                MediumQualityVideo(),
+                additional_ffmpeg_parameters=f"-ss {to_seek} -to {duration}",
+            )
+        else:
+            input_stream = AudioPiped(
+                file_path,
+                MediumQualityAudio(),
+                additional_ffmpeg_parameters=f"-ss {to_seek} -to {duration}",
+            )
+        await self.music.change_stream(chat_id, input_stream)
+
     async def invited_vc(self, chat_id: int):
         try:
             await hellbot.app.send_message(
@@ -130,7 +147,7 @@ class HellMusic(PyTgCalls):
                 photo = thumb.generate((359), (297, 302), video_id)
                 await self.music.change_stream(int(chat_id), input_stream)
                 btns = Buttons.player_markup(
-                    chat_id, "None" if video_id == "telegram" else video_id
+                    chat_id, "None" if video_id == "telegram" else video_id, hellbot.app.username
                 )
                 if photo:
                     await hellbot.app.send_photo(

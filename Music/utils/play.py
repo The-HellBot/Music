@@ -63,10 +63,10 @@ class Player:
             file_path = file
         else:
             try:
-                await message.edit("Downloading ...")
+                await message.edit_text("Downloading ...")
                 file_path = await ytube.download(video_id, True)
             except Exception as e:
-                return await message.reply_text(str(e))
+                return await message.edit_text(str(e))
         if await db.is_active_vc(chat_id):
             position = Queue.put_queue(
                 chat_id,
@@ -107,7 +107,7 @@ class Player:
                 vc_type,
                 force,
             )
-            btns = Buttons.player_markup(chat_id, video_id)
+            btns = Buttons.player_markup(chat_id, video_id, hellbot.app.username)
             if photo:
                 await hellbot.app.send_photo(
                     chat_id,
@@ -131,6 +131,11 @@ class Player:
                     ),
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
+        await message.delete()
+        await hellbot.logit(
+            f"play {vc_type}",
+            f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"
+        )
 
 
 player = Player()

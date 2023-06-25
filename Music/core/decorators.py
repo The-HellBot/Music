@@ -3,14 +3,15 @@ from functools import wraps
 from pyrogram.types import CallbackQuery, Message
 
 from config import Config
-from Music.utils.admins import get_auth_users
-from Music.utils.player import player
+from Music.utils.admins import get_auth_users, get_user_rights
+from Music.utils.play import player
 
 from .database import db
 
 on_mode = ["on", "enable", "yes", "true"]
 
 
+# check if private mode is enabled or not
 def check_mode(func):
     @wraps(func)
     async def decorated(client, message):
@@ -28,7 +29,29 @@ def check_mode(func):
     return decorated
 
 
-def AdminsWrapper(func):
+# allow admins only
+def AdminWrapper(func):
+    @wraps(func)
+    async def decorated(client, message):
+        try:
+            await message.delete()
+        except:
+            pass
+        if message.sender_chat:
+            return await message.reply_text(
+                "Seems like you are an anonymous admin. Please revert back to normal to use this command."
+            )
+        chat_id = message.chat.id
+        if message.from_user.id not in Config.SUDO_USERS:
+            if not await get_user_rights(chat_id, message.from_user.id):
+                return await message.reply_text(
+                    "You don't have enough rights to use this command! You need to be an admin with manage voice chats permission to use this command."
+                )
+        return await func(client, message)
+
+
+# allow admins and auth users only
+def AuthWrapper(func):
     @wraps(func)
     async def decorated(client, message):
         try:
@@ -65,6 +88,24 @@ def AdminsWrapper(func):
     return decorated
 
 
+# allow normal users only
+def UserWrapper(func):
+    @wraps(func)
+    async def decorated(client, message):
+        try:
+            await message.delete()
+        except:
+            pass
+        if message.sender_chat:
+            return await message.reply_text(
+                "Seems like you are an anonymous admin. Please revert back to normal to use this command."
+            )
+        return await func(client, message)
+
+    return decorated
+
+
+# wrapper to check and return context
 def PlayWrapper(func):
     @wraps(func)
     async def decorated(client, message):

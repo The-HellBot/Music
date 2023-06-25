@@ -2,12 +2,15 @@ from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InputMediaPhoto,
 
 from config import Config
 from Music.core import hellbot
-from Music.helpers.formatters import formatter
 from Music.helpers.buttons import Buttons
+from Music.helpers.formatters import formatter
 
 
-class MakePages:
-    async def song_page(message, rand_key, key):
+class Pages:
+    def __init__(self):
+        pass
+
+    async def song_page(self, message: Message, rand_key: str, key: int):
         m = message.message if isinstance(message, CallbackQuery) else message
         if Config.SONG_CACHE[rand_key]:
             all_tracks = Config.SONG_CACHE[rand_key]
@@ -27,6 +30,7 @@ class MakePages:
             return await m.reply_text("Query timed out! Please start the query again.")
 
     async def activevc_page(
+        self,
         message: Message or CallbackQuery,
         collection: list,
         page: int = 0,
@@ -56,3 +60,38 @@ class MakePages:
             await m.edit_text(text, reply_markup=InlineKeyboardMarkup(btns))
         else:
             await m.reply_text(text, reply_markup=InlineKeyboardMarkup(btns))
+
+    async def authusers_page(
+        self,
+        message: Message or CallbackQuery,
+        rand_key: str,
+        page: int = 0,
+        index: int = 0,
+        edit: bool = False,
+    ):
+        m = message.message if isinstance(message, CallbackQuery) else message
+        collection = Config.CACHE[rand_key]
+        grouped, total = formatter.group_the_list(collection, 6)
+        chat = message.chat.title or "Unknown Chat"
+        text = f"__({page+1}/{len(grouped)})__ **Authorized Users in {chat}:**\n    >> __{total} users__\n\n"
+        btns = Buttons.authusers_markup(len(grouped), page, rand_key)
+        try:
+            for auth in grouped[int(page)]:
+                index += 1
+                text += f"**{'0' if index < 10 else ''}{index}:** {auth['auth_user']}\n"
+                text += f"    **Auth By:** {auth['admin_name']} (`{auth['admin_id']}`)\n"
+                text += f"    **Since:** __{auth['auth_date']}__\n\n"
+        except IndexError:
+            page = 0
+            for auth in grouped[int(page)]:
+                index += 1
+                text += f"**{'0' if index < 10 else ''}{index}:** {auth['auth_user']}\n"
+                text += f"    **Auth By:** {auth['admin_name']} (`{auth['admin_id']}`)\n"
+                text += f"    **Since:** __{auth['auth_date']}__\n\n"
+        if edit:
+            await m.edit_text(text, reply_markup=InlineKeyboardMarkup(btns))
+        else:
+            await m.reply_text(text, reply_markup=InlineKeyboardMarkup(btns))
+
+
+MakePages = Pages()
