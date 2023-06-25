@@ -4,26 +4,50 @@ from Music.core.clients import hellbot
 
 
 class MakeButtons:
-    def close_markup():
+    def __init__(self):
+        pass
+
+    def close_markup(self):
         buttons = [[InlineKeyboardButton("🗑", callback_data="close")]]
         return buttons
 
-    def player_markup(chat_id, video_id):
-        buttons = [
-            [
-                InlineKeyboardButton("About Song", url=f"https://t.me/{hellbot.app.username}?start=song_{video_id}"),
-            ],
-            [
-                InlineKeyboardButton("❤️", callback_data=f"add_favorite|{video_id}"),
-                InlineKeyboardButton("🎛️", callback_data=f"controls|{chat_id}|{video_id}"),
-            ],
-            [
-                InlineKeyboardButton("🗑", callback_data="close"),
-            ],
-        ]
+    def active_vc_markup(self, count: int, page: int):
+        if count != 1:
+            buttons = [
+                [
+                    InlineKeyboardButton(text="⪨", callback_data=f"activevc|prev|{page}"),
+                    InlineKeyboardButton(text="🗑", callback_data="close"),
+                    InlineKeyboardButton(text="⪩", callback_data=f"activevc|next|{page}"),
+                ]
+            ]
+        else:
+            buttons = [[InlineKeyboardButton(text="🗑", callback_data="close")]]
         return buttons
 
-    def controls_markup(video_id, chat_id):
+    def player_markup(self, chat_id, video_id):
+        if video_id == "telegram":
+            buttons = [
+                [
+                    InlineKeyboardButton("🎛️", callback_data=f"controls|{chat_id}"),
+                    InlineKeyboardButton("🗑", callback_data="close"),
+                ]
+            ]
+        else:
+            buttons = [
+                [
+                    InlineKeyboardButton("About Song", url=f"https://t.me/{hellbot.app.username}?start=song_{video_id}"),
+                ],
+                [
+                    InlineKeyboardButton("❤️", callback_data=f"add_favorite|{video_id}"),
+                    InlineKeyboardButton("🎛️", callback_data=f"controls|{chat_id}"),
+                ],
+                [
+                    InlineKeyboardButton("🗑", callback_data="close"),
+                ],
+            ]
+        return buttons
+
+    def controls_markup(self, video_id, chat_id):
         buttons = [
             [
                 InlineKeyboardButton(text="⟲", callback_data=f"authcontrols|bseek|{chat_id}"),
@@ -47,7 +71,7 @@ class MakeButtons:
         ]
         return buttons
 
-    def song_markup(rand_key, url, key):
+    def song_markup(self, rand_key, url, key):
         buttons = [
             [
                 InlineKeyboardButton(text="Visit Youtube", url=url),
@@ -66,7 +90,7 @@ class MakeButtons:
         ]
         return buttons
 
-    def song_details_markup(videoid, url, ch_url):
+    def song_details_markup(self, videoid, url, ch_url):
         buttons = [
             [
                 InlineKeyboardButton(text="📝 Description", callback_data=f"about_song|desc|{videoid}"),
@@ -81,7 +105,7 @@ class MakeButtons:
         ]
         return buttons
 
-    def help_gc_markup():
+    def help_gc_markup(self):
         buttons = [
             [
                 InlineKeyboardButton(text="Get Help ❓", url=f"https://t.me/{hellbot.app.username}?start=help"),
@@ -90,7 +114,7 @@ class MakeButtons:
         ]
         return buttons
 
-    def help_pm_markup():
+    def help_pm_markup(self):
         buttons = [
             [
                 InlineKeyboardButton(text="➊ Admins", callback_data="help|admin"),
@@ -105,3 +129,6 @@ class MakeButtons:
             ]
         ]
         return buttons
+
+
+Buttons = MakeButtons()

@@ -1,9 +1,5 @@
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import (
-    ChatAdminRequired,
-    UserAlreadyParticipant,
-    UserNotParticipant,
-)
+from pyrogram.errors import ChatAdminRequired, UserAlreadyParticipant, UserNotParticipant
 from pyrogram.raw.functions.phone import CreateGroupCall
 from pyrogram.raw.types import InputPeerChannel
 from pyrogram.types import InlineKeyboardMarkup
@@ -15,12 +11,12 @@ from pytgcalls.types.input_stream.quality import MediumQualityAudio, MediumQuali
 from pytgcalls.types.stream import StreamAudioEnded
 
 from config import Config
-from Music.helpers.buttons import MakeButtons
+from Music.helpers.buttons import Buttons
 from Music.helpers.strings import TEXTS
 from Music.utils.auto_cmds import autoclean, autoend
 from Music.utils.exceptions import UserException
 from Music.utils.queue import Queue
-from Music.utils.thumbnail import thumbnail
+from Music.utils.thumbnail import thumb
 from Music.utils.youtube import ytube
 
 from .clients import hellbot
@@ -29,12 +25,15 @@ from .logger import LOGS
 
 
 class HellMusic(PyTgCalls):
-    def __ini__(self):
+    def __init__(self):
         self.music = PyTgCalls(hellbot.user)
         self.audience = {}
 
-    async def __clean__(self, chat_id: int):
-        Queue.clear_queue(chat_id)
+    async def __clean__(self, chat_id: int, force: bool):
+        if force:
+            Queue.rm_queue(chat_id, 0)
+        else:
+            Queue.clear_queue(chat_id)
         await db.remove_active_vc(chat_id)
 
     async def start(self):
@@ -66,8 +65,8 @@ class HellMusic(PyTgCalls):
     async def resume_vc(self, chat_id: int):
         await self.music.resume_stream(chat_id)
 
-    async def leave_vc(self, chat_id: int):
-        await self.__clean__(chat_id)
+    async def leave_vc(self, chat_id: int, force: bool = False):
+        await self.__clean__(chat_id, force)
         await self.music.leave_group_call(chat_id)
 
     async def skip_vc(self, chat_id: int, file_path: str, video: bool = False):
@@ -128,9 +127,9 @@ class HellMusic(PyTgCalls):
             else:
                 input_stream = AudioPiped(queue, MediumQualityAudio())
             try:
-                photo = thumbnail.generate((359), (297, 302), video_id)
+                photo = thumb.generate((359), (297, 302), video_id)
                 await self.music.change_stream(int(chat_id), input_stream)
-                btns = MakeButtons.player_markup(
+                btns = Buttons.player_markup(
                     chat_id, "None" if video_id == "telegram" else video_id
                 )
                 if photo:

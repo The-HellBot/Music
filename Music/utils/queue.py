@@ -13,7 +13,7 @@ class Queue:
         video_id: str,
         vc_type: str = "voice",
         forceplay: bool = False,
-    ):
+    ) -> int:
         context = {
             "chat_id": chat_id,
             "user_id": user_id,
@@ -39,13 +39,18 @@ class Queue:
             Config.CACHE[chat_id] = []
             Config.CACHE[chat_id].append(file)
 
+        position = len(local_db.get(chat_id)) - 1
+
+        return position
+
     def get_queue(chat_id: int):
         que = local_db.get(chat_id)
         return que
 
     def rm_queue(chat_id: int, index: int):
         try:
-            local_db[chat_id].pop(index)
+            db = local_db.get(chat_id)
+            db.pop(index)
         except IndexError:
             pass
 

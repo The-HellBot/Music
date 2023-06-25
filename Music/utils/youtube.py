@@ -43,7 +43,7 @@ class YouTube:
             else:
                 self.client = None
         except Exception as e:
-            LOGS.warn(f"[Exception in Lyrics API]: {e}")
+            LOGS.warning(f"[Exception in Lyrics API]: {e}")
             self.client = None
 
     async def check(self, link: str):
@@ -61,6 +61,7 @@ class YouTube:
         yt_url = await self.format_link(link, video_id)
         results = VideosSearch(yt_url, limit=1)
         for result in (await results.next())["result"]:
+            vid = result["id"]
             channel = result["channel"]["name"]
             channel_url = result["channel"]["link"]
             description = result["descriptionSnippet"][0]["text"]
@@ -71,6 +72,7 @@ class YouTube:
             url = result["link"]
             views = result["viewCount"]["short"]
         context = {
+            "id": vid,
             "ch_link": channel_url,
             "channel": channel,
             "description": description,

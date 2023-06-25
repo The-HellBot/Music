@@ -6,7 +6,7 @@ from pyrogram.types import InlineKeyboardMarkup, Message
 
 from config import Config
 from Music.core import hellbot, hellmusic, check_mode
-from Music.helpers import TEXTS, MakeButtons, formatter
+from Music.helpers import TEXTS, Buttons, formatter
 from Music.utils import ytube
 
 
@@ -30,7 +30,7 @@ async def start(_, message: Message):
                     results["thumbnail"],
                     caption=about,
                     reply_markup=InlineKeyboardMarkup(
-                        MakeButtons.song_details_markup(
+                        Buttons.song_details_markup(
                             deep_cmd.split("_", 1)[1],
                             results["link"],
                             results["ch_link"],
@@ -41,7 +41,7 @@ async def start(_, message: Message):
             elif deep_cmd.startswith("help"):
                 await message.reply_text(
                     TEXTS.HELP_PM,
-                    reply_markup=InlineKeyboardMarkup(MakeButtons.help_pm_markup()),
+                    reply_markup=InlineKeyboardMarkup(Buttons.help_pm_markup()),
                 )
                 return
         await message.reply_text(TEXTS.START_PM.format(hellbot.app.mention))
@@ -54,12 +54,12 @@ async def help(_, message: Message):
     if message.chat.type == ChatType.PRIVATE:
         await message.reply_text(
             TEXTS.HELP_PM,
-            reply_markup=InlineKeyboardMarkup(MakeButtons.help_pm_markup()),
+            reply_markup=InlineKeyboardMarkup(Buttons.help_pm_markup()),
         )
     elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
         await message.reply_text(
             TEXTS.HELP_GC,
-            reply_markup=InlineKeyboardMarkup(MakeButtons.help_gc_markup()),
+            reply_markup=InlineKeyboardMarkup(Buttons.help_gc_markup()),
         )
 
 
@@ -72,7 +72,7 @@ async def ping(_, message: Message):
     await message.reply_text(
         TEXTS.PING_REPLY.format(end_time, stats["uptime"], calls_ping),
         disable_web_page_preview=True,
-        reply_markup=InlineKeyboardMarkup(MakeButtons.close_markup()),
+        reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
     )
 
 
@@ -88,5 +88,5 @@ async def sysinfo(_, message: Message):
             stats["ram"],
             stats["uptime"],
         ),
-        reply_markup=InlineKeyboardMarkup(MakeButtons.close_markup()),
+        reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
     )

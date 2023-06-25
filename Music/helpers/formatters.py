@@ -29,6 +29,16 @@ class Formatters:
         self.watermark = False
         self.width_adjustment = True
 
+    def check_limit(self, check: int, config: int) -> bool:
+        if config == 0:
+            return True
+        if check == config:
+            return True
+        elif check < config:
+            return True
+        else:
+            return False
+
     def mins_to_secs(self, time: str) -> int:
         out_time = sum(
             int(x) * 60**i for i, x in enumerate(reversed(time.split(":")))

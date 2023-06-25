@@ -622,7 +622,10 @@ class Thumbnail:
 
             draw = ImageDraw.Draw(base_image)
             draw.text(
-                (740, 350), f"\x54\x69\x74\x6c\x65: {title}", font=font, fill=font_color
+                (740, 350),
+                f"\x54\x69\x74\x6c\x65: {title}",
+                font=font,
+                fill=font_color,
             )
             draw.text(
                 (740, 430),
@@ -655,4 +658,4 @@ class Thumbnail:
             return None
 
 
-thumbnail = Thumbnail()
+thumb = Thumbnail()
