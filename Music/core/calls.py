@@ -13,12 +13,12 @@ from pytgcalls.types.stream import StreamAudioEnded
 from config import Config
 from Music.helpers.buttons import Buttons
 from Music.helpers.strings import TEXTS
-from Music.utils.auto_cmds import autoclean, autoend
 from Music.utils.exceptions import UserException
 from Music.utils.queue import Queue
 from Music.utils.thumbnail import thumb
 from Music.utils.youtube import ytube
 
+from .auto_cmds import autoclean, autoend
 from .clients import hellbot
 from .database import db
 from .logger import LOGS
@@ -147,7 +147,9 @@ class HellMusic(PyTgCalls):
                 photo = thumb.generate((359), (297, 302), video_id)
                 await self.music.change_stream(int(chat_id), input_stream)
                 btns = Buttons.player_markup(
-                    chat_id, "None" if video_id == "telegram" else video_id, hellbot.app.username
+                    chat_id,
+                    "None" if video_id == "telegram" else video_id,
+                    hellbot.app.username,
                 )
                 if photo:
                     await hellbot.app.send_photo(

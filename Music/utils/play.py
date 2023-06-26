@@ -1,6 +1,7 @@
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import InlineKeyboardMarkup, Message
 
+from Music.core.auto_cmds import auto_delete
 from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
@@ -10,7 +11,6 @@ from Music.helpers.strings import TEXTS
 from .queue import Queue
 from .thumbnail import thumb
 from .youtube import ytube
-from .auto_cmds import auto_delete
 
 
 class Player:

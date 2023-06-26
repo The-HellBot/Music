@@ -5,10 +5,11 @@ import os
 from pyrogram.types import Message
 
 from config import Config
-from Music.core.calls import hellmusic
-from Music.core.database import db
-from Music.core.logger import LOGS
 from Music.helpers.formatters import formatter
+
+from .calls import hellmusic
+from .database import db
+from .logger import LOGS
 
 
 async def autoend(chat_id: int):

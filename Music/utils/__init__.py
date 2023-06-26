@@ -1,5 +1,4 @@
 from .admins import get_admins, get_auth_users
-from .auto_cmds import auto_delete, autoclean, autoend
 from .exceptions import CarbonException, UserException
 from .pages import MakePages
 from .play import player
@@ -10,9 +9,6 @@ from .youtube import ytube
 __all__ = [
     "get_admins",
     "get_auth_users",
-    "auto_delete",
-    "autoclean",
-    "autoend",
     "CarbonException",
     "UserException",
     "MakePages",

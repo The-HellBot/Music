@@ -238,7 +238,8 @@ class MakeButtons:
             [
                 InlineKeyboardButton(text="➌ Sudos", callback_data="help|sudo"),
                 InlineKeyboardButton(text="➍ Others", callback_data="help|others"),
-            ][
+            ],
+            [
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ],
         ]
