@@ -135,24 +135,22 @@ class Database(object):
     # autoend db #
     async def get_autoend(self) -> bool:
         try:
-            autoend = await self.autoend.find_one({"autoend": "autoend"})
+            autoend = await self.autoend.find_one({"autoend": "on"})
             if autoend:
-                return bool(autoend["status"])
+                return True
             else:
                 return False
         except:
             return False
 
     async def set_autoend(self, autoend: bool):
-        _db = await self.autoend.find_one({"autoend": "autoend"})
+        _db = await self.autoend.find_one({"autoend": "on"})
         if autoend is True:
             if _db:
                 return
-            await self.autoend.insert_one(
-                {"autoend": "autoend"}, {"status": "on"}
-            )
+            await self.autoend.insert_one({"autoend": "on"})
         else:
-            await self.autoend.delete_one({"autoend": "autoend"})
+            await self.autoend.delete_one({"autoend": "on"})
 
     # loop db #
     async def set_loop(self, chat_id: int, loop: int):
@@ -271,7 +269,7 @@ class Database(object):
 
     async def get_all_authusers(self, chat_id: int):
         all_users = await self.authusers.find_one({"chat_id": chat_id})
-        return all_users if all_users else {}
+        return all_users["user_id"] if all_users else {}
 
     async def remove_authuser(self, chat_id: int, user_id: int):
         await self.authusers.delete_one({"chat_id": chat_id, "user_id": user_id})
