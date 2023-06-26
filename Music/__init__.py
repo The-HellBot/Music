@@ -1,12 +1,9 @@
 import os
-import time
 
 from config import Config
 from Music.core.logger import LOGS
 
-
 local_db = {}
-__start_time__ = time.time()
 
 
 # make required directories

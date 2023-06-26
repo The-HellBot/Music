@@ -12,7 +12,7 @@ from aiohttp import client_exceptions
 from html_telegraph_poster import TelegraphPoster
 
 from config import Config
-from Music import __start_time__
+from Music.version import __start_time__
 from Music.utils.exceptions import CarbonException
 
 from .tools import colour, themes
