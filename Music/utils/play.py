@@ -102,7 +102,7 @@ class Player:
                 Queue.clear_queue(chat_id)
             photo = thumb.generate((359), (297, 302), video_id)
             await hellmusic.join_vc(
-                chat_id, file, True if vc_type == "video" else False
+                chat_id, file_path, True if vc_type == "video" else False
             )
             position = Queue.put_queue(
                 chat_id,

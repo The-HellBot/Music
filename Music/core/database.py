@@ -130,7 +130,7 @@ class Database(object):
 
     async def total_actvc_count(self) -> int:
         count = self.active_vc
-        return len(count)
+        return len(count) - 1
 
     # autoend db #
     async def get_autoend(self) -> bool:
@@ -149,7 +149,7 @@ class Database(object):
             if _db:
                 return
             await self.autoend.insert_one(
-                {"autoend": "autoend"}, {"$set": {"status": "on"}}
+                {"autoend": "autoend"}, {"status": "on"}
             )
         else:
             await self.autoend.delete_one({"autoend": "autoend"})
@@ -220,8 +220,8 @@ class Database(object):
         return True
 
     async def total_block_count(self):
-        count = await self.blocked_users.count_documents({})
-        return count
+        count = await self.get_blocked_users()
+        return len(count)
 
     # gbanned users db #
     async def get_gbanned_users(self) -> list:
@@ -254,8 +254,8 @@ class Database(object):
             return False
 
     async def total_gbans_count(self):
-        count = await self.gban_db.count_documents({})
-        return count
+        count = await self.get_gbanned_users()
+        return len(count)
 
     # authusers db #
     async def add_authusers(self, chat_id: int, user_id: int, details: dict):
@@ -267,7 +267,7 @@ class Database(object):
 
     async def get_authuser(self, chat_id: int, user_id: int):
         chat = await self.authusers.find_one({"chat_id": chat_id, "user_id": user_id})
-        return chat if chat else {}
+        return chat["details"] if chat else {}
 
     async def get_all_authusers(self, chat_id: int):
         all_users = await self.authusers.find_one({"chat_id": chat_id})

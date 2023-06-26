@@ -175,8 +175,9 @@ async def log_(_, message: Message):
             for x in lines[-limit:]:
                 logdata += x
             link = await formatter.bb_paste(logdata)
-            return await message.reply_text(
-                f"**Logs:** {link}", disable_web_page_preview=True
+            return await message.reply_document(
+                "HellMusic.log",
+                caption=f"**Logs:** {link}",
             )
         else:
             return await message.reply_text("No Logs Found!")
