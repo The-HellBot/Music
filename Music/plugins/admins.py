@@ -101,6 +101,7 @@ async def authusers(_, message: Message):
         collection = []
         for user in all_auths:
             data = await db.get_authuser(message.chat.id, user)
+            print(data)
             admin_id = data["auth_by_id"]
             admin_name = data["auth_by_name"]
             auth_date = data["auth_date"]

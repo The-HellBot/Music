@@ -13,11 +13,9 @@ from Music.utils.youtube import ytube
 @check_mode
 @UserWrapper
 async def songs(_, message: Message):
-    if len(message.command) != 2:
+    if len(message.command) == 1:
         return await message.reply_text("Nothing given to search.")
     query = message.text.split(None, 1)[1]
-    if not query:
-        return await message.reply_text("Nothing given to search.")
     hell = await message.reply_photo(
         Config.BLACK_IMG, caption=f"<b><i>Searching</i></b> “`{query}`” ..."
     )

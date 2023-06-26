@@ -191,20 +191,18 @@ class HellMusic(PyTgCalls):
             )
         except (NoActiveGroupCall, GroupCallNotFound):
             try:
-                peer = await hellbot.user.resolve_peer(chat_id)
-                await hellbot.user.send(
-                    CreateGroupCall(
-                        peer=InputPeerChannel(
-                            channel_id=peer.channel_id,
-                            access_hash=peer.access_hash,
-                        ),
-                        random_id=hellbot.user.rnd_id() // 9000000000,
-                    )
-                )
-                return await self.join_vc(chat_id, file_path, video)
-            except:
+                await self.join_gc(chat_id)
+            except Exception as e:
                 raise UserException(
-                    f"[UserException - join_vc]: Assistant is having trouble starting the voice chat! Please start it manually!"
+                    f"[UserException - join_vc]: {e}"
+                )
+            try:
+                await self.music.join_group_call(
+                    chat_id, input_stream, stream_type=StreamType().pulse_stream
+                )
+            except Exception as e:
+                raise UserException(
+                    f"[UserException - join_vc]: There was some error while joining the vc {e}"
                 )
         except Exception as e:
             raise UserException(f"[UserException - join_vc]: {e}")
