@@ -145,11 +145,11 @@ class Database(object):
 
     async def set_autoend(self, autoend: bool):
         _db = await self.autoend.find_one({"autoend": "autoend"})
-        if autoend:
+        if autoend is True:
             if _db:
                 return
             await self.autoend.insert_one(
-                {"autoend": "autoend"}, {"$set": {"status": autoend}}
+                {"autoend": "autoend"}, {"$set": {"status": "on"}}
             )
         else:
             await self.autoend.delete_one({"autoend": "autoend"})
@@ -259,23 +259,22 @@ class Database(object):
 
     # authusers db #
     async def add_authusers(self, chat_id: int, user_id: int, details: dict):
-        context = {user_id: details}
-        await self.authusers.insert_one({chat_id: context})
+        await self.authusers.insert_one({"chat_id": chat_id, "user_id": user_id, "details": details})
 
     async def is_authuser(self, chat_id: int, user_id: int) -> bool:
-        chat = await self.authusers.find_one({chat_id: {user_id: {}}})
+        chat = await self.authusers.find_one({"chat_id": chat_id, "user_id": user_id})
         return bool(chat)
 
     async def get_authuser(self, chat_id: int, user_id: int):
-        chat = await self.authusers.find_one({chat_id: {user_id: {}}})
+        chat = await self.authusers.find_one({"chat_id": chat_id, "user_id": user_id})
         return chat if chat else {}
 
     async def get_all_authusers(self, chat_id: int):
-        all_users = await self.authusers.find_one({chat_id: {}})
+        all_users = await self.authusers.find_one({"chat_id": chat_id})
         return all_users if all_users else {}
 
     async def remove_authuser(self, chat_id: int, user_id: int):
-        await self.authusers.delete_one({chat_id: {user_id: {}}})
+        await self.authusers.delete_one({"chat_id": chat_id, "user_id": user_id})
 
     # authchats db #
     async def get_authchats(self) -> list:
@@ -341,7 +340,9 @@ class Database(object):
     # songs db #
     async def total_songs_count(self) -> int:
         count = await self.songsdb.find_one({"songs": "songs"})
-        return count['count'] or 0
+        if count:
+            return count['count']
+        return 0
 
     async def update_songs_count(self, count: int):
         songs = await self.total_songs_count()

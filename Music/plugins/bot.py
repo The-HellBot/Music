@@ -44,7 +44,7 @@ async def start(_, message: Message):
                 return
             elif deep_cmd.startswith("help"):
                 await message.reply_text(
-                    TEXTS.HELP_PM,
+                    TEXTS.HELP_PM.format(hellbot.app.mention),
                     reply_markup=InlineKeyboardMarkup(Buttons.help_pm_markup()),
                 )
                 return
@@ -58,7 +58,7 @@ async def start(_, message: Message):
 async def help(_, message: Message):
     if message.chat.type == ChatType.PRIVATE:
         await message.reply_text(
-            TEXTS.HELP_PM,
+            TEXTS.HELP_PM.format(hellbot.app.mention),
             reply_markup=InlineKeyboardMarkup(Buttons.help_pm_markup()),
         )
     elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
@@ -94,6 +94,7 @@ async def sysinfo(_, message: Message):
             stats["disk"],
             stats["ram"],
             stats["uptime"],
+            hellbot.app.mention,
         ),
         reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
     )

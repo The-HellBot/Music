@@ -125,7 +125,7 @@ class YouTube:
     async def send_song(
         self, message, rand_key: str, key: int, video: bool = False
     ) -> dict:
-        track = Config.song_dict[rand_key][key]
+        track = Config.SONG_CACHE[rand_key][key]
         ydl_opts = self.video_opts if video else self.audio_opts
         link = track["full_link"]
         hell = await message.reply_text("Downloading...")

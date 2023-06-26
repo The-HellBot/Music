@@ -79,6 +79,7 @@ async def lyrics(_, message: Message):
 async def song_cb(_, cb: CallbackQuery):
     _, action, key, rand_key = cb.data.split("|")
     user = rand_key.split("_")[0]
+    key = int(key)
     if cb.from_user.id != int(user):
         await cb.answer("You are not allowed to do that!", show_alert=True)
         return

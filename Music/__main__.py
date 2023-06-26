@@ -16,7 +16,7 @@ async def start_bot():
     pyro_version = __version__["Pyrogram"]
     pycalls_version = __version__["PyTgCalls"]
 
-    LOGS.info("All Checks Completed! Let's Start Mello...")
+    LOGS.info("All Checks Completed! Let's Start Hell-Music...")
 
     try:
         await user_data.setup()

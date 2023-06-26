@@ -31,7 +31,7 @@ async def user_profile(_, message: Message):
         "join_date": user["join_date"],
     }
     await message.reply_text(
-        MusicUser.get_profile_text(context),
+        MusicUser.get_profile_text(context, hellbot.app.mention),
         reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
     )
 

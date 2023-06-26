@@ -129,7 +129,7 @@ async def gungabn(_, message: Message):
             await asyncio.sleep(int(e.x))
         except Exception:
             pass
-    await db.remove_banned_user(user_id)
+    await db.remove_gbanned_users(user_id)
     await message.reply_text(
         f"**Ungbanned Successfully!**\n\n**User:** {mention}\n**Chats:** `{count}`"
     )
@@ -164,8 +164,8 @@ async def gbanned_list(_, message: Message):
 @UserWrapper
 async def log_(_, message: Message):
     try:
-        if os.path.exists("Mello.log"):
-            log = open("Mello.log", "r")
+        if os.path.exists("HellMusic.log"):
+            log = open("HellMusic.log", "r")
             lines = log.readlines()
             logdata = ""
             try:

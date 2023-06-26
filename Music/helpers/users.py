@@ -6,7 +6,7 @@ class UserModel:
         self.profile = TEXTS.PROFILE
         self.stats = TEXTS.STATS
 
-    def get_profile_text(self, context: dict) -> str:
+    def get_profile_text(self, context: dict, mention) -> str:
         return self.profile.format(
             self.get_user_level_symbol(context["songs_played"]),
             context["mention"],
@@ -14,6 +14,7 @@ class UserModel:
             self.get_user_level(context["songs_played"]),
             context["songs_played"],
             context["join_date"],
+            mention,
         )
 
     def get_user_level(self, songs_played: int) -> str:

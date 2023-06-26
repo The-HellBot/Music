@@ -86,7 +86,7 @@ async def play_music(_, message: Message, context: dict):
             return await hell.edit("Playlist links are not supported yet.")
         try:
             await hell.edit("Searching ...")
-            result = ytube.get_data(url, False)
+            result = await ytube.get_data(url, False)
         except Exception as e:
             return await hell.edit(f"**Error:**\n`{e}`")
         context = {
@@ -107,7 +107,7 @@ async def play_music(_, message: Message, context: dict):
     query = message.text.split(" ", 1)[1]
     try:
         await hell.edit("Searching ...")
-        result = ytube.get_data(query, False)
+        result = await ytube.get_data(query, False)
     except Exception as e:
         return await hell.edit(f"**Error:**\n`{e}`")
     context = {

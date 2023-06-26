@@ -67,12 +67,13 @@ class TEXTS:
         "**</>** {11}"
     )
     SYSTEM = (
-        "**System Info**\n\n"
-        "**Core:** __{0}__\n"
-        "**CPU Usage:** __{1}__\n"
-        "**Disk Usage:** __{2}__\n"
-        "**RAM Usage:** __{3}__\n"
-        "**Uptime:** __{4}__"
+        "**>> System Info:**\n\n"
+        "   **Core:** __{0}__\n"
+        "   **CPU Usage:** __{1}__\n"
+        "   **Disk Usage:** __{2}__\n"
+        "   **RAM Usage:** __{3}__\n"
+        "   **Uptime:** __{4}__\n\n"
+        "**</>** {5}"
     )
     HELP_ADMIN = (
         "**Admin Commands**\n\n"

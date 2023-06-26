@@ -46,7 +46,7 @@ class HellMusic(PyTgCalls):
             quit(1)
 
     async def ping(self):
-        pinged = await self.music.ping()
+        pinged = await self.music.ping
         return pinged
 
     async def vc_participants(self, chat_id: int):
