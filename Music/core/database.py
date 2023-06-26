@@ -19,12 +19,12 @@ class Database(object):
         self.autoend = self.db.autoend
         self.blocked_users = self.db.blocked_users
         self.chats = self.db.chats
+        self.favorites = self.db.favorites
         self.gban_db = self.db.gban_db
         self.gcast = self.db.gcast
-        self.favorites = self.db.favorites
+        self.songsdb = self.db.songsdb
         self.sudousers = self.db.sudousers
         self.users = self.db.users
-        self.songsdb = self.db.songsdb
 
         # local db collections
         self.active_vc = [{"chat_id": 0, "join_time": 0, "vc_type": "voice"}]
@@ -267,9 +267,12 @@ class Database(object):
         chat = await self.authusers.find_one({"chat_id": chat_id, "user_id": user_id})
         return chat["details"] if chat else {}
 
-    async def get_all_authusers(self, chat_id: int):
-        all_users = await self.authusers.find_one({"chat_id": chat_id})
-        return all_users["user_id"] if all_users else {}
+    async def get_all_authusers(self, chat_id: int) -> list:
+        all_users = []
+        users = await self.authusers.find_one({"chat_id": chat_id})
+        async for user in users:
+            all_users.append(user["user_id"])
+        return all_users if all_users else []
 
     async def remove_authuser(self, chat_id: int, user_id: int):
         await self.authusers.delete_one({"chat_id": chat_id, "user_id": user_id})

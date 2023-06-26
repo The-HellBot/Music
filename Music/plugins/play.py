@@ -35,7 +35,7 @@ async def play_music(_, message: Message, context: dict):
                 f"Audio duration limit of {Config.PLAY_LIMIT} minutes exceeded."
             )
         await hell.edit("Downloading ...")
-        file_path = await tgaud.download()
+        file_path = await hellbot.app.download_media(message.reply_to_message)
         context = {
             "chat_id": message.chat.id,
             "user_id": message.from_user.id,
@@ -63,7 +63,7 @@ async def play_music(_, message: Message, context: dict):
                 f"Audio duration limit of {Config.PLAY_LIMIT} minutes exceeded."
             )
         await hell.edit("Downloading ...")
-        file_path = await tgvid.download()
+        file_path = await hellbot.app.download_media(message.reply_to_message)
         context = {
             "chat_id": message.chat.id,
             "user_id": message.from_user.id,
