@@ -269,8 +269,8 @@ class Database(object):
 
     async def get_all_authusers(self, chat_id: int) -> list:
         all_users = []
-        users = await self.authusers.find_one({"chat_id": chat_id})
-        for user in users:
+        users = await self.authusers.find({"chat_id": chat_id})
+        async for user in users:
             all_users.append(user["user_id"])
         return all_users if all_users else []
 
