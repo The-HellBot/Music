@@ -1,7 +1,8 @@
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InputMediaPhoto, Message
 
 from config import Config
-from Music.core import hellbot
+from Music.core.clients import hellbot
+from Music.core.database import db
 from Music.helpers.buttons import Buttons
 from Music.helpers.formatters import formatter
 
@@ -79,19 +80,44 @@ class Pages:
             for auth in grouped[int(page)]:
                 index += 1
                 text += f"**{'0' if index < 10 else ''}{index}:** {auth['auth_user']}\n"
-                text += f"    **Auth By:** {auth['admin_name']} (`{auth['admin_id']}`)\n"
+                text += (
+                    f"    **Auth By:** {auth['admin_name']} (`{auth['admin_id']}`)\n"
+                )
                 text += f"    **Since:** __{auth['auth_date']}__\n\n"
         except IndexError:
             page = 0
             for auth in grouped[int(page)]:
                 index += 1
                 text += f"**{'0' if index < 10 else ''}{index}:** {auth['auth_user']}\n"
-                text += f"    **Auth By:** {auth['admin_name']} (`{auth['admin_id']}`)\n"
+                text += (
+                    f"    **Auth By:** {auth['admin_name']} (`{auth['admin_id']}`)\n"
+                )
                 text += f"    **Since:** __{auth['auth_date']}__\n\n"
         if edit:
             await m.edit_text(text, reply_markup=InlineKeyboardMarkup(btns))
         else:
             await m.reply_text(text, reply_markup=InlineKeyboardMarkup(btns))
+
+
+    async def favorite_page(
+        self,
+        message: Message or CallbackQuery,
+        collection: list,
+        page: int = 0,
+        index: int = 0,
+        edit: bool = False,
+        delete: bool = False
+    ):
+        m = message.message if isinstance(message, CallbackQuery) else message
+        grouped, total = formatter.group_the_list(collection, 7)
+        text = f"__({page+1}/{len(grouped)})__ {message.from_user.mention} **favorites:** __{total} tracks__\n\n"
+        btns, final = Buttons.favorite_markup(
+            collection, message.from_user.id, page, index, db, delete
+        )
+        if edit:
+            await m.edit_text(f"{text}{final}", reply_markup=InlineKeyboardMarkup(btns))
+        else:
+            await m.reply_text(f"{text}{final}", reply_markup=InlineKeyboardMarkup(btns))
 
 
 MakePages = Pages()

@@ -14,19 +14,21 @@ class Database(object):
         self.db = self.client["HellMusicDB"]
 
         # mongo db collections
-        self.authusers = self.db.authusers
         self.authchats = self.db.authchats
+        self.authusers = self.db.authusers
         self.autoend = self.db.autoend
-        self.bl_chats = self.db.bl_chats
         self.blocked_users = self.db.blocked_users
         self.chats = self.db.chats
         self.gban_db = self.db.gban_db
         self.gcast = self.db.gcast
+        self.favorites = self.db.favorites
         self.sudousers = self.db.sudousers
         self.users = self.db.users
+        self.songsdb = self.db.songsdb
 
         # local db collections
         self.active_vc = [{"chat_id": 0, "join_time": 0, "vc_type": "voice"}]
+        self.inactive = {}
         self.loop = {}
         self.watcher = {}
 
@@ -43,9 +45,8 @@ class Database(object):
     async def add_user(self, user_id: int):
         context = {
             "user_id": user_id,
-            "join_date": datetime.datetime.now(),
+            "join_date": datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
             "songs_played": 0,
-            "level": 0,
         }
         await self.users.insert_one(context)
 
@@ -67,6 +68,11 @@ class Database(object):
     async def total_users_count(self):
         count = await self.users.count_documents({})
         return count
+
+    async def update_user(self, user_id: int, key: str, value: int):
+        prev = await self.users.find_one({"user_id": user_id})
+        value = prev[key] + value
+        await self.users.update_one({"user_id": user_id}, {"$set": {key: value}})
 
     # chat db #
     async def add_chat(self, chat_id: int):
@@ -121,6 +127,10 @@ class Database(object):
         for x in self.active_vc:
             if x["chat_id"] == chat_id:
                 self.active_vc.remove(x)
+
+    async def total_actvc_count(self) -> int:
+        count = self.active_vc
+        return len(count)
 
     # autoend db #
     async def get_autoend(self) -> bool:
@@ -209,6 +219,10 @@ class Database(object):
         )
         return True
 
+    async def total_block_count(self):
+        count = await self.blocked_users.count_documents({})
+        return count
+
     # gbanned users db #
     async def get_gbanned_users(self) -> list:
         users = await self.gban_db.find_one({"gbanned": "gbanned"})
@@ -238,6 +252,10 @@ class Database(object):
             return True
         else:
             return False
+
+    async def total_gbans_count(self):
+        count = await self.gban_db.count_documents({})
+        return count
 
     # authusers db #
     async def add_authusers(self, chat_id: int, user_id: int, details: dict):
@@ -281,6 +299,56 @@ class Database(object):
             {"authchats": "authchats"}, {"$set": {"chat_ids": chats}}, upsert=True
         )
         return True
+
+    async def is_authchat(self, chat_id: int) -> bool:
+        chats = await self.authchats.find_one({"authchats": "authchats"})
+        if chat_id in chats["chat_ids"]:
+            return True
+        return False
+
+    # favorites db #
+    async def get_favs(self, user_id: int) -> dict:
+        favs = await self.favorites.find_one({"user_id": user_id})
+        return favs["tracks"] if favs else {}
+
+    async def add_favorites(self, user_id: int, video_id: str, context: dict):
+        favs = await self.get_favs(user_id)
+        favs[video_id] = context
+        await self.favorites.update_one(
+            {"user_id": user_id}, {"$set": {"tracks": favs}}, upsert=True
+        )
+
+    async def rem_favorites(self, user_id: int, video_id: str) -> bool:
+        favs = await self.get_favs(user_id)
+        if video_id in favs:
+            del favs[video_id]
+            await self.favorites.update_one(
+                {"user_id": user_id}, {"$set": {"tracks": favs}}, upsert=True
+            )
+            return True
+        return False
+
+    async def get_all_favorites(self, user_id: int) -> list:
+        favs = []
+        for x in await self.get_favs(user_id):
+            favs.append(x)
+        return favs
+
+    async def get_favorite(self, user_id: int, video_id: str) -> dict:
+        favs = await self.get_favs(user_id)
+        return favs[video_id] if video_id in favs else {}
+
+    # songs db #
+    async def total_songs_count(self) -> int:
+        count = await self.songsdb.find_one({"songs": "songs"})
+        return count['count'] or 0
+
+    async def update_songs_count(self, count: int):
+        songs = await self.total_songs_count()
+        songs = songs + count
+        await self.songsdb.update_one(
+            {"songs": "songs"}, {"$set": {"count": songs}}, upsert=True
+        )
 
 
 db = Database()

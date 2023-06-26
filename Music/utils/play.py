@@ -10,6 +10,7 @@ from Music.helpers.strings import TEXTS
 from .queue import Queue
 from .thumbnail import thumb
 from .youtube import ytube
+from .auto_cmds import auto_delete
 
 
 class Player:
@@ -45,7 +46,7 @@ class Player:
             return None
         return url[offset : offset + length]
 
-    async def play(self, message: Message, context: dict):
+    async def play(self, message: Message, context: dict, edit: bool = True):
         (
             chat_id,
             user_id,
@@ -63,10 +64,17 @@ class Player:
             file_path = file
         else:
             try:
-                await message.edit_text("Downloading ...")
+                if edit:
+                    await message.edit_text("Downloading ...")
+                else:
+                    await message.reply_text("Downloading ...")
                 file_path = await ytube.download(video_id, True)
             except Exception as e:
-                return await message.edit_text(str(e))
+                if edit:
+                    await message.edit_text(str(e))
+                else:
+                    await message.reply_text(str(e))
+                return
         if await db.is_active_vc(chat_id):
             position = Queue.put_queue(
                 chat_id,
@@ -109,7 +117,7 @@ class Player:
             )
             btns = Buttons.player_markup(chat_id, video_id, hellbot.app.username)
             if photo:
-                await hellbot.app.send_photo(
+                sent = await hellbot.app.send_photo(
                     chat_id,
                     photo,
                     TEXTS.PLAYING.format(
@@ -121,7 +129,7 @@ class Player:
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
             else:
-                await hellbot.app.send_message(
+                sent = await hellbot.app.send_message(
                     chat_id,
                     TEXTS.PLAYING.format(
                         hellbot.app.mention,
@@ -132,6 +140,9 @@ class Player:
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
         await message.delete()
+        await db.update_songs_count(1)
+        await db.update_user(user_id, "songs_played", 1)
+        await auto_delete(sent, duration)
         await hellbot.logit(
             f"play {vc_type}",
             f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"

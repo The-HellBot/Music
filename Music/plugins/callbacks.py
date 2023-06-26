@@ -1,0 +1,230 @@
+import datetime
+
+from pyrogram import filters
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
+
+from config import Config
+from Music.core import db, hellbot, hellmusic
+from Music.helpers import TEXTS, Buttons, formatter
+from Music.utils import Queue, get_auth_users, player, ytube
+
+
+@hellbot.app.on_callback_query(filters.regex(r"close") & ~Config.BANNED_USERS)
+async def close_cb(_, cb: CallbackQuery):
+    try:
+        await cb.message.delete()
+        await cb.answer("Closed!", show_alert=True)
+    except:
+        pass
+
+
+@hellbot.app.on_callback_query(filters.regex(r"controls") & ~Config.BANNED_USERS)
+async def controls_cb(_, cb: CallbackQuery):
+    chat_id = int(cb.data.split("|")[1])
+    btns = Buttons.controls_markup(chat_id)
+    try:
+        await cb.message.edit_reply_markup(InlineKeyboardMarkup(btns))
+    except:
+        return
+
+
+@hellbot.app.on_callback_query(filters.regex(r"ctrl") & ~Config.BANNED_USERS)
+async def controler_cb(_, cb: CallbackQuery):
+    _, action, chat_id = cb.data.split("|")
+    if int(chat_id) != cb.message.chat.id:
+        return await cb.answer("This message is not for this chat!", show_alert=True)
+    is_active = await db.is_active_vc(int(chat_id))
+    if not is_active:
+        return await cb.answer("Voice chat is not active!", show_alert=True)
+    is_authchat = await db.is_authchat(cb.message.chat.id)
+    if not is_authchat:
+        if cb.from_user.id not in Config.SUDO_USERS:
+            try:
+                admins = await get_auth_users(int(chat_id))
+            except Exception as e:
+                return await cb.answer(
+                    f"There was an error while fetching admin list.\n\n{e}",
+                    show_alert=True,
+                )
+            if not admins:
+                return await cb.answer("Need to refresh admin list.", show_alert=True)
+            else:
+                if cb.from_user.id not in admins:
+                    return await cb.answer(
+                        "This command is only for authorized users and admins!",
+                        show_alert=True,
+                    )
+    if action == "play":
+        is_paused = await db.get_watcher(cb.message.chat.id, "pause")
+        if is_paused:
+            await db.set_watcher(cb.message.chat.id, "pause", False)
+            await hellmusic.resume_vc(cb.message.chat.id)
+            await cb.answer("Resumed!", show_alert=True)
+            return await cb.message.reply_text(
+                f"__VC Resumed by:__ {cb.from_user.mention}"
+            )
+        else:
+            await db.set_watcher(cb.message.chat.id, "pause", True)
+            await hellmusic.pause_vc(cb.message.chat.id)
+            await cb.answer("Paused!", show_alert=True)
+            return await cb.message.reply_text(
+                f"__VC Paused by:__ {cb.from_user.mention}"
+            )
+    elif action == "mute":
+        is_muted = await db.get_watcher(cb.message.chat.id, "mute")
+        if is_muted:
+            return await cb.answer("Already muted!", show_alert=True)
+        else:
+            await db.set_watcher(cb.message.chat.id, "mute", True)
+            await hellmusic.mute_vc(cb.message.chat.id)
+            await cb.answer("Muted!", show_alert=True)
+            return await cb.message.reply_text(
+                f"__VC Muted by:__ {cb.from_user.mention}"
+            )
+    elif action == "unmute":
+        is_muted = await db.get_watcher(cb.message.chat.id, "mute")
+        if is_muted:
+            await db.set_watcher(cb.message.chat.id, "mute", False)
+            await hellmusic.unmute_vc(cb.message.chat.id)
+            await cb.answer("Unmuted!", show_alert=True)
+            return await cb.message.reply_text(
+                f"__VC Unmuted by:__ {cb.from_user.mention}"
+            )
+        else:
+            return await cb.answer("Already unmuted!", show_alert=True)
+    elif action == "end":
+        await hellmusic.leave_vc(cb.message.chat.id)
+        await db.set_loop(cb.message.chat.id, 0)
+        await cb.answer("Left the VC!", show_alert=True)
+        return await cb.message.reply_text(f"__VC Stopped by:__ {cb.from_user.mention}")
+    elif action == "loop":
+        is_loop = await db.get_loop(cb.message.chat.id)
+        final = is_loop + 3
+        final = 10 if final > 10 else final
+        await db.set_loop(cb.message.chat.id, final)
+        await cb.answer(f"Loop set to {final}", show_alert=True)
+        return await cb.message.reply_text(
+            f"__Loop set to {final}__ by: {cb.from_user.mention}\n\Previous loop was {is_loop}"
+        )
+    elif action == "replay":
+        que = Queue.get_queue(cb.message.chat.id)
+        context = {
+            "chat_id": cb.message.chat.id,
+            "user_id": cb.from_user.id,
+            "duration": que[0]["duration"],
+            "file": que[0]["file"],
+            "title": que[0]["title"],
+            "user": cb.from_user.mention,
+            "video_id": que[0]["video_id"],
+            "vc_type": que[0]["vc_type"],
+            "force": True,
+        }
+        await cb.answer("Replaying!", show_alert=True)
+        await player.play(cb.message, context, False)
+    elif action == "skip":
+        que = Queue.get_queue(cb.message.chat.id)
+        if len(que) == 1:
+            return await cb.answer(
+                "No more songs in queue to skip! Use /end or /stop to stop the VC.",
+                show_alert=True,
+            )
+        is_loop = await db.get_loop(cb.message.chat.id)
+        if is_loop != 0:
+            await db.set_loop(cb.message.chat.id, 0)
+        try:
+            Queue.rm_queue(cb.message.chat.id, 0)
+        except:
+            return await cb.answer("No more songs in queue to skip!", show_alert=True)
+        new_que = Queue.get_queue(cb.message.chat.id)
+        context = {
+            "chat_id": new_que[0]["chat_id"],
+            "user_id": new_que[0]["user_id"],
+            "duration": new_que[0]["duration"],
+            "file": new_que[0]["file"],
+            "title": new_que[0]["title"],
+            "user": new_que[0]["user"],
+            "video_id": new_que[0]["video_id"],
+            "vc_type": new_que[0]["vc_type"],
+            "force": True,
+        }
+        await cb.message.reply_text(f"__VC Skipped by:__ {cb.from_user.mention}")
+        await player.play(cb.message, context, False)
+    elif action == "bseek":
+        que = Queue.get_queue(cb.message.chat.id)
+        played = int(que[0]["played"])
+        seek_time = 10
+        if (played - seek_time) <= 10:
+            return await cb.answer("Cannot seek beyond 10 seconds!", show_alert=True)
+        to_seek = played - seek_time
+        try:
+            context = {
+                "chat_id": que[0]["chat_id"],
+                "file": que[0]["file"],
+                "duration": que[0]["duration"],
+                "seek": formatter.secs_to_mins(to_seek),
+                "video": True if que[0]["vc_type"] == "video" else False,
+            }
+            await hellmusic.seek_vc(context)
+        except:
+            return await cb.answer("Something went wrong!", show_alert=True)
+        Queue.update_duration(cb.message.chat.id, 0, to_seek)
+        await cb.message.reply_text(
+            f"__Seeked back by {seek_time} seconds!__ \n\nBy: {cb.from_user.mention}"
+        )
+    elif action == "fseek":
+        que = Queue.get_queue(cb.message.chat.id)
+        played = int(que[0]["played"])
+        duration = formatter.mins_to_secs(que[0]["duration"])
+        seek_time = 10
+        if (duration - (played + seek_time)) <= 10:
+            return await cb.answer("Cannot seek beyond 10 seconds!", show_alert=True)
+        to_seek = played + seek_time
+        try:
+            context = {
+                "chat_id": que[0]["chat_id"],
+                "file": que[0]["file"],
+                "duration": que[0]["duration"],
+                "seek": formatter.secs_to_mins(to_seek),
+                "video": True if que[0]["vc_type"] == "video" else False,
+            }
+            await hellmusic.seek_vc(context)
+        except:
+            return await cb.answer("Something went wrong!", show_alert=True)
+        Queue.update_duration(cb.message.chat.id, 1, to_seek)
+        await cb.message.reply_text(
+            f"__Seeked forward by {seek_time} seconds!__ \n\nBy: {cb.from_user.mention}"
+        )
+    elif action == "back":
+        que = Queue.get_queue(cb.message.chat.id)
+        video_id = que[0]["video_id"]
+        btns = Buttons.player_markup(cb.message.chat.id, video_id, hellbot.app.username)
+        try:
+            await cb.message.edit_reply_markup(InlineKeyboardMarkup(btns))
+        except:
+            return
+
+
+@hellbot.app.on_callback_query(filters.regex(r"help") & ~Config.BANNED_USERS)
+async def help_cb(_, cb: CallbackQuery):
+    data = cb.data.split("|")[1]
+    if data == "admin":
+        return await cb.message.edit_text(
+            TEXTS.HELP_ADMIN, reply_markup=InlineKeyboardMarkup(Buttons.help_back())
+        )
+    elif data == "user":
+        return await cb.message.edit_text(
+            TEXTS.HELP_USER, reply_markup=InlineKeyboardMarkup(Buttons.help_back())
+        )
+    elif data == "sudo":
+        return await cb.message.edit_text(
+            TEXTS.HELP_SUDO, reply_markup=InlineKeyboardMarkup(Buttons.help_back())
+        )
+    elif data == "others":
+        return await cb.message.edit_text(
+            TEXTS.HELP_OTHERS, reply_markup=InlineKeyboardMarkup(Buttons.help_back())
+        )
+    elif data == "back":
+        return await cb.message.edit_text(
+            TEXTS.HELP_PM.format(hellbot.app.mention),
+            reply_markup=InlineKeyboardMarkup(Buttons.help_pm_markup()),
+        )

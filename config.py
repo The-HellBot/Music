@@ -21,11 +21,12 @@ class Config(object):
     BLACK_IMG = environ.get("BLACK_IMG", "https://telegra.ph/file/2c546060b20dfd7c1ff2d.jpg")       # black image for progress
     BOT_NAME = environ.get("BOT_NAME", "\x40\x4d\x75\x73\x69\x63\x5f\x48\x65\x6c\x6c\x42\x6f\x74")  # dont put fancy texts here.
     BOT_PIC = environ.get("BOT_PIC", "https://te.legra.ph/file/5d5642103804ae180e40b.jpg")          # put direct link to image here
-    LYRICS_API = environ.get("LYRICS_API", None)        # from https://docs.genius.com/
-    PLAY_LIMIT = int(environ.get("PLAY_LIMIT", 0))      # time in minutes. 0 for no limit
-    PRIVATE_MODE = environ.get("PRIVATE_MODE", "off")   # "on" or "off" to enable/disable private mode
-    SONG_LIMIT = int(environ.get("SONG_LIMIT", 0))      # time in minutes. 0 for no limit
-    TELEGRAM_IMG = environ.get("TELEGRAM_IMG", None)    # put direct link to image here
+    LYRICS_API = environ.get("LYRICS_API", None)            # from https://docs.genius.com/
+    MAX_FAVORITES = int(environ.get("MAX_FAVORITES", 50))  # max number of favorite tracks
+    PLAY_LIMIT = int(environ.get("PLAY_LIMIT", 0))          # time in minutes. 0 for no limit
+    PRIVATE_MODE = environ.get("PRIVATE_MODE", "off")       # "on" or "off" to enable/disable private mode
+    SONG_LIMIT = int(environ.get("SONG_LIMIT", 0))          # time in minutes. 0 for no limit
+    TELEGRAM_IMG = environ.get("TELEGRAM_IMG", None)        # put direct link to image here
     TG_AUDIO_SIZE_LIMIT = int(environ.get("TG_AUDIO_SIZE_LIMIT", 104857600))    # size in bytes. 0 for no limit
     TG_VIDEO_SIZE_LIMIT = int(environ.get("TG_VIDEO_SIZE_LIMIT", 1073741824))   # size in bytes. 0 for no limit
     TZ = environ.get("TZ", "Asia/Kolkata")  # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones

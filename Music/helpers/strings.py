@@ -28,6 +28,15 @@ class TEXTS:
         "**♪ Duration:** __{2}__\n"
         "**♪ Auxed By:** {3}"
     )
+    PROFILE = (
+        "**{0} User Profile**\n\n"
+        "**Name:** {1}\n"
+        "**ID:** `{2}`\n"
+        "**Level:** __{3}__\n"
+        "**Songs Played:** __{4}__\n"
+        "**Joined Since:** __{5}__\n\n"
+        "**{6} ❤️**"
+    )
     QUEUE = (
         "**Added to Queue (#{0})** \n\n"
         "**Song Name:** __{1}__\n"
@@ -41,6 +50,22 @@ class TEXTS:
         "**Requested By:** {4}\n\n"
         "**{5} ❤️**"
     )
+    STATS = (
+        ">> **Server Stats:**\n\n"
+        "    **Total Users:** `{0} users`\n"
+        "    **Total Chats:** `{1} chats`\n"
+        "    **Total Gbans:** `{2} users`\n"
+        "    **Blocked Users:** `{3} users`\n"
+        "    **Songs Played:** `{4} songs`\n"
+        "    **Active VC:** `{5} vc`\n\n"
+        ">> **System Stats:**\n\n"
+        "    **Core:** __{6}__\n"
+        "    **CPU Usage:** __{7}__\n"
+        "    **Disk Usage:** __{8}__\n"
+        "    **RAM Usage:** __{9}__\n"
+        "    **Uptime:** __{10}__\n\n"
+        "**</>** {11}"
+    )
     SYSTEM = (
         "**System Info**\n\n"
         "**Core:** __{0}__\n"
@@ -48,6 +73,18 @@ class TEXTS:
         "**Disk Usage:** __{2}__\n"
         "**RAM Usage:** __{3}__\n"
         "**Uptime:** __{4}__"
+    )
+    HELP_ADMIN = (
+        "**Admin Commands**\n\n"
+    )
+    HELP_USER = (
+        "**User Commands**\n\n"
+    )
+    HELP_SUDO = (
+        "**Sudo Commands**\n\n"
+    )
+    HELP_OTHERS = (
+        "**Other Commands**\n\n"
     )
     HELP_GC = "Get the help menu in your PM. Click the button below!"
     HELP_PM = "Get detailed informations about my commands and their usage by navigating to these buttons below! \n\n**{0} ❤️**"

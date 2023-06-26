@@ -32,7 +32,6 @@ async def start(_, message: Message):
                     caption=about,
                     reply_markup=InlineKeyboardMarkup(
                         Buttons.song_details_markup(
-                            deep_cmd.split("_", 1)[1],
                             results["link"],
                             results["ch_link"],
                         )

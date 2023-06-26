@@ -1,7 +1,7 @@
 import datetime
 
 from pyrogram import filters
-from pyrogram.types import Message, CallbackQuery
+from pyrogram.types import CallbackQuery, Message
 
 from config import Config
 from Music.core import AdminWrapper, UserWrapper, check_mode, db, hellbot

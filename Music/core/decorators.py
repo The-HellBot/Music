@@ -15,12 +15,7 @@ on_mode = ["on", "enable", "yes", "true"]
 def check_mode(func):
     @wraps(func)
     async def decorated(client, message):
-        if isinstance(message, Message):
-            user_id = message.from_user.id
-        elif isinstance(message, CallbackQuery):
-            user_id = message.from_user.id
-        else:
-            return
+        user_id = message.from_user.id
         if (Config.PRIVATE_MODE).lower in on_mode:
             if user_id not in Config.SUDO_USERS:
                 return
@@ -49,6 +44,8 @@ def AdminWrapper(func):
                 )
         return await func(client, message)
 
+    return decorated
+
 
 # allow admins and auth users only
 def AuthWrapper(func):
@@ -65,7 +62,7 @@ def AuthWrapper(func):
         chat_id = message.chat.id
         if not await db.is_active_vc(chat_id):
             return await message.reply_text("Nothing is streaming on the voice chat!")
-        is_authchat = await db.get_authchats(message.chat.id)
+        is_authchat = await db.is_authchat(message.chat.id)
         if not is_authchat:
             if message.from_user.id not in Config.SUDO_USERS:
                 try:
