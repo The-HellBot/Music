@@ -117,7 +117,7 @@ class HellMusic(PyTgCalls):
                 await db.set_loop(chat_id, loop - 1)
         except:
             return await self.leave_vc(chat_id)
-        # get = Queue.get_queue(chat_id)
+        get = Queue.get_queue(chat_id)
         chat_id = get[0]["chat_id"]
         duration = get[0]["duration"]
         queue = get[0]["file"]

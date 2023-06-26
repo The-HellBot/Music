@@ -12,7 +12,7 @@ from .logger import LOGS
 
 
 async def autoend(chat_id: int, client):
-    autoend = await db.get_autoend(chat_id)
+    autoend = await db.get_autoend()
     if autoend:
         users = len(await client.vc_participants(chat_id))
         if users == 1:

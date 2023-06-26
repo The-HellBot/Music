@@ -269,7 +269,7 @@ class Database(object):
 
     async def get_all_authusers(self, chat_id: int) -> list:
         all_users = []
-        users = await self.authusers.find({"chat_id": chat_id})
+        users = self.authusers.find({"chat_id": chat_id})
         async for user in users:
             all_users.append(user["user_id"])
         return all_users if all_users else []
@@ -302,7 +302,7 @@ class Database(object):
 
     async def is_authchat(self, chat_id: int) -> bool:
         chats = await self.authchats.find_one({"authchats": "authchats"})
-        if chat_id in chats["chat_ids"]:
+        if chats and chat_id in chats["chat_ids"]:
             return True
         return False
 

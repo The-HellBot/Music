@@ -95,7 +95,7 @@ class Player:
                     duration,
                     user,
                 ),
-                reply_markup=Buttons.close_markup(),
+                reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
             )
         else:
             if not force:
