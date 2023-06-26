@@ -4,9 +4,14 @@ from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
 
 from config import Config
-from Music.core import LOGS, UserWrapper, check_mode, db, hellbot, hellmusic
-from Music.helpers import formatter
-from Music.utils import MakePages, Queue
+from Music.core.calls import hellmusic
+from Music.core.clients import hellbot
+from Music.core.database import db
+from Music.core.decorators import UserWrapper, check_mode
+from Music.core.logger import LOGS
+from Music.helpers.formatters import formatter
+from Music.utils.pages import MakePages
+from Music.utils.queue import Queue
 
 
 @hellbot.app.on_message(filters.command("active") & Config.SUDO_USERS)

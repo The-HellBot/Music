@@ -4,9 +4,12 @@ from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
 
 from config import Config
-from Music.core import UserWrapper, check_mode, db, hellbot
-from Music.helpers import formatter
-from Music.utils import MakePages, ytube
+from Music.core.clients import hellbot
+from Music.core.database import db
+from Music.core.decorators import UserWrapper, check_mode
+from Music.helpers.formatters import formatter
+from Music.utils.pages import MakePages
+from Music.utils.youtube import ytube
 
 
 @hellbot.app.on_message(

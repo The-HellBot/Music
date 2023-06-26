@@ -2,9 +2,11 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from config import Config
-from Music.core import PlayWrapper, check_mode, hellbot
-from Music.helpers import formatter
-from Music.utils import player, ytube
+from Music.core.clients import hellbot
+from Music.core.decorators import PlayWrapper, check_mode
+from Music.helpers.formatters import formatter
+from Music.utils.play import player
+from Music.utils.youtube import ytube
 
 
 @hellbot.app.on_message(

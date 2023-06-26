@@ -9,8 +9,10 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from config import Config, all_vars
-from Music.core import UserWrapper, db, hellbot
-from Music.helpers import aexec
+from Music.core.clients import hellbot
+from Music.core.database import db
+from Music.core.decorators import UserWrapper
+from Music.helpers.tools import aexec
 
 
 @hellbot.app.on_message(filters.command(["eval", "run"]) & Config.GOD_USERS)

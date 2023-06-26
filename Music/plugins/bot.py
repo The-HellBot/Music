@@ -5,9 +5,13 @@ from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardMarkup, Message
 
 from config import Config
-from Music.core import UserWrapper, check_mode, hellbot, hellmusic
-from Music.helpers import TEXTS, Buttons, formatter
-from Music.utils import ytube
+from Music.core.calls import hellmusic
+from Music.core.clients import hellbot
+from Music.core.decorators import UserWrapper, check_mode
+from Music.helpers.buttons import Buttons
+from Music.helpers.formatters import formatter
+from Music.helpers.strings import TEXTS
+from Music.utils.youtube import ytube
 
 
 @hellbot.app.on_message(filters.command(["start", "alive"]) & ~Config.BANNED_USERS)

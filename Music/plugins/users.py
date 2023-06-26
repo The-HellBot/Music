@@ -2,8 +2,12 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, Message
 
 from config import Config
-from Music.core import UserWrapper, check_mode, db, hellbot
-from Music.helpers import Buttons, MusicUser, formatter
+from Music.core.clients import hellbot
+from Music.core.database import db
+from Music.core.decorators import UserWrapper, check_mode
+from Music.helpers.buttons import Buttons
+from Music.helpers.formatters import formatter
+from Music.helpers.users import MusicUser
 
 
 @hellbot.app.on_message(

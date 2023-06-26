@@ -2,9 +2,13 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from config import Config
-from Music.core import AuthWrapper, check_mode, db, hellbot, hellmusic
-from Music.helpers import formatter
-from Music.utils import Queue, player
+from Music.core.calls import hellmusic
+from Music.core.clients import hellbot
+from Music.core.database import db
+from Music.core.decorators import AuthWrapper, check_mode
+from Music.helpers.formatters import formatter
+from Music.utils.play import player
+from Music.utils.queue import Queue
 
 
 @hellbot.app.on_message(

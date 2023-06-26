@@ -7,8 +7,12 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import Message
 
 from config import Config
-from Music.core import UserWrapper, db, hellbot, hellmusic, user_data
-from Music.helpers import formatter
+from Music.core.calls import hellmusic
+from Music.core.clients import hellbot
+from Music.core.database import db
+from Music.core.decorators import UserWrapper
+from Music.core.users import user_data
+from Music.helpers.formatters import formatter
 
 
 @hellbot.app.on_message(filters.command("autoend") & Config.SUDO_USERS)

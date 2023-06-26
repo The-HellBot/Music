@@ -1,7 +1,5 @@
 from functools import wraps
 
-from pyrogram.types import CallbackQuery, Message
-
 from config import Config
 from Music.utils.admins import get_auth_users, get_user_rights
 from Music.utils.play import player

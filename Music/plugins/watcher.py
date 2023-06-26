@@ -5,8 +5,12 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from config import Config
-from Music.core import LOGS, auto_delete, db, hellbot, hellmusic
-from Music.utils import Queue
+from Music.core.auto_cmds import auto_delete
+from Music.core.calls import hellmusic
+from Music.core.clients import hellbot
+from Music.core.database import db
+from Music.core.logger import LOGS
+from Music.utils.queue import Queue
 
 
 @hellbot.app.on_message(filters.private, group=2)
