@@ -112,6 +112,8 @@ async def controler_cb(_, cb: CallbackQuery):
         )
     elif action == "replay":
         que = Queue.get_queue(cb.message.chat.id)
+        if que == []:
+            return await cb.answer("No songs in queue to replay!", show_alert=True)
         context = {
             "chat_id": cb.message.chat.id,
             "user_id": cb.from_user.id,
@@ -127,6 +129,8 @@ async def controler_cb(_, cb: CallbackQuery):
         await player.play(cb.message, context, False)
     elif action == "skip":
         que = Queue.get_queue(cb.message.chat.id)
+        if que == []:
+            return await cb.answer("No songs in queue to skip!", show_alert=True)
         if len(que) == 1:
             return await cb.answer(
                 "No more songs in queue to skip! Use /end or /stop to stop the VC.",
@@ -140,6 +144,8 @@ async def controler_cb(_, cb: CallbackQuery):
         except:
             return await cb.answer("No more songs in queue to skip!", show_alert=True)
         new_que = Queue.get_queue(cb.message.chat.id)
+        if new_que  == []:
+            return await cb.answer("No more songs in queue to skip!", show_alert=True)
         context = {
             "chat_id": new_que[0]["chat_id"],
             "user_id": new_que[0]["user_id"],
@@ -155,6 +161,8 @@ async def controler_cb(_, cb: CallbackQuery):
         await player.play(cb.message, context, False)
     elif action == "bseek":
         que = Queue.get_queue(cb.message.chat.id)
+        if que == []:
+            return await cb.answer("No songs in queue to seek!", show_alert=True)
         played = int(que[0]["played"])
         seek_time = 10
         if (played - seek_time) <= 10:
@@ -177,6 +185,8 @@ async def controler_cb(_, cb: CallbackQuery):
         )
     elif action == "fseek":
         que = Queue.get_queue(cb.message.chat.id)
+        if que == []:
+            return await cb.answer("No songs in queue to seek!", show_alert=True)
         played = int(que[0]["played"])
         duration = formatter.mins_to_secs(que[0]["duration"])
         seek_time = 10
@@ -200,6 +210,8 @@ async def controler_cb(_, cb: CallbackQuery):
         )
     elif action == "back":
         que = Queue.get_queue(cb.message.chat.id)
+        if que == []:
+            video_id = "telegram"
         video_id = que[0]["video_id"]
         btns = Buttons.player_markup(cb.message.chat.id, video_id, hellbot.app.username)
         try:

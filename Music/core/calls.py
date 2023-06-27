@@ -110,9 +110,8 @@ class HellMusic(PyTgCalls):
     async def change_vc(self, chat_id: int):
         get = Queue.get_queue(chat_id)
         try:
-            if not get:
+            if get == []:
                 return await self.leave_vc(chat_id)
-
             loop = await db.get_loop(chat_id)
             if loop == 0:
                 clean = get.pop(0)
@@ -122,6 +121,8 @@ class HellMusic(PyTgCalls):
         except:
             return await self.leave_vc(chat_id)
         get = Queue.get_queue(chat_id)
+        if get == []:
+            return await self.leave_vc(chat_id)
         chat_id = get[0]["chat_id"]
         duration = get[0]["duration"]
         queue = get[0]["file"]
@@ -262,15 +263,21 @@ class HellMusic(PyTgCalls):
         @self.music.on_closed_voice_chat()
         @self.music.on_kicked()
         @self.music.on_left()
-        async def stream_end(chat_id: int):
+        async def end_(chat_id: int):
             await self.leave_vc(chat_id)
 
         @self.music.on_group_call_invite()
-        async def invite_to_call(chat_id: int):
+        async def invite_(chat_id: int):
             await self.invited_vc(chat_id)
 
+        @self.music.on_stream_end()
+        async def update_(update: Update):
+            if not isinstance(update, StreamAudioEnded):
+                return
+            await self.change_vc(update.chat_id)
+
         @self.music.on_participants_change()
-        async def members_changed(update: Update):
+        async def members_(update: Update):
             if not isinstance(update, JoinedGroupCallParticipant) and not isinstance(
                 update, LeftGroupCallParticipant
             ):
@@ -291,12 +298,6 @@ class HellMusic(PyTgCalls):
                     await autoend(chat_id, len(users))
             except:
                 return
-
-        @self.music.on_stream_end()
-        async def update_stream(update: Update):
-            if not isinstance(update, StreamAudioEnded):
-                return
-            await self.change_vc(update.chat_id)
 
 
 hellmusic = HellMusic()

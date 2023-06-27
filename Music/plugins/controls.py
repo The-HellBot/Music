@@ -122,6 +122,8 @@ async def replay(_, message: Message):
         return await message.reply_text("No active Voice Chat found here!")
     hell = await message.reply_text("Replaying...")
     que = Queue.get_queue(message.chat.id)
+    if que == []:
+        return await hell.edit("No songs in the queue to replay!")
     context = {
         "chat_id": message.chat.id,
         "user_id": message.from_user.id,
@@ -145,6 +147,8 @@ async def skip(_, message: Message):
         return await message.reply_text("No active Voice Chat found here!")
     hell = await message.reply_text("Skipping...")
     que = Queue.get_queue(message.chat.id)
+    if que == []:
+        return await hell.edit("No songs in the queue to skip!")
     if len(que) == 1:
         return await hell.edit_text(
             "No more songs in queue to skip! Use /end or /stop to stop the VC."
@@ -158,6 +162,8 @@ async def skip(_, message: Message):
     except:
         return await hell.edit_text("No more songs in queue to skip!")
     new_que = Queue.get_queue(message.chat.id)
+    if new_que == []:
+        return await hell.edit("No songs in the queue to skip!")
     context = {
         "chat_id": new_que[0]["chat_id"],
         "user_id": new_que[0]["user_id"],
@@ -194,6 +200,8 @@ async def seek(_, message: Message):
     except:
         return await hell.edit_text("Please enter numeric characters only!")
     que = Queue.get_queue(message.chat.id)
+    if que == []:
+        return await hell.edit_text("No songs in the queue to seek!")
     played = int(que[0]["played"])
     duration = formatter.mins_to_secs(que[0]["duration"])
     if seek_type == 0:

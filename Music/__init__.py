@@ -3,8 +3,6 @@ import os
 from config import Config
 from Music.core.logger import LOGS
 
-local_db = {}
-
 
 # make required directories
 if not os.path.isdir(Config.DWL_DIR):

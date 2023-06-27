@@ -30,7 +30,7 @@ async def activevc(_, message: Message):
         participants = len(await hellmusic.vc_participants(cid))
         try:
             check = Queue.get_queue(cid)
-            song = (check[0]["title"])
+            song = check[0]["title"]
         except Exception as e:
             LOGS.error(e)
             song = "Unknown"
@@ -72,7 +72,7 @@ async def activevc_cb(_, cb: CallbackQuery):
         participants = len(await hellmusic.vc_participants(cid))
         try:
             check = Queue.get_queue(cid)
-            song = (check[0]["title"])
+            song = check[0]["title"]
         except Exception as e:
             LOGS.error(e)
             song = "Unknown"

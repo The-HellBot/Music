@@ -60,7 +60,7 @@ async def update_played():
             if is_paused:
                 continue
             que = Queue.get_queue(chat_id)
-            if que == {}:
+            if que == []:
                 continue
             Queue.update_duration(chat_id, 1, 1)
 
