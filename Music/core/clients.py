@@ -1,6 +1,7 @@
 from pyrogram import Client
 
 from config import Config
+from Music.utils.exceptions import HellBotException
 
 from .logger import LOGS
 
@@ -56,7 +57,7 @@ class HellClient(Client):
                 Config.LOGGER_ID, log_text, disable_web_page_preview=True
             )
         except Exception as e:
-            LOGS.warning(f"Error in Logger: {e}")
+            raise HellBotException(f"[HellBotException]: {e}")
 
 
 hellbot = HellClient()

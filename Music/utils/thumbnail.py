@@ -7,10 +7,10 @@ from io import BytesIO
 import requests
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
+from config import Config
 from Music.core.logger import LOGS
 from Music.helpers.formatters import formatter
 from Music.helpers.youtube import Hell_YTS
-from config import Config
 
 
 class Thumbnail:

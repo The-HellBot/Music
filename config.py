@@ -32,13 +32,13 @@ class Config(object):
     TZ = environ.get("TZ", "Asia/Kolkata")  # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
     # do not edit these variables
-    ADMINS = {}
     BANNED_USERS = filters.user()
     CACHE = {}
     CACHE_DIR = "./cache/"
     DELETE_DICT = {}
     DWL_DIR = "./downloads/"
     GOD_USERS = filters.user()
+    PLAYER_CACHE = {}
     SONG_CACHE = {}
     SUDO_USERS = filters.user()
 

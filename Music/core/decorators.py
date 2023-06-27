@@ -2,6 +2,7 @@ from functools import wraps
 
 from config import Config
 from Music.utils.admins import get_auth_users, get_user_rights
+from Music.utils.exceptions import HellBotException
 from Music.utils.play import player
 
 from .database import db
@@ -66,9 +67,7 @@ def AuthWrapper(func):
                 try:
                     admins = await get_auth_users(chat_id)
                 except Exception as e:
-                    return await message.reply_text(
-                        f"There was an error while fetching admin list. Please try again later.\n\n`{e}`"
-                    )
+                    raise HellBotException(f"[HellBotException]: {e}")
                 if not admins:
                     return await message.reply_text(
                         "Need to refresh admin list. Click here -> /reload"

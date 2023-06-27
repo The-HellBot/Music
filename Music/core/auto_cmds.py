@@ -1,7 +1,6 @@
 import datetime
 import os
 
-
 from config import Config
 
 from .database import db

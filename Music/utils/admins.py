@@ -31,6 +31,7 @@ async def get_user_rights(chat_id: int, user_id: int):
         return False
     if user.privileges.can_manage_video_chats:
         return True
+    return False
 
 
 async def get_user_type(chat_id: int, user_id: int):

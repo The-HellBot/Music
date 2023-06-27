@@ -23,20 +23,20 @@ async def start(_, message: Message):
             if deep_cmd.startswith("song"):
                 results = await ytube.get_data(deep_cmd.split("_", 1)[1], True)
                 about = TEXTS.ABOUT_SONG.format(
-                    results["title"],
-                    results["channel"],
-                    results["published"],
-                    results["views"],
-                    results["duration"],
+                    results[0]["title"],
+                    results[0]["channel"],
+                    results[0]["published"],
+                    results[0]["views"],
+                    results[0]["duration"],
                     hellbot.app.mention,
                 )
                 await message.reply_photo(
-                    results["thumbnail"],
+                    results[0]["thumbnail"],
                     caption=about,
                     reply_markup=InlineKeyboardMarkup(
                         Buttons.song_details_markup(
-                            results["link"],
-                            results["ch_link"],
+                            results[0]["link"],
+                            results[0]["ch_link"],
                         )
                     ),
                 )

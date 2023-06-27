@@ -1,13 +1,13 @@
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import InlineKeyboardMarkup, Message
 
+from config import Config
 from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
 from Music.helpers.buttons import Buttons
 from Music.helpers.strings import TEXTS
 
-from .exceptions import UserException
 from .queue import Queue
 from .thumbnail import thumb
 from .youtube import ytube
@@ -92,13 +92,13 @@ class Player:
                 await hellmusic.join_vc(
                     chat_id, file_path, True if vc_type == "video" else False
                 )
-            except UserException as e:
+            except Exception as e:
                 await message.delete()
                 await message.reply_text(str(e))
                 return
             btns = Buttons.player_markup(chat_id, video_id, hellbot.app.username)
             if photo:
-                await hellbot.app.send_photo(
+                sent = await hellbot.app.send_photo(
                     chat_id,
                     photo,
                     TEXTS.PLAYING.format(
@@ -110,7 +110,7 @@ class Player:
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
             else:
-                await hellbot.app.send_message(
+                sent = await hellbot.app.send_message(
                     chat_id,
                     TEXTS.PLAYING.format(
                         hellbot.app.mention,
@@ -120,6 +120,13 @@ class Player:
                     ),
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
+            previous = Config.PLAYER_CACHE.get(chat_id)
+            if previous:
+                try:
+                    await previous.delete()
+                except Exception:
+                    pass
+            Config.PLAYER_CACHE[chat_id] = sent
         else:
             await hellbot.app.send_message(
                 chat_id,

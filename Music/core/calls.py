@@ -1,11 +1,5 @@
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import (
-    ChatAdminRequired,
-    UserAlreadyParticipant,
-    UserNotParticipant,
-)
-from pyrogram.raw.functions.phone import CreateGroupCall
-from pyrogram.raw.types import InputPeerChannel
+from pyrogram.errors import ChatAdminRequired, UserAlreadyParticipant, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup
 from pytgcalls import PyTgCalls, StreamType
 from pytgcalls.exceptions import GroupCallNotFound, NoActiveGroupCall
@@ -17,7 +11,7 @@ from pytgcalls.types.stream import StreamAudioEnded
 from config import Config
 from Music.helpers.buttons import Buttons
 from Music.helpers.strings import TEXTS
-from Music.utils.exceptions import UserException
+from Music.utils.exceptions import ChangeVCException, JoinGCException, JoinVCException, UserException
 from Music.utils.queue import Queue
 from Music.utils.thumbnail import thumb
 from Music.utils.youtube import ytube
@@ -157,11 +151,11 @@ class HellMusic(PyTgCalls):
                     hellbot.app.username,
                 )
                 if photo:
-                    await hellbot.app.send_photo(
+                    sent = await hellbot.app.send_photo(
                         int(chat_id),
                         photo,
                         TEXTS.PLAYING.format(
-                            Config.BOT_NAME,
+                            hellbot.app.mention,
                             title,
                             duration,
                             user,
@@ -169,10 +163,10 @@ class HellMusic(PyTgCalls):
                         reply_markup=InlineKeyboardMarkup(btns),
                     )
                 else:
-                    await hellbot.app.send_message(
+                    sent = await hellbot.app.send_message(
                         int(chat_id),
                         TEXTS.PLAYING.format(
-                            Config.BOT_NAME,
+                            hellbot.app.mention,
                             title,
                             duration,
                             user,
@@ -180,16 +174,23 @@ class HellMusic(PyTgCalls):
                         disable_web_page_preview=True,
                         reply_markup=InlineKeyboardMarkup(btns),
                     )
+                previous = Config.PLAYER_CACHE.get(chat_id)
+                if previous:
+                    try:
+                        await previous.delete()
+                    except:
+                        pass
+                Config.PLAYER_CACHE[chat_id] = sent
             except Exception as e:
-                raise UserException(f"[UserException - change_vc]: {e}")
+                raise ChangeVCException(f"[ChangeVCException]: {e}")
 
     async def join_vc(self, chat_id: int, file_path: str, video: bool = False):
-        audio_quality = MediumQualityAudio()
-        video_quality = MediumQualityVideo()
         if video:
-            input_stream = AudioVideoPiped(file_path, audio_quality, video_quality)
+            input_stream = AudioVideoPiped(
+                file_path, MediumQualityAudio(), MediumQualityVideo()
+            )
         else:
-            input_stream = AudioPiped(file_path, audio_quality)
+            input_stream = AudioPiped(file_path, MediumQualityAudio())
         try:
             await self.music.join_group_call(
                 chat_id, input_stream, stream_type=StreamType().pulse_stream
@@ -198,17 +199,15 @@ class HellMusic(PyTgCalls):
             try:
                 await self.join_gc(chat_id)
             except Exception as e:
-                raise UserException(f"[UserException - join_vc]: {e}")
+                raise JoinGCException(f"[JoinGCException]: {e}")
             try:
                 await self.music.join_group_call(
                     chat_id, input_stream, stream_type=StreamType().pulse_stream
                 )
             except Exception as e:
-                raise UserException(
-                    f"[UserException - join_vc]: There was some error while joining the vc {e}"
-                )
+                raise JoinVCException(f"[JoinVCException]: {e}")
         except Exception as e:
-            raise UserException(f"[UserException - join_vc]: {e}")
+            raise UserException(f"[UserException]: {e}")
         await db.add_active_vc(chat_id, "video" if video else "voice")
         self.audience[chat_id] = {}
         users = await self.vc_participants(chat_id)
@@ -220,11 +219,11 @@ class HellMusic(PyTgCalls):
                 get = await hellbot.app.get_chat_member(chat_id, hellbot.user.id)
             except ChatAdminRequired:
                 raise UserException(
-                    f"[UserException - join_gc]: Bot is not admin in chat {chat_id}"
+                    f"[UserException]: Bot is not admin in chat {chat_id}"
                 )
             if get.status == ChatMemberStatus.RESTRICTED or ChatMemberStatus.BANNED:
                 raise UserException(
-                    f"[UserException - join_gc]: Bot is restricted or banned in chat {chat_id}"
+                    f"[UserException]: Assistant is restricted or banned in chat {chat_id}"
                 )
         except UserNotParticipant:
             chat = await hellbot.app.get_chat(chat_id)
@@ -234,7 +233,7 @@ class HellMusic(PyTgCalls):
                 except UserAlreadyParticipant:
                     pass
                 except Exception as e:
-                    raise UserException(f"[UserException - join_gc]: {e}")
+                    raise UserException(f"[UserException]: {e}")
             else:
                 try:
                     try:
@@ -243,10 +242,10 @@ class HellMusic(PyTgCalls):
                             link = await hellbot.app.export_chat_invite_link(chat_id)
                     except ChatAdminRequired:
                         raise UserException(
-                            f"[UserException - join_gc]: Bot is not admin in chat {chat_id}"
+                            f"[UserException]: Bot is not admin in chat {chat_id}"
                         )
                     except Exception as e:
-                        raise UserException(f"[UserException - join_gc]: {e}")
+                        raise UserException(f"[UserException]: {e}")
                     hell = await hellbot.app.send_message(
                         chat_id, "Inviting assistant to chat..."
                     )
@@ -257,7 +256,7 @@ class HellMusic(PyTgCalls):
                 except UserAlreadyParticipant:
                     pass
                 except Exception as e:
-                    raise UserException(f"[UserException - join_gc]: {e}")
+                    raise UserException(f"[UserException]: {e}")
 
     async def decorators(self):
         @self.music.on_closed_voice_chat()

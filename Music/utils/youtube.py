@@ -1,5 +1,3 @@
-import asyncio
-import json
 import os
 import re
 import time
@@ -9,11 +7,12 @@ import yt_dlp
 from lyricsgenius import Genius
 from youtubesearchpython.__future__ import VideosSearch
 
+from pyrogram.types import CallbackQuery
+
 from config import Config
 from Music.core.clients import hellbot
 from Music.core.logger import LOGS
 from Music.helpers.strings import TEXTS
-from Music.helpers.youtube import Hell_YTS
 
 
 class YouTube:
@@ -73,9 +72,10 @@ class YouTube:
             link = link.split("&")[0]
         return link
 
-    async def get_data(self, link: str, video_id: bool) -> dict:
+    async def get_data(self, link: str, video_id: bool, limit: int = 1) -> list:
         yt_url = await self.format_link(link, video_id)
-        results = VideosSearch(yt_url, limit=1)
+        collection = []
+        results = VideosSearch(yt_url, limit=limit)
         for result in (await results.next())["result"]:
             vid = result["id"]
             channel = result["channel"]["name"]
@@ -87,19 +87,20 @@ class YouTube:
             title = result["title"]
             url = result["link"]
             views = result["viewCount"]["short"]
-        context = {
-            "id": vid,
-            "ch_link": channel_url,
-            "channel": channel,
-            "description": description,
-            "duration": duration,
-            "link": url,
-            "published": published,
-            "thumbnail": thumbnail,
-            "title": title,
-            "views": views,
-        }
-        return context
+            context = {
+                "id": vid,
+                "ch_link": channel_url,
+                "channel": channel,
+                "description": description,
+                "duration": duration,
+                "link": url,
+                "published": published,
+                "thumbnail": thumbnail,
+                "title": title,
+                "views": views,
+            }
+            collection.append(context)
+        return collection[:limit]
 
     async def download(self, link: str, video_id: bool, video: bool = False) -> str:
         yt_url = await self.format_link(link, video_id)
@@ -114,52 +115,31 @@ class YouTube:
             dlp.download([yt_url])
         return path
 
-    async def get_tracks(self, mention, query: str) -> list:
-        results = []
-        try:
-            output = json.loads(Hell_YTS(query, 10).to_json())
-        except Exception as e:
-            return results
-        for i in output["videos"]:
-            context = {
-                "title": i["title"],
-                "link": i["url_suffix"],
-                "full_link": f"https://www.youtube.com{i['url_suffix']}",
-                "vidid": i["id"],
-                "views": i["views"],
-                "duration": i["duration"],
-                "thumb": f"https://i.ytimg.com/vi/{i['id']}/hqdefault.jpg",
-                "mention": mention,
-            }
-            results.append(context)
-        return results
-
     async def send_song(
-        self, message, rand_key: str, key: int, video: bool = False
+        self, message: CallbackQuery, rand_key: str, key: int, video: bool = False
     ) -> dict:
         track = Config.SONG_CACHE[rand_key][key]
         ydl_opts = self.video_opts if video else self.audio_opts
-        link = track["full_link"]
-        hell = await message.reply_text("Downloading...")
-        await message.delete()
+        hell = await message.message.reply_text("Downloading...")
+        await message.message.delete()
         try:
             output = None
-            thumb = f"{track['vidid']}{time.time()}.jpg"
-            _thumb = requests.get(track["thumb"], allow_redirects=True)
+            thumb = f"{track['id']}{time.time()}.jpg"
+            _thumb = requests.get(track["thumbnail"], allow_redirects=True)
             open(thumb, "wb").write(_thumb.content)
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                yt_file = ydl.extract_info(link, download=video)
+                yt_file = ydl.extract_info(track["link"], download=video)
                 if not video:
                     output = ydl.prepare_filename(yt_file)
                     ydl.process_info(yt_file)
-                    await message.reply_audio(
+                    await message.message.reply_audio(
                         audio=output,
                         caption=TEXTS.SONG_CAPTION.format(
                             track["title"],
-                            link,
+                            track["link"],
                             track["views"],
                             track["duration"],
-                            track["mention"],
+                            message.from_user.mention,
                             hellbot.app.mention,
                         ),
                         duration=int(yt_file["duration"]),
@@ -169,24 +149,24 @@ class YouTube:
                     )
                 else:
                     output = f"{yt_file['id']}.mp4"
-                    await message.reply_video(
+                    await message.message.reply_video(
                         video=output,
                         caption=TEXTS.SONG_CAPTION.format(
                             track["title"],
-                            link,
+                            track["link"],
                             track["views"],
                             track["duration"],
-                            track["mention"],
+                            message.from_user.mention,
                             hellbot.app.mention,
                         ),
                         duration=int(yt_file["duration"]),
                         thumb=thumb,
                         supports_streaming=True,
                     )
-            chat = message.chat.title or message.chat.first_name
+            chat = message.message.chat.title or message.message.chat.first_name
             await hellbot.logit(
                 "Video" if video else "Audio",
-                f"{track['mention']} uploaded a song named [{track['title']}]({link}) in {chat} (`{message.chat.id}`)",
+                f"{message.from_user.mention} uploaded a song named [{track['title']}]({track['link']}) in {chat} (`{message.message.chat.id}`)",
             )
             await hell.delete()
         except Exception as e:
