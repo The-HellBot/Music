@@ -41,7 +41,7 @@ async def add_favorites(_, cb: CallbackQuery):
         )
     details = await ytube.get_data(video_id, True)
     context = {
-        "video_id": details["video_id"],
+        "video_id": details["id"],
         "title": details["title"],
         "duration": details["duration"],
         "add_date": datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
