@@ -87,8 +87,6 @@ class Player:
             force,
         )
         if position == 0:
-            if not force:
-                Queue.clear_queue(chat_id)
             photo = thumb.generate((359), (297, 302), video_id)
             try:
                 await hellmusic.join_vc(
