@@ -37,7 +37,11 @@ class QueueDB:
                 local_db[chat_id] = []
                 local_db[chat_id].append(context)
         else:
-            local_db[chat_id].append(context)
+            try:
+                local_db[chat_id].append(context)
+            except KeyError:
+                local_db[chat_id] = []
+                local_db[chat_id].append(context)
         try:
             Config.CACHE[chat_id].append(file)
         except KeyError:
