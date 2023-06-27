@@ -32,6 +32,7 @@ async def auth(_, message: Message):
         is_auth = await db.is_authuser(message.chat.id, user.id)
         if not is_auth:
             context = {
+                "user_name": user.first_name,
                 "auth_by_id": message.from_user.id,
                 "auth_by_name": message.from_user.first_name,
                 "auth_date": datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
@@ -51,6 +52,7 @@ async def auth(_, message: Message):
         is_auth = await db.is_authuser(message.chat.id, user.id)
         if not is_auth:
             context = {
+                "user_name": user.first_name,
                 "auth_by_id": message.from_user.id,
                 "auth_by_name": message.from_user.first_name,
                 "auth_date": datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
@@ -101,16 +103,12 @@ async def authusers(_, message: Message):
         collection = []
         for user in all_auths:
             data = await db.get_authuser(message.chat.id, user)
+            user_name = data["user_name"]
             admin_id = data["auth_by_id"]
             admin_name = data["auth_by_name"]
             auth_date = data["auth_date"]
-            try:
-                user = await hellbot.app.get_users(user)
-                user = user.first_name
-            except:
-                user = "Unknown User"
             context = {
-                "auth_user": user,
+                "auth_user": user_name,
                 "admin_id": admin_id,
                 "admin_name": admin_name,
                 "auth_date": auth_date,

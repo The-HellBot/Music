@@ -74,7 +74,7 @@ async def ping(_, message: Message):
     start_time = datetime.datetime.now()
     calls_ping = await hellmusic.ping()
     stats = await formatter.system_stats()
-    end_time = (datetime.datetime.now() - start_time).microseconds / 1000
+    end_time = (datetime.datetime.now() - start_time).seconds / 60
     await message.reply_text(
         TEXTS.PING_REPLY.format(end_time, stats["uptime"], calls_ping),
         disable_web_page_preview=True,

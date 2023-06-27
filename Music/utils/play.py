@@ -8,6 +8,7 @@ from Music.core.database import db
 from Music.helpers.buttons import Buttons
 from Music.helpers.strings import TEXTS
 
+from .exceptions import UserException
 from .queue import Queue
 from .thumbnail import thumb
 from .youtube import ytube
@@ -68,53 +69,42 @@ class Player:
                     await message.edit_text("Downloading ...")
                 else:
                     await message.reply_text("Downloading ...")
-                file_path = await ytube.download(video_id, True)
+                success, file_path = await ytube.download(video_id, True)
             except Exception as e:
                 if edit:
                     await message.edit_text(str(e))
                 else:
                     await message.reply_text(str(e))
                 return
-        if await db.is_active_vc(chat_id):
-            position = Queue.put_queue(
-                chat_id,
-                user_id,
-                duration,
-                file_path,
-                title,
-                user,
-                video_id,
-                vc_type,
-                force,
-            )
-            await hellbot.app.send_message(
-                chat_id,
-                TEXTS.QUEUE.format(
-                    position,
-                    title,
-                    duration,
-                    user,
-                ),
-                reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
-            )
-        else:
+            if not success:
+                if edit:
+                    await message.edit_text(file_path)
+                else:
+                    await message.reply_text(file_path)
+                return
+        position = Queue.put_queue(
+            chat_id,
+            user_id,
+            duration,
+            file_path,
+            title,
+            user,
+            video_id,
+            vc_type,
+            force,
+        )
+        if position == 0:
             if not force:
                 Queue.clear_queue(chat_id)
             photo = thumb.generate((359), (297, 302), video_id)
-            await hellmusic.join_vc(
-                chat_id, file_path, True if vc_type == "video" else False
-            )
-            position = Queue.put_queue(
-                chat_id,
-                user_id,
-                duration,
-                file_path,
-                title,
-                user,
-                video_id,
-                vc_type,
-                force,
-            )
+            try:
+                await hellmusic.join_vc(
+                    chat_id, file_path, True if vc_type == "video" else False
+                )
+            except UserException as e:
+                await message.delete()
+                await message.reply_text(str(e))
+                return
             btns = Buttons.player_markup(chat_id, video_id, hellbot.app.username)
             if photo:
                 sent = await hellbot.app.send_photo(
@@ -139,6 +129,17 @@ class Player:
                     ),
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
+        else:
+            await hellbot.app.send_message(
+                chat_id,
+                TEXTS.QUEUE.format(
+                    position,
+                    title,
+                    duration,
+                    user,
+                ),
+                reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
+            )
         await message.delete()
         await db.update_songs_count(1)
         await db.update_user(user_id, "songs_played", 1)

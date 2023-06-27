@@ -208,7 +208,8 @@ class HellMusic(PyTgCalls):
             raise UserException(f"[UserException - join_vc]: {e}")
         await db.add_active_vc(chat_id, "video" if video else "voice")
         self.audience[chat_id] = {}
-        await autoend(chat_id, self.music)
+        users = await self.vc_participants(chat_id)
+        await autoend(chat_id, len(users))
 
     async def join_gc(self, chat_id: int):
         try:
@@ -275,8 +276,9 @@ class HellMusic(PyTgCalls):
             try:
                 chat_id = update.chat_id
                 audience = self.audience.get(chat_id)
+                users = await self.vc_participants(chat_id)
                 if not audience:
-                    await autoend(chat_id, self.music)
+                    await autoend(chat_id, len(users))
                 else:
                     new = (
                         audience + 1
@@ -284,7 +286,7 @@ class HellMusic(PyTgCalls):
                         else audience - 1
                     )
                     self.audience[chat_id] = new
-                    await autoend(chat_id, self.music)
+                    await autoend(chat_id, len(users))
             except:
                 return
 

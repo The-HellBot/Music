@@ -2,8 +2,12 @@ from config import Config
 from Music import local_db
 
 
-class Queue:
+class QueueDB:
+    def __init__(self):
+        pass
+
     def put_queue(
+        self,
         chat_id: int,
         user_id: int,
         duration: str,
@@ -44,27 +48,27 @@ class Queue:
 
         return position
 
-    def get_queue(chat_id: int) -> dict:
+    def get_queue(self, chat_id: int) -> dict:
         try:
             que = local_db.get(chat_id)
         except KeyError:
             que = {}
         return que
 
-    def rm_queue(chat_id: int, index: int):
+    def rm_queue(self, chat_id: int, index: int):
         try:
             db = local_db.get(chat_id)
             db.pop(index)
         except IndexError:
             pass
 
-    def clear_queue(chat_id: int):
+    def clear_queue(self, chat_id: int):
         try:
             local_db[chat_id] = []
         except KeyError:
             pass
 
-    def get_current(chat_id: int):
+    def get_current(self, chat_id: int):
         try:
             return local_db[chat_id][0]
         except KeyError:
@@ -72,7 +76,7 @@ class Queue:
         except IndexError:
             return None
 
-    def update_duration(chat_id: int, seek_type: int, time: int):
+    def update_duration(self, chat_id: int, seek_type: int, time: int):
         try:
             if seek_type == 0:
                 local_db[chat_id][0]["played"] -= time
@@ -80,3 +84,6 @@ class Queue:
                 local_db[chat_id][0]["played"] += time
         except IndexError:
             pass
+
+
+Queue = QueueDB()
