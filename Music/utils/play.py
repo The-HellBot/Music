@@ -69,18 +69,12 @@ class Player:
                     await message.edit_text("Downloading ...")
                 else:
                     await message.reply_text("Downloading ...")
-                success, file_path = await ytube.download(video_id, True)
+                file_path = await ytube.download(video_id, True, True if vc_type == "video" else False)
             except Exception as e:
                 if edit:
                     await message.edit_text(str(e))
                 else:
                     await message.reply_text(str(e))
-                return
-            if not success:
-                if edit:
-                    await message.edit_text(file_path)
-                else:
-                    await message.reply_text(file_path)
                 return
         position = Queue.put_queue(
             chat_id,

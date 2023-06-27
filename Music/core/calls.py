@@ -1,5 +1,9 @@
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import ChatAdminRequired, UserAlreadyParticipant, UserNotParticipant
+from pyrogram.errors import (
+    ChatAdminRequired,
+    UserAlreadyParticipant,
+    UserNotParticipant,
+)
 from pyrogram.raw.functions.phone import CreateGroupCall
 from pyrogram.raw.types import InputPeerChannel
 from pyrogram.types import InlineKeyboardMarkup
@@ -134,15 +138,15 @@ class HellMusic(PyTgCalls):
             if tg:
                 to_stream = queue
             else:
-                success, to_stream = await ytube.download(video_id, True)
-                if not success:
-                    raise UserException(f"[UserException - change_vc]: {to_stream}")
+                to_stream = await ytube.download(
+                    video_id, True, True if vc_type == "video" else False
+                )
             if vc_type == "video":
                 input_stream = AudioVideoPiped(
-                    queue, MediumQualityAudio(), MediumQualityVideo()
+                    to_stream, MediumQualityAudio(), MediumQualityVideo()
                 )
             else:
-                input_stream = AudioPiped(queue, MediumQualityAudio())
+                input_stream = AudioPiped(to_stream, MediumQualityAudio())
             try:
                 photo = thumb.generate((359), (297, 302), video_id)
                 await self.music.change_stream(int(chat_id), input_stream)
@@ -193,9 +197,7 @@ class HellMusic(PyTgCalls):
             try:
                 await self.join_gc(chat_id)
             except Exception as e:
-                raise UserException(
-                    f"[UserException - join_vc]: {e}"
-                )
+                raise UserException(f"[UserException - join_vc]: {e}")
             try:
                 await self.music.join_group_call(
                     chat_id, input_stream, stream_type=StreamType().pulse_stream

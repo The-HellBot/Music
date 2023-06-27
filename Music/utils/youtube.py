@@ -36,6 +36,22 @@ class YouTube:
             "logtostderr": False,
             "quiet": True,
         }
+        self.yt_opts_audio = {
+            "format": "bestaudio/best",
+            "outtmpl": "downloads/%(id)s.%(ext)s",
+            "geo_bypass": True,
+            "nocheckcertificate": True,
+            "quiet": True,
+            "no_warnings": True,
+        }
+        self.yt_opts_video = {
+            "format": "(bestvideo[height<=?720][width<=?1280][ext=mp4])+(bestaudio[ext=m4a])",
+            "outtmpl": "downloads/%(id)s.%(ext)s",
+            "geo_bypass": True,
+            "nocheckcertificate": True,
+            "quiet": True,
+            "no_warnings": True,
+        }
         self.lyrics = Config.LYRICS_API
         try:
             if self.lyrics:
@@ -85,22 +101,18 @@ class YouTube:
         }
         return context
 
-    async def download(self, link: str, video_id: bool):
+    async def download(self, link: str, video_id: bool, video: bool = False) -> str:
         yt_url = await self.format_link(link, video_id)
-        process = await asyncio.create_subprocess_exec(
-            "yt-dlp",
-            "-g",
-            "-f",
-            "best[height<=?720][width<=?1280]",
-            f"{yt_url}",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-        stdout, stderr = await process.communicate()
-        if stdout:
-            return True, stdout.decode().split("\n")[0]
+        if video:
+            dlp = yt_dlp.YoutubeDL(self.yt_opts_video)
+            info = dlp.extract_info(yt_url, False)
         else:
-            return False, stderr.decode()
+            dlp = yt_dlp.YoutubeDL(self.yt_opts_audio)
+            info = dlp.extract_info(yt_url, False)
+        path = os.path.join("downloads", f"{info['id']}.{info['ext']}")
+        if not os.path.exists(path):
+            dlp.download([yt_url])
+        return path
 
     async def get_tracks(self, mention, query: str) -> list:
         results = []
