@@ -93,7 +93,6 @@ async def unauth(_, message: Message):
 
 @hellbot.app.on_message(filters.command("authusers") & filters.group & ~Config.BANNED_USERS)
 @check_mode
-@UserWrapper
 async def authusers(_, message: Message):
     all_auths = await db.get_all_authusers(message.chat.id)
     if not all_auths:

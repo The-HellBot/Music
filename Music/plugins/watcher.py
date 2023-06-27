@@ -5,7 +5,6 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from config import Config
-from Music.core.auto_cmds import auto_delete
 from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
@@ -83,11 +82,10 @@ async def end_inactive_vc():
                 except:
                     continue
                 try:
-                    sent = await hellbot.app.send_message(
+                    await hellbot.app.send_message(
                         chat_id,
                         "⏹️ **Inactive VC:** Streaming has been stopped!",
                     )
-                    await auto_delete(sent, "0:20")
                 except:
                     continue
 

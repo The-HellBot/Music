@@ -108,7 +108,7 @@ class MakeButtons:
         if video_id == "telegram":
             buttons = [
                 [
-                    InlineKeyboardButton("🎛️", callback_data=f"controls|{chat_id}"),
+                    InlineKeyboardButton("🎛️", callback_data=f"controls|{video_id}|{chat_id}"),
                     InlineKeyboardButton("🗑", callback_data="close"),
                 ]
             ]
@@ -124,7 +124,7 @@ class MakeButtons:
                     InlineKeyboardButton(
                         "❤️", callback_data=f"add_favorite|{video_id}"
                     ),
-                    InlineKeyboardButton("🎛️", callback_data=f"controls|{chat_id}"),
+                    InlineKeyboardButton("🎛️", callback_data=f"controls|{video_id}|{chat_id}"),
                 ],
                 [
                     InlineKeyboardButton("🗑", callback_data="close"),
@@ -132,7 +132,7 @@ class MakeButtons:
             ]
         return buttons
 
-    def controls_markup(self, chat_id):
+    def controls_markup(self, video_id, chat_id):
         buttons = [
             [
                 InlineKeyboardButton(text="⟲", callback_data=f"ctrl|bseek|{chat_id}"),
@@ -160,7 +160,7 @@ class MakeButtons:
                 ),
             ],
             [
-                InlineKeyboardButton(text="🔙", callback_data=f"ctrl|back|{chat_id}"),
+                InlineKeyboardButton(text="🔙", callback_data=f"player|{video_id}|{chat_id}"),
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ],
         ]

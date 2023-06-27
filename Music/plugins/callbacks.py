@@ -24,8 +24,19 @@ async def close_cb(_, cb: CallbackQuery):
 
 @hellbot.app.on_callback_query(filters.regex(r"controls") & ~Config.BANNED_USERS)
 async def controls_cb(_, cb: CallbackQuery):
-    chat_id = int(cb.data.split("|")[1])
-    btns = Buttons.controls_markup(chat_id)
+    video_id = cb.data.split("|")[1]
+    chat_id = int(cb.data.split("|")[2])
+    btns = Buttons.controls_markup(video_id, chat_id)
+    try:
+        await cb.message.edit_reply_markup(InlineKeyboardMarkup(btns))
+    except:
+        return
+
+
+@hellbot.app.on_callback_query(filters.regex(r"player") & ~Config.BANNED_USERS)
+async def player_cb(_, cb: CallbackQuery):
+    _, video_id, chat_id = cb.data.split("|")
+    btns = Buttons.player_markup(chat_id, video_id, hellbot.app.username)
     try:
         await cb.message.edit_reply_markup(InlineKeyboardMarkup(btns))
     except:
@@ -212,7 +223,8 @@ async def controler_cb(_, cb: CallbackQuery):
         que = Queue.get_queue(cb.message.chat.id)
         if que == []:
             video_id = "telegram"
-        video_id = que[0]["video_id"]
+        else:
+            video_id = que[0]["video_id"]
         btns = Buttons.player_markup(cb.message.chat.id, video_id, hellbot.app.username)
         try:
             await cb.message.edit_reply_markup(InlineKeyboardMarkup(btns))

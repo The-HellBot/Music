@@ -11,12 +11,10 @@ from pyrogram.types import Message
 from config import Config, all_vars
 from Music.core.clients import hellbot
 from Music.core.database import db
-from Music.core.decorators import UserWrapper
 from Music.helpers.tools import aexec
 
 
 @hellbot.app.on_message(filters.command(["eval", "run"]) & Config.GOD_USERS)
-@UserWrapper
 async def eval(_, message: Message):
     hell = await message.reply_text("Processing ...")
     lists = message.text.split(" ", 1)
@@ -63,7 +61,6 @@ async def eval(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command(["term", "sh", "shh"]) & Config.GOD_USERS)
-@UserWrapper
 async def term(_, message: Message):
     hell = await message.reply_text("Processing ...")
     lists = message.text.split(" ", 1)
@@ -118,7 +115,6 @@ async def term(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command(["getvar", "gvar", "var"]) & Config.GOD_USERS)
-@UserWrapper
 async def varget_(_, message: Message):
     if len(message.command) != 2:
         return await message.reply_text("Give a variable name to get it's value.")
@@ -133,7 +129,6 @@ async def varget_(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("addsudo") & Config.GOD_USERS)
-@UserWrapper
 async def useradd(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:
@@ -169,7 +164,6 @@ async def useradd(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command(["delsudo", "rmsudo"]) & Config.GOD_USERS)
-@UserWrapper
 async def userdel(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:

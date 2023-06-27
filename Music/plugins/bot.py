@@ -16,7 +16,6 @@ from Music.utils.youtube import ytube
 
 @hellbot.app.on_message(filters.command(["start", "alive"]) & ~Config.BANNED_USERS)
 @check_mode
-@UserWrapper
 async def start(_, message: Message):
     if message.chat.type == ChatType.PRIVATE:
         if len(message.command) > 1:
@@ -54,7 +53,6 @@ async def start(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("help") & ~Config.BANNED_USERS)
-@UserWrapper
 async def help(_, message: Message):
     if message.chat.type == ChatType.PRIVATE:
         await message.reply_text(
@@ -69,7 +67,6 @@ async def help(_, message: Message):
 
 
 @hellbot.app.on_message(filters.command("ping") & ~Config.BANNED_USERS)
-@UserWrapper
 async def ping(_, message: Message):
     start_time = datetime.datetime.now()
     calls_ping = await hellmusic.ping()

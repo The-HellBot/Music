@@ -263,21 +263,21 @@ class HellMusic(PyTgCalls):
         @self.music.on_closed_voice_chat()
         @self.music.on_kicked()
         @self.music.on_left()
-        async def end_(chat_id: int):
+        async def end_(client, chat_id: int):
             await self.leave_vc(chat_id)
 
         @self.music.on_group_call_invite()
-        async def invite_(chat_id: int):
+        async def invite_(client, chat_id: int):
             await self.invited_vc(chat_id)
 
         @self.music.on_stream_end()
-        async def update_(update: Update):
+        async def update_(client, update: Update):
             if not isinstance(update, StreamAudioEnded):
                 return
             await self.change_vc(update.chat_id)
 
         @self.music.on_participants_change()
-        async def members_(update: Update):
+        async def members_(client, update: Update):
             if not isinstance(update, JoinedGroupCallParticipant) and not isinstance(
                 update, LeftGroupCallParticipant
             ):

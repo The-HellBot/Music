@@ -7,7 +7,7 @@ from config import Config
 from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
-from Music.core.decorators import UserWrapper, check_mode
+from Music.core.decorators import check_mode
 from Music.core.logger import LOGS
 from Music.helpers.formatters import formatter
 from Music.utils.pages import MakePages
@@ -16,7 +16,6 @@ from Music.utils.queue import Queue
 
 @hellbot.app.on_message(filters.command("active") & Config.SUDO_USERS)
 @check_mode
-@UserWrapper
 async def activevc(_, message: Message):
     hell = await message.reply_text(f"Getting active voice chats ...")
     active_chats = await db.get_active_vc()

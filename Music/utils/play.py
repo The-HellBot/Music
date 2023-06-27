@@ -1,7 +1,6 @@
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import InlineKeyboardMarkup, Message
 
-from Music.core.auto_cmds import auto_delete
 from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
@@ -101,7 +100,7 @@ class Player:
                 return
             btns = Buttons.player_markup(chat_id, video_id, hellbot.app.username)
             if photo:
-                sent = await hellbot.app.send_photo(
+                await hellbot.app.send_photo(
                     chat_id,
                     photo,
                     TEXTS.PLAYING.format(
@@ -113,7 +112,7 @@ class Player:
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
             else:
-                sent = await hellbot.app.send_message(
+                await hellbot.app.send_message(
                     chat_id,
                     TEXTS.PLAYING.format(
                         hellbot.app.mention,
@@ -137,7 +136,6 @@ class Player:
         await message.delete()
         await db.update_songs_count(1)
         await db.update_user(user_id, "songs_played", 1)
-        await auto_delete(sent, duration)
         await hellbot.logit(
             f"play {vc_type}",
             f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"
