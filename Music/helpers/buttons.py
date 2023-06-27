@@ -32,7 +32,6 @@ class MakeButtons:
             for track in collection[page]:
                 index += 1
                 favs = await db.get_favorite(user_id, str(track))
-                print(favs)
                 txt += f"**{'0' if index < 10 else ''}{index}:** {favs['title']}\n"
                 txt += f"    **Duration:** {favs['duration']}\n"
                 txt += f"    **Since:** {favs['add_date']}\n\n"
