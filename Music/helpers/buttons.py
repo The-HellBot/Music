@@ -17,23 +17,15 @@ class MakeButtons:
         if len(collection) != 1:
             nav_btns = [
                 [
-                    InlineKeyboardButton(
-                        "⪨", callback_data=f"myfavs|prev|{user_id}|{page}"
-                    ),
-                    InlineKeyboardButton(
-                        "🗑", callback_data=f"myfavs|close|{user_id}|{page}"
-                    ),
-                    InlineKeyboardButton(
-                        "⪩", callback_data=f"myfavs|next|{user_id}|{page}"
-                    ),
+                    InlineKeyboardButton("⪨", callback_data=f"myfavs|prev|{user_id}|{page}"),
+                    InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}"),
+                    InlineKeyboardButton("⪩", callback_data=f"myfavs|next|{user_id}|{page}"),
                 ]
             ]
         else:
             nav_btns = [
                 [
-                    InlineKeyboardButton(
-                        "🗑", callback_data=f"myfavs|close|{user_id}|{page}"
-                    ),
+                    InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}"),
                 ],
             ]
         try:
@@ -66,13 +58,9 @@ class MakeButtons:
         if count != 1:
             buttons = [
                 [
-                    InlineKeyboardButton(
-                        text="⪨", callback_data=f"activevc|prev|{page}"
-                    ),
+                    InlineKeyboardButton(text="⪨", callback_data=f"activevc|prev|{page}"),
                     InlineKeyboardButton(text="🗑", callback_data="close"),
-                    InlineKeyboardButton(
-                        text="⪩", callback_data=f"activevc|next|{page}"
-                    ),
+                    InlineKeyboardButton(text="⪩", callback_data=f"activevc|next|{page}"),
                 ]
             ]
         else:
@@ -83,23 +71,15 @@ class MakeButtons:
         if count != 1:
             buttons = [
                 [
-                    InlineKeyboardButton(
-                        text="⪨", callback_data=f"authus|prev|{page}|{rand_key}"
-                    ),
-                    InlineKeyboardButton(
-                        text="🗑", callback_data=f"authus|close|{page}|{rand_key}"
-                    ),
-                    InlineKeyboardButton(
-                        text="⪩", callback_data=f"authus|next|{page}|{rand_key}"
-                    ),
+                    InlineKeyboardButton(text="⪨", callback_data=f"authus|prev|{page}|{rand_key}"),
+                    InlineKeyboardButton(text="🗑", callback_data=f"authus|close|{page}|{rand_key}"),
+                    InlineKeyboardButton(text="⪩", callback_data=f"authus|next|{page}|{rand_key}"),
                 ]
             ]
         else:
             buttons = [
                 [
-                    InlineKeyboardButton(
-                        text="🗑", callback_data=f"authus|close|{page}|{rand_key}"
-                    )
+                    InlineKeyboardButton(text="🗑", callback_data=f"authus|close|{page}|{rand_key}")
                 ]
             ]
         return buttons
@@ -115,15 +95,10 @@ class MakeButtons:
         else:
             buttons = [
                 [
-                    InlineKeyboardButton(
-                        "About Song",
-                        url=f"https://t.me/{username}?start=song_{video_id}",
-                    ),
+                    InlineKeyboardButton("About Song", url=f"https://t.me/{username}?start=song_{video_id}"),
                 ],
                 [
-                    InlineKeyboardButton(
-                        "❤️", callback_data=f"add_favorite|{video_id}"
-                    ),
+                    InlineKeyboardButton("❤️", callback_data=f"add_favorite|{video_id}"),
                     InlineKeyboardButton("🎛️", callback_data=f"controls|{video_id}|{chat_id}"),
                 ],
                 [
@@ -141,23 +116,13 @@ class MakeButtons:
             ],
             [
                 InlineKeyboardButton(text="⊡ End", callback_data=f"ctrl|end|{chat_id}"),
-                InlineKeyboardButton(
-                    text="↻ Replay", callback_data=f"ctrl|replay|{chat_id}"
-                ),
-                InlineKeyboardButton(
-                    text="∞ Loop", callback_data=f"ctrl|loop|{chat_id}"
-                ),
+                InlineKeyboardButton(text="↻ Replay", callback_data=f"ctrl|replay|{chat_id}"),
+                InlineKeyboardButton(text="∞ Loop", callback_data=f"ctrl|loop|{chat_id}"),
             ],
             [
-                InlineKeyboardButton(
-                    text="⊝ Mute", callback_data=f"ctrl|mute|{chat_id}"
-                ),
-                InlineKeyboardButton(
-                    text="⊜ Unmute", callback_data=f"ctrl|unmute|{chat_id}"
-                ),
-                InlineKeyboardButton(
-                    text="⊹ Skip", callback_data=f"ctrl|skip|{chat_id}"
-                ),
+                InlineKeyboardButton(text="⊝ Mute", callback_data=f"ctrl|mute|{chat_id}"),
+                InlineKeyboardButton(text="⊜ Unmute", callback_data=f"ctrl|unmute|{chat_id}"),
+                InlineKeyboardButton(text="⊹ Skip", callback_data=f"ctrl|skip|{chat_id}"),
             ],
             [
                 InlineKeyboardButton(text="🔙", callback_data=f"player|{video_id}|{chat_id}"),
@@ -202,9 +167,7 @@ class MakeButtons:
     def start_markup(self, username: str):
         buttons = [
             [
-                InlineKeyboardButton(
-                    text="Start Me 🎵", url=f"https://t.me/{username}?start=start"
-                ),
+                InlineKeyboardButton(text="Start Me 🎵", url=f"https://t.me/{username}?start=start"),
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ]
         ]
@@ -213,9 +176,7 @@ class MakeButtons:
     def help_gc_markup(self, username: str):
         buttons = [
             [
-                InlineKeyboardButton(
-                    text="Get Help ❓", url=f"https://t.me/{username}?start=help"
-                ),
+                InlineKeyboardButton(text="Get Help ❓", url=f"https://t.me/{username}?start=help"),
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ]
         ]
