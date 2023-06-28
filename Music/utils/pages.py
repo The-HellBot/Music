@@ -131,7 +131,7 @@ class Pages:
         m = message.message if isinstance(message, CallbackQuery) else message
         grouped, total = formatter.group_the_list(collection, 5)
         text = f"__({page+1}/{len(grouped)})__ **In Queue:** __{total} tracks__\n\n"
-        btns = await Buttons.queue_markup(len(grouped), page)
+        btns = Buttons.queue_markup(len(grouped), page)
         try:
             for que in grouped[page]:
                 index += 1

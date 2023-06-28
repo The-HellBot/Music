@@ -80,7 +80,6 @@ class YouTube:
             vid = result["id"]
             channel = result["channel"]["name"]
             channel_url = result["channel"]["link"]
-            description = result["descriptionSnippet"][0]["text"]
             duration = result["duration"]
             published = result["publishedTime"]
             thumbnail = f"https://i.ytimg.com/vi/{result['id']}/hqdefault.jpg"
@@ -91,7 +90,6 @@ class YouTube:
                 "id": vid,
                 "ch_link": channel_url,
                 "channel": channel,
-                "description": description,
                 "duration": duration,
                 "link": url,
                 "published": published,

@@ -147,7 +147,7 @@ async def playing(_, message: Message):
         que["user"],
     )
     photo = thumb.generate((359), (297, 302), que["video_id"])
-    btns = Buttons.player_markup(chat_id, que["video_id"], hellbot.app.mention)
+    btns = Buttons.player_markup(chat_id, que["video_id"], hellbot.app.username)
     if photo:
         sent = await message.reply_photo(photo, caption=to_send, reply_markup=InlineKeyboardMarkup(btns))
     else:
