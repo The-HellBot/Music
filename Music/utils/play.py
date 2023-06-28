@@ -97,6 +97,9 @@ class Player:
             except Exception as e:
                 await message.delete()
                 await message.reply_text(str(e))
+                Queue.clear_queue(chat_id)
+                os.remove(file_path)
+                os.remove(photo)
                 return
             btns = Buttons.player_markup(chat_id, video_id, hellbot.app.username)
             if photo:
