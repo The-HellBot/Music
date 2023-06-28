@@ -15,7 +15,7 @@ class Pages:
         m = message.message if isinstance(message, CallbackQuery) else message
         if Config.SONG_CACHE[rand_key]:
             all_tracks = Config.SONG_CACHE[rand_key]
-            btns = Buttons.song_markup(rand_key, all_tracks[key]["link"], key, len(all_tracks))
+            btns = Buttons.song_markup(rand_key, all_tracks[key]["link"], key)
             cap = f"__({key+1}/{len(all_tracks)})__ **Song Downloader:**\n\n"
             cap += f"**• Title:** `{all_tracks[key]['title']}`\n\n"
             cap += f"🎶 {hellbot.app.mention}"

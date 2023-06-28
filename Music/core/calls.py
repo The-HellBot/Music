@@ -66,6 +66,12 @@ class HellMusic(PyTgCalls):
     async def leave_vc(self, chat_id: int, force: bool = False):
         await self.__clean__(chat_id, force)
         await self.music.leave_group_call(chat_id)
+        previous = Config.PLAYER_CACHE.get(chat_id)
+        if previous:
+            try:
+                await previous.delete()
+            except:
+                pass
 
     async def skip_vc(self, chat_id: int, file_path: str, video: bool = False):
         if video:

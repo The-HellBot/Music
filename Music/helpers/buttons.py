@@ -149,7 +149,7 @@ class MakeButtons:
         ]
         return buttons
 
-    def song_markup(self, rand_key, url, key, length):
+    def song_markup(self, rand_key, url, key):
         buttons = [
             [
                 InlineKeyboardButton(text="Visit Youtube", url=url),
@@ -158,15 +158,14 @@ class MakeButtons:
                 InlineKeyboardButton(text="Audio", callback_data=f"song_dl|adl|{key}|{rand_key}"),
                 InlineKeyboardButton(text="Video", callback_data=f"song_dl|vdl|{key}|{rand_key}"),
             ],
-        ]
-        if length > 1:
-            nav_btns = [
+            [
                 InlineKeyboardButton(text="⪨", callback_data=f"song_dl|prev|{key}|{rand_key}"),
                 InlineKeyboardButton(text="⪩", callback_data=f"song_dl|next|{key}|{rand_key}"),
             ],
-            buttons.append(nav_btns)
-
-        buttons.append([InlineKeyboardButton(text="🗑", callback_data=f"song_dl|close|{key}|{rand_key}")])
+            [
+                InlineKeyboardButton(text="🗑", callback_data=f"song_dl|close|{key}|{rand_key}"),
+            ],
+        ]
 
         return buttons
 
