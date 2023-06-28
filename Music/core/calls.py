@@ -5,7 +5,7 @@ from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import ChatAdminRequired, UserAlreadyParticipant, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup
 from pytgcalls import PyTgCalls, StreamType
-from pytgcalls.exceptions import GroupCallNotFound, NoActiveGroupCall
+from pytgcalls.exceptions import NoActiveGroupCall, AlreadyJoinedError
 from pytgcalls.types import JoinedGroupCallParticipant, LeftGroupCallParticipant, Update
 from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped
 from pytgcalls.types.input_stream.quality import MediumQualityAudio, MediumQualityVideo
@@ -214,17 +214,20 @@ class HellMusic(PyTgCalls):
                 raise ChangeVCException(f"[ChangeVCException]: {e}")
 
     async def join_vc(self, chat_id: int, file_path: str, video: bool = False):
+        # define input stream
         if video:
             input_stream = AudioVideoPiped(
                 file_path, MediumQualityAudio(), MediumQualityVideo()
             )
         else:
             input_stream = AudioPiped(file_path, MediumQualityAudio())
+
+        # join vc
         try:
             await self.music.join_group_call(
                 chat_id, input_stream, stream_type=StreamType().pulse_stream
             )
-        except (NoActiveGroupCall, GroupCallNotFound):
+        except NoActiveGroupCall:
             try:
                 await self.join_gc(chat_id)
             except Exception as e:
@@ -234,9 +237,12 @@ class HellMusic(PyTgCalls):
                     chat_id, input_stream, stream_type=StreamType().pulse_stream
                 )
             except Exception as e:
-                raise JoinVCException(f"[JoinVCException]: {e}")
+                raise JoinVCException(f"[JoinVCException]: {e}")    
+        except AlreadyJoinedError:
+            raise UserException(f"[UserException]: Already joined in the voice chat. If this is a mistake then try to restart the voice chat.")
         except Exception as e:
             raise UserException(f"[UserException]: {e}")
+
         await db.add_active_vc(chat_id, "video" if video else "voice")
         self.audience[chat_id] = {}
         users = await self.vc_participants(chat_id)
