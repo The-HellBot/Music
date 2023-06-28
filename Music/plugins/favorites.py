@@ -23,7 +23,7 @@ async def favorites(_, message: Message):
     favs = await db.get_all_favorites(message.from_user.id)
     if not favs:
         await hell.edit_text("You dont have any favorite tracks added to the bot!")
-    if message.command[0][1] == "d":
+    if message.command[0][0] == "d":
         delete = True
     await MakePages.favorite_page(hell, favs, message.from_user.id, 0, 0, True, delete)
 
@@ -37,7 +37,7 @@ async def add_favorites(_, cb: CallbackQuery):
     count = len(await db.get_all_favorites(cb.from_user.id))
     if count == Config.MAX_FAVORITES:
         return await cb.answer(
-            "You can't have more than 50 favorites!", show_alert=True
+            f"You can't have more than {Config.MAX_FAVORITES} favorites!", show_alert=True
         )
     details = await ytube.get_data(video_id, True)
     context = {
@@ -62,7 +62,7 @@ async def myfavs_cb(_, cb: CallbackQuery):
         await cb.answer("Closed!", show_alert=True)
     else:
         collection = await db.get_all_favorites(int(user_id))
-        last_page, _ = formatter.group_the_list(collection, length=True)
+        last_page, _ = formatter.group_the_list(collection, 7, length=True)
         last_page -= 1
         if int(page) == 0 and action == "prev":
             new_page = last_page

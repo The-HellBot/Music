@@ -9,6 +9,24 @@ class MakeButtons:
         buttons = [[InlineKeyboardButton("🗑", callback_data="close")]]
         return buttons
 
+    def queue_markup(self, count: int, page: int):
+        if count != 1:
+            buttons = [
+                [
+                    InlineKeyboardButton("⪨", callback_data=f"queue|prev|{page}"),
+                    InlineKeyboardButton("🗑", callback_data="close"),
+                    InlineKeyboardButton("⪩", callback_data=f"queue|next|{page}"),
+                ]
+            ]
+        else:
+            buttons = [
+                [
+                    InlineKeyboardButton("🗑", callback_data="close"),
+                ]
+            ]
+
+        return buttons
+
     async def favorite_markup(
         self, collection: list, user_id: int, page: int, index: int, db, delete: bool
     ):

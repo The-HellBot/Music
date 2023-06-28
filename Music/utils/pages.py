@@ -48,6 +48,7 @@ class Pages:
                 text += f"**{'0' if index < 10 else ''}{index}:** {active['title']} [`{active['chat_id']}`]\n"
                 text += f"    **Listeners:** __{active['participants']}__\n"
                 text += f"    **Playing:** __{active['playing']}__\n"
+                text += f"    **VC Type:** __{active['vc_type']}__\n"
                 text += f"    **Since:** __{active['active_since']}__\n\n"
         except IndexError:
             page = 0
@@ -98,7 +99,6 @@ class Pages:
         else:
             await m.reply_text(text, reply_markup=InlineKeyboardMarkup(btns))
 
-
     async def favorite_page(
         self,
         message: Message or CallbackQuery,
@@ -119,6 +119,38 @@ class Pages:
             await m.edit_text(f"{text}{final}", reply_markup=InlineKeyboardMarkup(btns))
         else:
             await m.reply_text(f"{text}{final}", reply_markup=InlineKeyboardMarkup(btns))
+
+    async def queue_page(
+        self,
+        message: Message or CallbackQuery,
+        collection: list,
+        page: int = 0,
+        index: int = 0,
+        edit: bool = False,
+    ):
+        m = message.message if isinstance(message, CallbackQuery) else message
+        grouped, total = formatter.group_the_list(collection, 5)
+        text = f"__({page+1}/{len(grouped)})__ **In Queue:** __{total} tracks__\n\n"
+        btns = await Buttons.queue_markup(len(grouped), page)
+        try:
+            for que in grouped[page]:
+                index += 1
+                text += f"**{'0' if index < 10 else ''}{index}:** {que['title']}\n"
+                text += f"    **VC Type:** {que['vc_type']}\n"
+                text += f"    **Requested By:** {que['user']}\n"
+                text += f"    **Duration:** __{que['duration']}__\n\n"
+        except IndexError:
+            page = 0
+            for que in grouped[page]:
+                index += 1
+                text += f"**{'0' if index < 10 else ''}{index}:** {que['title']}\n"
+                text += f"    **VC Type:** {que['vc_type']}\n"
+                text += f"    **Requested By:** {que['user']}\n"
+                text += f"    **Duration:** __{que['duration']}__\n\n"
+        if edit:
+            await m.edit_text(text, reply_markup=InlineKeyboardMarkup(btns))
+        else:
+            await m.reply_text(text, reply_markup=InlineKeyboardMarkup(btns))
 
 
 MakePages = Pages()

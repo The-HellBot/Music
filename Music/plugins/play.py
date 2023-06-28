@@ -1,5 +1,6 @@
 from pyrogram import filters
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardMarkup, CallbackQuery
+from Music.utils.pages import MakePages
 
 from config import Config
 from Music.core.clients import hellbot
@@ -148,6 +149,44 @@ async def playing(_, message: Message):
     photo = thumb.generate((359), (297, 302), que["video_id"])
     btns = Buttons.player_markup(chat_id, que["video_id"], hellbot.app.mention)
     if photo:
-        await message.reply_photo(photo, caption=to_send)
+        sent = await message.reply_photo(photo, caption=to_send, reply_markup=InlineKeyboardMarkup(btns))
     else:
-        await message.reply_text(to_send)
+        sent = await message.reply_text(to_send, reply_markup=InlineKeyboardMarkup(btns))
+    previous = Config.PLAYER_CACHE.get(chat_id)
+    if previous:
+        try:
+            await previous.delete()
+        except Exception:
+            pass
+    Config.PLAYER_CACHE[chat_id] = sent
+
+
+@hellbot.app.on_message(filters.command(["queue", "que", "q"]) & filters.group & ~Config.BANNED_USERS)
+@UserWrapper
+async def queued_tracks(_, message: Message):
+    hell = await message.reply_text("Getting Queue...")
+    chat_id = message.chat.id
+    is_active = await db.is_active_vc(chat_id)
+    if not is_active:
+        return await hell.edit_text("No active voice chat found here.")
+    collection = Queue.get_queue(chat_id)
+    if not collection:
+        return await hell.edit_text("Nothing is playing here.")
+    await MakePages.queue_page(hell, collection, 0, 0, True)
+
+
+@hellbot.app.on_callback_query(filters.regex(r"queue") & filters.group & ~Config.BANNED_USERS)
+async def queued_tracks_cb(_, cb: CallbackQuery):
+    _, action, page = cb.data.split("|")
+    key = int(page)
+    collection = Queue.get_queue(cb.message.chat.id)
+    length, _ = formatter.group_the_list(collection, 5, True)
+    length -= 1
+    if key == 0 and action == "prev":
+        new_page = length
+    elif key == length and action == "next":
+        new_page = 0
+    else:
+        new_page = key + 1 if action == "next" else key - 1
+    index = new_page * 5
+    await MakePages.queue_page(cb, collection, new_page, index, True)

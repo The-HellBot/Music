@@ -1,3 +1,5 @@
+import os
+
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import InlineKeyboardMarkup, Message
 
@@ -109,6 +111,7 @@ class Player:
                     ),
                     reply_markup=InlineKeyboardMarkup(btns),
                 )
+                os.remove(photo)
             else:
                 sent = await hellbot.app.send_message(
                     chat_id,
