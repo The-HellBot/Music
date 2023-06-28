@@ -23,6 +23,8 @@ from Music.utils.youtube import ytube
 @check_mode
 @PlayWrapper
 async def play_music(_, message: Message, context: dict):
+    if not await db.is_user_exist(message.from_user.id):
+        await db.add_user(message.from_user.id)
     hell = await message.reply_text("Processing ...")
     # initialise variables
     video, force, url, tgaud, tgvid = context.values()

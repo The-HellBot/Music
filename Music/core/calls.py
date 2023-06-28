@@ -1,3 +1,6 @@
+import datetime
+import os
+
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import ChatAdminRequired, UserAlreadyParticipant, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup
@@ -16,7 +19,6 @@ from Music.utils.queue import Queue
 from Music.utils.thumbnail import thumb
 from Music.utils.youtube import ytube
 
-from .auto_cmds import autoclean, autoend
 from .clients import hellbot
 from .database import db
 from .logger import LOGS
@@ -33,6 +35,27 @@ class HellMusic(PyTgCalls):
         else:
             Queue.clear_queue(chat_id)
         await db.remove_active_vc(chat_id)
+
+    async def autoend(self, chat_id: int, users: int):
+        autoend = await db.get_autoend()
+        if autoend:
+            if users == 1:
+                db.inactive[chat_id] = datetime.datetime.now() + datetime.timedelta(minutes=5)
+            else:
+                db.inactive[chat_id] = {}
+
+    def autoclean(self, popped: dict):
+        try:
+            file = popped["file"]
+            Config.CACHE.remove(file)
+            count = Config.CACHE.count(file)
+            if count == 0:
+                try:
+                    os.remove(file)
+                except:
+                    pass
+        except:
+            pass
 
     async def start(self):
         LOGS.info(">> Booting PyTgCalls Client...")
@@ -115,7 +138,7 @@ class HellMusic(PyTgCalls):
             loop = await db.get_loop(chat_id)
             if loop == 0:
                 clean = get.pop(0)
-                await autoclean(clean)
+                self.autoclean(clean)
             else:
                 await db.set_loop(chat_id, loop - 1)
         except:
@@ -217,7 +240,7 @@ class HellMusic(PyTgCalls):
         await db.add_active_vc(chat_id, "video" if video else "voice")
         self.audience[chat_id] = {}
         users = await self.vc_participants(chat_id)
-        await autoend(chat_id, len(users))
+        await self.autoend(chat_id, len(users))
 
     async def join_gc(self, chat_id: int):
         try:
@@ -268,21 +291,21 @@ class HellMusic(PyTgCalls):
         @self.music.on_closed_voice_chat()
         @self.music.on_kicked()
         @self.music.on_left()
-        async def end_(client, chat_id: int):
+        async def end_(_, chat_id: int):
             await self.leave_vc(chat_id)
 
         @self.music.on_group_call_invite()
-        async def invite_(client, chat_id: int):
+        async def invite_(_, chat_id: int):
             await self.invited_vc(chat_id)
 
         @self.music.on_stream_end()
-        async def update_(client, update: Update):
+        async def update_(_, update: Update):
             if not isinstance(update, StreamAudioEnded):
                 return
             await self.change_vc(update.chat_id)
 
         @self.music.on_participants_change()
-        async def members_(client, update: Update):
+        async def members_(_, update: Update):
             if not isinstance(update, JoinedGroupCallParticipant) and not isinstance(
                 update, LeftGroupCallParticipant
             ):
@@ -292,7 +315,7 @@ class HellMusic(PyTgCalls):
                 audience = self.audience.get(chat_id)
                 users = await self.vc_participants(chat_id)
                 if not audience:
-                    await autoend(chat_id, len(users))
+                    await self.autoend(chat_id, len(users))
                 else:
                     new = (
                         audience + 1
@@ -300,7 +323,7 @@ class HellMusic(PyTgCalls):
                         else audience - 1
                     )
                     self.audience[chat_id] = new
-                    await autoend(chat_id, len(users))
+                    await self.autoend(chat_id, len(users))
             except:
                 return
 

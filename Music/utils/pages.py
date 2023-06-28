@@ -104,6 +104,7 @@ class Pages:
         message: Message or CallbackQuery,
         collection: list,
         user_id: int,
+        mention: str,
         page: int = 0,
         index: int = 0,
         edit: bool = False,
@@ -111,7 +112,7 @@ class Pages:
     ):
         m = message.message if isinstance(message, CallbackQuery) else message
         grouped, total = formatter.group_the_list(collection, 7)
-        text = f"__({page+1}/{len(grouped)})__ {message.from_user.mention} **favorites:** __{total} tracks__\n\n"
+        text = f"__({page+1}/{len(grouped)})__ {mention} **favorites:** __{total} tracks__\n\n"
         btns, final = await Buttons.favorite_markup(
             grouped, user_id, page, index, db, delete
         )

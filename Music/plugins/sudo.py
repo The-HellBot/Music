@@ -44,14 +44,12 @@ async def auto_end_stream(_, message: Message):
         )
 
 
-@hellbot.app.on_message(filters.command("gban") & Config.SUDO_USERS)
+@hellbot.app.on_message(filters.command(["gban", "block"]) & Config.SUDO_USERS)
 @UserWrapper
 async def gban(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:
-            return await message.reply_text(
-                "Reply to a user's message or give their id."
-            )
+            return await message.reply_text("Reply to a user's message or give their id.")
         user = await hellbot.app.get_users(message.command[1])
         user_id = user.id
         mention = user.mention
@@ -59,48 +57,50 @@ async def gban(_, message: Message):
         user_id = message.reply_to_message.from_user.id
         mention = message.reply_to_message.from_user.mention
     if user_id == message.from_user.id:
-        return await message.reply_text("You can't gban yourself.")
+        return await message.reply_text(f"You can't {message.command[0]} yourself.")
     elif user_id == hellbot.app.id:
-        return await message.reply_text("Yo! I'm not stupid to gban myself.")
+        return await message.reply_text(f"Yo! I'm not stupid to {message.command[0]} myself.")
     elif user_id in Config.SUDO_USERS:
-        return await message.reply_text("I can't gban my sudo users.")
+        return await message.reply_text(f"I can't {message.command[0]} my sudo users.")
     is_gbanned = await db.is_gbanned_user(user_id)
     if is_gbanned:
-        return await message.reply_text(f"{mention} is already gbanned.")
+        return await message.reply_text(f"{mention} is already in {message.command[0]} list.")
     if user_id not in Config.BANNED_USERS:
         Config.BANNED_USERS.add(user_id)
-    all_chats = []
-    chats = await db.get_all_chats()
-    async for chat in chats:
-        all_chats.append(int(chat["chat_id"]))
-    eta = formatter.get_readable_time(len(all_chats))
-    hell = await message.reply_text(
-        f"{mention} is being gbanned from by the bot. This might take around {eta}."
-    )
-    count = 0
-    for chat_id in all_chats:
-        try:
-            await hellbot.app.ban_chat_member(chat_id, user_id)
-            count += 1
-        except FloodWait as e:
-            await asyncio.sleep(int(e.x))
-        except Exception:
-            pass
-    await db.add_gbanned_user(user_id)
-    await message.reply_text(
-        f"**Gbanned Successfully!**\n\n**User:** {mention}\n**Chats:** `{count} chats`"
-    )
-    await hell.delete()
+    if message.command[0] == "gban":
+        all_chats = []
+        chats = await db.get_all_chats()
+        async for chat in chats:
+            all_chats.append(int(chat["chat_id"]))
+        eta = formatter.get_readable_time(len(all_chats))
+        hell = await message.reply_text(
+            f"{mention} is being gbanned from by the bot. This might take around {eta}."
+        )
+        count = 0
+        for chat_id in all_chats:
+            try:
+                await hellbot.app.ban_chat_member(chat_id, user_id)
+                count += 1
+            except FloodWait as e:
+                await asyncio.sleep(int(e.x))
+            except Exception:
+                pass
+        await db.add_gbanned_user(user_id)
+        await message.reply_text(
+            f"**Gbanned Successfully!**\n\n**User:** {mention}\n**Chats:** `{count} chats`"
+        )
+        await hell.delete()
+    else:
+        await db.add_blocked_user(user_id)
+        await message.reply_text(f"**Blocked Successfully!**\n\n**User:** {mention}")
 
 
-@hellbot.app.on_message(filters.command("ungban") & Config.SUDO_USERS)
+@hellbot.app.on_message(filters.command(["ungban", "unblock"]) & Config.SUDO_USERS)
 @UserWrapper
 async def gungabn(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:
-            return await message.reply_text(
-                "Reply to a user's message or give their id."
-            )
+            return await message.reply_text("Reply to a user's message or give their id.")
         user = await hellbot.app.get_users(message.command[1])
         user_id = user.id
         mention = user.mention
@@ -109,53 +109,64 @@ async def gungabn(_, message: Message):
         mention = message.reply_to_message.from_user.mention
     is_gbanned = await db.is_gbanned_user(user_id)
     if not is_gbanned:
-        return await message.reply_text(f"{mention} is not gbanned.")
+        return await message.reply_text(f"{mention} is not in {message.command[0][2:]} list.")
     if user_id in Config.BANNED_USERS:
         Config.BANNED_USERS.remove(user_id)
-    all_chats = []
-    chats = await db.get_all_chats()
-    async for chat in chats:
-        all_chats.append(int(chat["chat_id"]))
-    eta = formatter.get_readable_time(len(all_chats))
-    hell = await message.reply_text(
-        f"{mention} is being ungban from by the bot. This might take around {eta}."
-    )
-    count = 0
-    for chat_id in all_chats:
-        try:
-            await hellbot.app.unban_chat_member(chat_id, user_id)
-            count += 1
-        except FloodWait as e:
-            await asyncio.sleep(int(e.x))
-        except Exception:
-            pass
-    await db.remove_gbanned_users(user_id)
-    await message.reply_text(
-        f"**Ungbanned Successfully!**\n\n**User:** {mention}\n**Chats:** `{count}`"
-    )
-    await hell.delete()
+    if message.command[0] == "ungban":
+        all_chats = []
+        chats = await db.get_all_chats()
+        async for chat in chats:
+            all_chats.append(int(chat["chat_id"]))
+        eta = formatter.get_readable_time(len(all_chats))
+        hell = await message.reply_text(
+            f"{mention} is being ungban from by the bot. This might take around {eta}."
+        )
+        count = 0
+        for chat_id in all_chats:
+            try:
+                await hellbot.app.unban_chat_member(chat_id, user_id)
+                count += 1
+            except FloodWait as e:
+                await asyncio.sleep(int(e.x))
+            except Exception:
+                pass
+        await db.remove_gbanned_users(user_id)
+        await message.reply_text(
+            f"**Ungbanned Successfully!**\n\n**User:** {mention}\n**Chats:** `{count}`"
+        )
+        await hell.delete()
+    else:
+        await db.remove_blocked_user(user_id)
+        await message.reply_text(f"**Unblocked Successfully!**\n\n**User:** {mention}")
 
 
-@hellbot.app.on_message(filters.command("listgban") & Config.SUDO_USERS)
+@hellbot.app.on_message(filters.command(["gbanlist", "blocklist"]) & Config.SUDO_USERS)
 @UserWrapper
 async def gbanned_list(_, message: Message):
-    users = await db.get_gbanned_users()
-    if len(users) == 0:
-        return await message.reply_text("No Gbanned Users Found!")
-    hell = await message.reply_text("Fetching Gbanned Users...")
-    msg = "**Gbanned Users:**\n\n"
+    if message.command[0] == "gbanlist":
+        users = await db.get_gbanned_users()
+        if len(users) == 0:
+            return await message.reply_text("No Gbanned Users Found!")
+        hell = await message.reply_text("Fetching Gbanned Users...")
+        msg = "**Gbanned Users:**\n\n"
+    else:
+        users = await db.get_blocked_users()
+        if len(users) == 0:
+            return await message.reply_text("No Blocked Users Found!")
+        hell = await message.reply_text("Fetching Blocked Users...")
+        msg = "**Blocked Users:**\n\n"
     count = 0
     for user_id in users:
         count += 1
         try:
             user = await hellbot.app.get_users(user_id)
             user = user.first_name if not user.mention else user.mention
-            msg += f"{'0' if count <= 9 else ''}{count}: {user}\n"
+            msg += f"{'0' if count <= 9 else ''}{count}: {user} `{user_id}`\n"
         except Exception:
             msg += f"{'0' if count <= 9 else ''}{count}: [User] `{user_id}`\n"
             continue
     if count == 0:
-        return await hell.edit_text("No Gbanned Users Found!")
+        return await hell.edit_text(f"Nobody is in {message.command[0]}!")
     else:
         return await hell.edit_text(msg)
 
@@ -247,3 +258,4 @@ async def sudoers_list(_, message: Message):
         await message.reply_text("No sudo users found.")
     else:
         await message.reply_text(text)
+
