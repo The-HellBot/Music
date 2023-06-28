@@ -65,8 +65,9 @@ class MakeButtons:
                 btns.append(InlineKeyboardButton(text=f"{index}", callback_data=f"delfavs|{track}|{user_id}"))
 
         if delete:
+            btns = [btns]
             btns.append([InlineKeyboardButton(text="Delete All ❌", callback_data=f"delfavs|all|{user_id}")])
-            buttons = [btns] + nav_btns
+            buttons = btns + nav_btns
         else:
             buttons = nav_btns
 
