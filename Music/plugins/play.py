@@ -177,7 +177,7 @@ async def queued_tracks(_, message: Message):
     await MakePages.queue_page(hell, collection, 0, 0, True)
 
 
-@hellbot.app.on_callback_query(filters.regex(r"queue") & filters.group & ~Config.BANNED_USERS)
+@hellbot.app.on_callback_query(filters.regex(r"queue") & ~Config.BANNED_USERS)
 async def queued_tracks_cb(_, cb: CallbackQuery):
     _, action, page = cb.data.split("|")
     key = int(page)

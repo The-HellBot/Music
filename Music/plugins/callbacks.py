@@ -122,8 +122,10 @@ async def controler_cb(_, cb: CallbackQuery):
             f"__Loop set to {final}__ by: {cb.from_user.mention}\n\Previous loop was {is_loop}"
         )
     elif action == "replay":
+        hell = await cb.message.reply_text("Processing ...")
         que = Queue.get_queue(cb.message.chat.id)
         if que == []:
+            await hell.delete()
             return await cb.answer("No songs in queue to replay!", show_alert=True)
         context = {
             "chat_id": cb.message.chat.id,
@@ -137,12 +139,15 @@ async def controler_cb(_, cb: CallbackQuery):
             "force": True,
         }
         await cb.answer("Replaying!", show_alert=True)
-        await player.play(cb.message, context, False)
+        await player.replay(cb.message.chat.id, hell)
     elif action == "skip":
+        hell = await cb.message.reply_text("Processing ...")
         que = Queue.get_queue(cb.message.chat.id)
         if que == []:
+            await hell.delete()
             return await cb.answer("No songs in queue to skip!", show_alert=True)
         if len(que) == 1:
+            await hell.delete()
             return await cb.answer(
                 "No more songs in queue to skip! Use /end or /stop to stop the VC.",
                 show_alert=True,
@@ -150,26 +155,7 @@ async def controler_cb(_, cb: CallbackQuery):
         is_loop = await db.get_loop(cb.message.chat.id)
         if is_loop != 0:
             await db.set_loop(cb.message.chat.id, 0)
-        try:
-            Queue.rm_queue(cb.message.chat.id, 0)
-        except:
-            return await cb.answer("No more songs in queue to skip!", show_alert=True)
-        new_que = Queue.get_queue(cb.message.chat.id)
-        if new_que  == []:
-            return await cb.answer("No more songs in queue to skip!", show_alert=True)
-        context = {
-            "chat_id": new_que[0]["chat_id"],
-            "user_id": new_que[0]["user_id"],
-            "duration": new_que[0]["duration"],
-            "file": new_que[0]["file"],
-            "title": new_que[0]["title"],
-            "user": new_que[0]["user"],
-            "video_id": new_que[0]["video_id"],
-            "vc_type": new_que[0]["vc_type"],
-            "force": True,
-        }
-        await cb.message.reply_text(f"__VC Skipped by:__ {cb.from_user.mention}")
-        await player.play(cb.message, context, False)
+        await player.skip(cb.message.chat.id, hell)
     elif action == "bseek":
         que = Queue.get_queue(cb.message.chat.id)
         if que == []:
@@ -250,6 +236,10 @@ async def help_cb(_, cb: CallbackQuery):
     elif data == "others":
         return await cb.message.edit_text(
             TEXTS.HELP_OTHERS, reply_markup=InlineKeyboardMarkup(Buttons.help_back())
+        )
+    elif data == "owner":
+        return await cb.message.edit_text(
+            TEXTS.HELP_OWNERS, reply_markup=InlineKeyboardMarkup(Buttons.help_back())
         )
     elif data == "back":
         return await cb.message.edit_text(

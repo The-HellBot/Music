@@ -124,18 +124,7 @@ async def replay(_, message: Message):
     que = Queue.get_queue(message.chat.id)
     if que == []:
         return await hell.edit("No songs in the queue to replay!")
-    context = {
-        "chat_id": message.chat.id,
-        "user_id": message.from_user.id,
-        "duration": que[0]["duration"],
-        "file": que[0]["file"],
-        "title": que[0]["title"],
-        "user": message.from_user.mention,
-        "video_id": que[0]["video_id"],
-        "vc_type": que[0]["vc_type"],
-        "force": True,
-    }
-    await player.play(hell, context)
+    await player.replay(message.chat.id, hell)
 
 
 @hellbot.app.on_message(filters.command("skip") & filters.group & ~Config.BANNED_USERS)
@@ -145,7 +134,7 @@ async def skip(_, message: Message):
     is_active = await db.is_active_vc(message.chat.id)
     if not is_active:
         return await message.reply_text("No active Voice Chat found here!")
-    hell = await message.reply_text("Skipping...")
+    hell = await message.reply_text("Processing ...")
     que = Queue.get_queue(message.chat.id)
     if que == []:
         return await hell.edit("No songs in the queue to skip!")
@@ -157,25 +146,7 @@ async def skip(_, message: Message):
     if is_loop != 0:
         await hell.edit_text("Disabled Loop to skip the current song!")
         await db.set_loop(message.chat.id, 0)
-    try:
-        Queue.rm_queue(message.chat.id, 0)
-    except:
-        return await hell.edit_text("No more songs in queue to skip!")
-    new_que = Queue.get_queue(message.chat.id)
-    if new_que == []:
-        return await hell.edit("No songs in the queue to skip!")
-    context = {
-        "chat_id": new_que[0]["chat_id"],
-        "user_id": new_que[0]["user_id"],
-        "duration": new_que[0]["duration"],
-        "file": new_que[0]["file"],
-        "title": new_que[0]["title"],
-        "user": new_que[0]["user"],
-        "video_id": new_que[0]["video_id"],
-        "vc_type": new_que[0]["vc_type"],
-        "force": True,
-    }
-    await player.play(hell, context)
+    await player.skip(message.chat.id, hell)
 
 
 @hellbot.app.on_message(filters.command("seek") & filters.group & ~Config.BANNED_USERS)

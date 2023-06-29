@@ -96,15 +96,6 @@ class HellMusic(PyTgCalls):
             except:
                 pass
 
-    async def skip_vc(self, chat_id: int, file_path: str, video: bool = False):
-        if video:
-            input_stream = AudioVideoPiped(
-                file_path, MediumQualityAudio(), MediumQualityVideo()
-            )
-        else:
-            input_stream = AudioPiped(file_path, MediumQualityAudio())
-        await self.music.change_stream(chat_id, input_stream)
-
     async def seek_vc(self, context: dict):
         chat_id, file_path, duration, to_seek, video = context.values()
         if video:
@@ -129,6 +120,15 @@ class HellMusic(PyTgCalls):
             )
         except:
             return
+
+    async def replay_vc(self, chat_id: int, file_path: str, video: bool = False):
+        if video:
+            input_stream = AudioVideoPiped(
+                file_path, MediumQualityAudio(), MediumQualityVideo()
+            )
+        else:
+            input_stream = AudioPiped(file_path, MediumQualityAudio())
+        await self.music.change_stream(chat_id, input_stream)
 
     async def change_vc(self, chat_id: int):
         get = Queue.get_queue(chat_id)

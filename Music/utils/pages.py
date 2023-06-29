@@ -111,7 +111,7 @@ class Pages:
         delete: bool = False
     ):
         m = message.message if isinstance(message, CallbackQuery) else message
-        grouped, total = formatter.group_the_list(collection, 7)
+        grouped, total = formatter.group_the_list(collection, 5)
         text = f"__({page+1}/{len(grouped)})__ {mention} **favorites:** __{total} tracks__\n\n"
         btns, final = await Buttons.favorite_markup(
             grouped, user_id, page, index, db, delete

@@ -2,13 +2,11 @@ import datetime
 
 from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
-from Music.helpers.buttons import Buttons
-from Music.helpers.strings import TEXTS
 
 from config import Config
 from Music.core.clients import hellbot
 from Music.core.database import db
-from Music.core.decorators import AdminWrapper, UserWrapper, check_mode
+from Music.core.decorators import AdminWrapper, check_mode
 from Music.helpers.formatters import formatter
 from Music.utils.pages import MakePages
 
@@ -93,7 +91,7 @@ async def unauth(_, message: Message):
             await message.reply_text("This user was not Authorized in this chat!")
 
 
-@hellbot.app.on_message(filters.command("authusers") & filters.group & ~Config.BANNED_USERS)
+@hellbot.app.on_message(filters.command("authlist") & filters.group & ~Config.BANNED_USERS)
 @check_mode
 async def authusers(_, message: Message):
     all_auths = await db.get_all_authusers(message.chat.id)

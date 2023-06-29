@@ -32,18 +32,19 @@ class MakeButtons:
     ):
         btns = []
         txt = ""
+        d = 0 if delete == True else 1
         if len(collection) != 1:
             nav_btns = [
                 [
-                    InlineKeyboardButton("⪨", callback_data=f"myfavs|prev|{user_id}|{page}"),
-                    InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}"),
-                    InlineKeyboardButton("⪩", callback_data=f"myfavs|next|{user_id}|{page}"),
+                    InlineKeyboardButton("⪨", callback_data=f"myfavs|prev|{user_id}|{page}|{d}"),
+                    InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}|{d}"),
+                    InlineKeyboardButton("⪩", callback_data=f"myfavs|next|{user_id}|{page}|{d}"),
                 ]
             ]
         else:
             nav_btns = [
                 [
-                    InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}"),
+                    InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}|{d}"),
                 ],
             ]
         try:
@@ -210,6 +211,9 @@ class MakeButtons:
                 InlineKeyboardButton(text="➌ Sudos", callback_data="help|sudo"),
                 InlineKeyboardButton(text="➍ Others", callback_data="help|others"),
             ],
+            [
+                InlineKeyboardButton(text="➎ Owner", callback_data="help|owner"),
+            ]
             [
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ],

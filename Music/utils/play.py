@@ -153,5 +153,61 @@ class Player:
             f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"
         )
 
+    async def skip(self, chat_id: int, message: Message):
+        await message.edit_text("Skipping ...")
+        await hellmusic.change_vc(chat_id)
+        await message.delete()
+
+    async def replay(self, chat_id: int, message: Message):
+        que = Queue.get_current(chat_id)
+        if not que:
+            return await message.edit_text("Nothing is playing to replay")
+        photo = thumb.generate((359), (297, 302), que["video_id"])
+        try:
+            await hellmusic.replay_vc(
+                chat_id, que["file"], True if que["vc_type"] == "video" else False
+            )
+        except Exception as e:
+            await message.delete()
+            await message.reply_text(str(e))
+            Queue.clear_queue(chat_id)
+            os.remove(que["file"])
+            os.remove(photo)
+            return
+        btns = Buttons.player_markup(chat_id, que["video_id"], hellbot.app.username)
+        if photo:
+            sent = await hellbot.app.send_photo(
+                chat_id,
+                photo,
+                TEXTS.PLAYING.format(
+                    hellbot.app.mention,
+                    que["title"],
+                    que["duration"],
+                    que['user'],
+                ),
+                reply_markup=InlineKeyboardMarkup(btns),
+            )
+            os.remove(photo)
+        else:
+            sent = await hellbot.app.send_message(
+                chat_id,
+                TEXTS.PLAYING.format(
+                    hellbot.app.mention,
+                    que["title"],
+                    que["duration"],
+                    que["user"],
+                ),
+                reply_markup=InlineKeyboardMarkup(btns),
+            )
+        previous = Config.PLAYER_CACHE.get(chat_id)
+        if previous:
+            try:
+                await previous.delete()
+            except Exception:
+                pass
+        Config.PLAYER_CACHE[chat_id] = sent
+        await message.delete()
+
+
 
 player = Player()

@@ -57,7 +57,7 @@ async def add_favorites(_, cb: CallbackQuery):
 
 @hellbot.app.on_callback_query(filters.regex(r"myfavs") & ~Config.BANNED_USERS)
 async def myfavs_cb(_, cb: CallbackQuery):
-    _, action, user_id, page = cb.data.split("|")
+    _, action, user_id, page, delete = cb.data.split("|")
     if int(user_id) != cb.from_user.id:
         return await cb.answer("This is not for you!", show_alert=True)
     if action == "close":
@@ -73,9 +73,13 @@ async def myfavs_cb(_, cb: CallbackQuery):
             new_page = 0
         else:
             new_page = int(page) + 1 if action == "next" else int(page) - 1
-        index = new_page * 7
+        index = new_page * 5
+        if int(delete) == 1:
+            to_del = False
+        else:
+            to_del = True
         await MakePages.favorite_page(
-            cb, collection, int(user_id), cb.from_user.mention, new_page, index, True
+            cb, collection, int(user_id), cb.from_user.mention, new_page, index, True, to_del
         )
 
 

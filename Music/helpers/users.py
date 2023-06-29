@@ -18,32 +18,32 @@ class UserModel:
         )
 
     def get_user_level(self, songs_played: int) -> str:
-        if songs_played < 20:
+        if songs_played < 50:
             return "Novice"
-        elif songs_played < 40:
+        elif songs_played < 100:
             return "Beginner"
-        elif songs_played < 80:
+        elif songs_played < 200:
             return "Intermediate"
-        elif songs_played < 160:
+        elif songs_played < 400:
             return "Advanced"
-        elif songs_played < 320:
+        elif songs_played < 800:
             return "Expert"
         else:
             return "Master"
 
     def get_user_level_symbol(self, songs_played: int) -> str:
         if songs_played < 20:
-            return "☆"
+            return "☆☆☆☆☆"
         elif songs_played < 40:
-            return "★"
+            return "★☆☆☆☆"
         elif songs_played < 80:
-            return "✭"
+            return "★★☆☆☆"
         elif songs_played < 160:
-            return "⍟"
+            return "★★★☆☆"
         elif songs_played < 320:
-            return "❂"
+            return "★★★★☆"
         else:
-            return "❉"
+            return "★★★★★"
 
     def get_stats_text(self, context: dict) -> str:
         (
