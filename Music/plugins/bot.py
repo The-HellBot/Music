@@ -69,10 +69,11 @@ async def help(_, message: Message):
 @hellbot.app.on_message(filters.command("ping") & ~Config.BANNED_USERS)
 async def ping(_, message: Message):
     start_time = datetime.datetime.now()
+    hell = await message.reply_text("Pong!")
     calls_ping = await hellmusic.ping()
     stats = await formatter.system_stats()
     end_time = (datetime.datetime.now() - start_time).seconds / 60
-    await message.reply_text(
+    await hell.edit_text(
         TEXTS.PING_REPLY.format(end_time, stats["uptime"], calls_ping),
         disable_web_page_preview=True,
         reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),

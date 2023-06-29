@@ -210,6 +210,12 @@ class HellMusic(PyTgCalls):
                     except:
                         pass
                 Config.PLAYER_CACHE[chat_id] = sent
+                await db.update_songs_count(1)
+                await db.update_user(user_id, "songs_played", 1)
+                await hellbot.logit(
+                    f"play {vc_type}",
+                    f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"
+                )
             except Exception as e:
                 raise ChangeVCException(f"[ChangeVCException]: {e}")
 

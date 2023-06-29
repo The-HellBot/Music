@@ -144,6 +144,7 @@ class Player:
                 ),
                 reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
             )
+            return await message.delete()
         await message.delete()
         await db.update_songs_count(1)
         await db.update_user(user_id, "songs_played", 1)
