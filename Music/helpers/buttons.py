@@ -213,7 +213,7 @@ class MakeButtons:
             ],
             [
                 InlineKeyboardButton(text="➎ Owner", callback_data="help|owner"),
-            ]
+            ],
             [
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ],

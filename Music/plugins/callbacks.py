@@ -127,17 +127,6 @@ async def controler_cb(_, cb: CallbackQuery):
         if que == []:
             await hell.delete()
             return await cb.answer("No songs in queue to replay!", show_alert=True)
-        context = {
-            "chat_id": cb.message.chat.id,
-            "user_id": cb.from_user.id,
-            "duration": que[0]["duration"],
-            "file": que[0]["file"],
-            "title": que[0]["title"],
-            "user": cb.from_user.mention,
-            "video_id": que[0]["video_id"],
-            "vc_type": que[0]["vc_type"],
-            "force": True,
-        }
         await cb.answer("Replaying!", show_alert=True)
         await player.replay(cb.message.chat.id, hell)
     elif action == "skip":

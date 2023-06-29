@@ -32,15 +32,15 @@ class UserModel:
             return "Master"
 
     def get_user_level_symbol(self, songs_played: int) -> str:
-        if songs_played < 20:
+        if songs_played < 50:
             return "☆☆☆☆☆"
-        elif songs_played < 40:
+        elif songs_played < 100:
             return "★☆☆☆☆"
-        elif songs_played < 80:
+        elif songs_played < 200:
             return "★★☆☆☆"
-        elif songs_played < 160:
+        elif songs_played < 400:
             return "★★★☆☆"
-        elif songs_played < 320:
+        elif songs_played < 800:
             return "★★★★☆"
         else:
             return "★★★★★"
