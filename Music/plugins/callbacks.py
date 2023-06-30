@@ -241,3 +241,12 @@ async def help_cb(_, cb: CallbackQuery):
             TEXTS.HELP_PM.format(hellbot.app.mention),
             reply_markup=InlineKeyboardMarkup(Buttons.help_pm_markup()),
         )
+
+
+@hellbot.app.on_callback_query(filters.regex(r"source") & ~Config.BANNED_USERS)
+async def source_cb(_, cb: CallbackQuery):
+    await cb.message.edit_text(
+        TEXTS.SOURCE.format(hellbot.app.mention),
+        reply_markup=InlineKeyboardMarkup(Buttons.source_markup()),
+        disable_web_page_preview=True,
+    )

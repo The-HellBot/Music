@@ -59,6 +59,15 @@ class TEXTS:
         "**⊸ Requested By:** {4}\n\n"
         "**❆** {5}"
     )
+    SOURCE = (
+        "**Source 📦:**\n\n"
+        "**Note:** \n__» The source code is available on GitHub. You can find the link below.__\n"
+        "__» Every project available under The-HellBot are open-source and free to use and modify to your needs.__"
+        "__» Anyone pretending to be the developer of this bot and selling the code, is a scammer.__\n\n"
+        "__» Please consider giving a star to the repository if you liked the project.__\n"
+        "__» Feel free to contact us if you need any help regarding the source code.__\n\n"
+        "❤️🎶 {0}"
+    )
     STATS = (
         "**⤞ Server Stats:**\n"
         "    __Total Users:__ `{0} users`\n"
@@ -163,6 +172,8 @@ class TEXTS:
         "    __Show this menu.__\n\n"
         "**» /sysinfo**\n"
         "    __Show system information of the bot.__\n\n"
+        "**» /leaderboard ; /topusers**\n"
+        "    __Show the top 10 users with most number of songs played.__\n\n"
     )
     HELP_OWNERS = (
         "**Owner Commands:**\n\n"
