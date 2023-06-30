@@ -132,4 +132,5 @@ async def favsplay_cb(_, cb: CallbackQuery):
         all_tracks = await db.get_all_favorites(int(user_id))
         video = True if action == "video" else False
         await player.playlist(cb.message, cb.from_user.id, all_tracks, video)
+        await cb.message.delete()
         

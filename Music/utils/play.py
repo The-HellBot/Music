@@ -230,7 +230,7 @@ class Player:
             previously = len(Queue.get_queue(message.chat.id))
         for i in collection:
             try:
-                data = await ytube.get_data(i, True, 1)
+                data = (await ytube.get_data(i, True, 1))[0]
                 file_path = data["id"]
                 if count == 0 and previously == 0:
                     file_path == await ytube.download(data["id"], True, video)
