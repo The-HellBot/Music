@@ -220,7 +220,7 @@ class Player:
     async def playlist(
         self, message: Message, user_id: int, collection: list, video: bool = False
     ):
-        hell = await message.reply_text("Setting up favorites play ...")
+        hell = await message.edit_text("Playing your favorites ...")
         vc_type = "video" if video else "voice"
         count = failed = 0
         if await db.is_active_vc(message.chat.id):
@@ -231,10 +231,9 @@ class Player:
         for i in collection:
             try:
                 data = (await ytube.get_data(i, True, 1))[0]
-                file_path = data["id"]
                 if count == 0 and previously == 0:
                     LOGS.info("Playing first song")
-                    file_path == await ytube.download(data["id"], True, video)
+                    file_path = await ytube.download(data["id"], True, video)
                     _queue = Queue.put_queue(
                         message.chat.id,
                         user_id,
@@ -292,7 +291,7 @@ class Player:
                         message.chat.id,
                         user_id,
                         data["duration"],
-                        file_path,
+                        data["id"],
                         data["title"],
                         message.from_user.mention,
                         data["id"],
