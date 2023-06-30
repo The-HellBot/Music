@@ -201,10 +201,41 @@ class MakeButtons:
         ]
         return buttons
 
+    def source_markup(self):
+        buttons = [
+            [
+                InlineKeyboardButton(text="Github ❤️", url="https://github.com/The-HellBot"),
+                InlineKeyboardButton(text="Repo 📦", url="https://github.com/The-HellBot/Music"),
+            ],
+            [
+                InlineKeyboardButton(text="Under HellBot Network { 🇮🇳 }", url="https://t.me/HellBot_Networks"),
+            ],
+            [
+                InlineKeyboardButton(text="Support 🎙️", url="https://t.me/HellBot_Chats"),
+                InlineKeyboardButton(text="Updates 📣", url="https://t.me/Its_HellBot"),
+            ],
+            [
+                InlineKeyboardButton(text="🗑", callback_data="close"),
+            ]
+        ]
+        return buttons
+
     def start_markup(self, username: str):
         buttons = [
             [
                 InlineKeyboardButton(text="Start Me 🎵", url=f"https://t.me/{username}?start=start"),
+                InlineKeyboardButton(text="🗑", callback_data="close"),
+            ]
+        ]
+        return buttons
+
+    def start_pm_markup(self):
+        buttons = [
+            [
+                InlineKeyboardButton(text="Help ⚙️", callback_data="help|back"),
+                InlineKeyboardButton(text="Source 📦", callback_data="source"),
+            ],
+            [
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ]
         ]

@@ -8,6 +8,7 @@ from Music.core.decorators import UserWrapper, check_mode
 from Music.helpers.buttons import Buttons
 from Music.helpers.formatters import formatter
 from Music.helpers.users import MusicUser
+from Music.utils.leaderboard import leaders
 
 
 @hellbot.app.on_message(
@@ -64,4 +65,24 @@ async def stats(_, message: Message):
     await hell.edit_text(
         MusicUser.get_stats_text(context),
         reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
+    )
+
+
+@hellbot.app.on_message(
+    filters.command(["leaderboard", "topusers"]) & filters.group & ~Config.BANNED_USERS
+)
+@UserWrapper
+async def topusers(_, message: Message):
+    hell = await message.reply_text("Just a sec... fetching top users")
+    context = {
+        "mention": hellbot.app.mention,
+        "username": hellbot.app.username,
+        "client": hellbot.app,
+    }
+    text = await leaders.generate(context)
+    btns = Buttons.close_markup()
+    await hell.edit_text(
+        text,
+        disable_web_page_preview=True,
+        reply_markup=InlineKeyboardMarkup(btns),
     )

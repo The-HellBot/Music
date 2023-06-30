@@ -48,7 +48,7 @@ async def start(_, message: Message):
                 userdbs = await db.get_user(userid)
                 songs = userdbs["songs_played"]
                 level = MusicUser.get_user_level(int(songs))
-                to_send = TEXTS.ABOU_USER.format(
+                to_send = TEXTS.ABOUT_USER.format(
                     userdbs["user_name"],
                     userdbs["user_id"],
                     level,
@@ -68,7 +68,11 @@ async def start(_, message: Message):
                     reply_markup=InlineKeyboardMarkup(Buttons.help_pm_markup()),
                 )
                 return
-        await message.reply_text(TEXTS.START_PM.format(hellbot.app.mention))
+        await message.reply_text(
+            TEXTS.START_PM.format(hellbot.app.mention),
+            reply_markup=InlineKeyboardMarkup(Buttons.start_pm_markup()),
+            disable_web_page_preview=True,
+        )
     elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
         await message.reply_text(TEXTS.START_GC)
 
