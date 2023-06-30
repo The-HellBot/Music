@@ -2,6 +2,7 @@ import os
 
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import InlineKeyboardMarkup, Message
+from Music.core.logger import LOGS
 
 from config import Config
 from Music.core.calls import hellmusic
@@ -299,7 +300,8 @@ class Player:
                         False,
                     )
                     count += 1
-            except:
+            except Exception as e:
+                LOGS.error(str(e))
                 failed += 1
         await hell.edit_text(f"**Added all tracks to queue!** \n\n**Total tracks: `{count}`** \n**Failed: `{failed}`**")
 

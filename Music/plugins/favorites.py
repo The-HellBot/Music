@@ -73,7 +73,7 @@ async def myfavs_cb(_, cb: CallbackQuery):
         )
     else:
         collection = await db.get_all_favorites(int(user_id))
-        last_page, _ = formatter.group_the_list(collection, 7, length=True)
+        last_page, _ = formatter.group_the_list(collection, 5, length=True)
         last_page -= 1
         if int(page) == 0 and action == "prev":
             new_page = last_page
