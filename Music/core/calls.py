@@ -236,7 +236,7 @@ class HellMusic(PyTgCalls):
             try:
                 await self.join_gc(chat_id)
             except Exception as e:
-                raise JoinGCException(f"[JoinGCException]: {e}")
+                raise JoinGCException(e)
             try:
                 await self.music.join_group_call(
                     chat_id, input_stream, stream_type=StreamType().pulse_stream
@@ -261,7 +261,7 @@ class HellMusic(PyTgCalls):
                 raise UserException(
                     f"[UserException]: Bot is not admin in chat {chat_id}"
                 )
-            if get.status == ChatMemberStatus.RESTRICTED or ChatMemberStatus.BANNED:
+            if get.status == ChatMemberStatus.RESTRICTED or get.status == ChatMemberStatus.BANNED:
                 raise UserException(
                     f"[UserException]: Assistant is restricted or banned in chat {chat_id}"
                 )

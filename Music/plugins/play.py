@@ -179,7 +179,7 @@ async def queued_tracks(_, message: Message):
     await MakePages.queue_page(hell, collection, 0, 0, True)
 
 
-@hellbot.app.on_callback_query(filters.command("clean") & ~Config.BANNED_USERS)
+@hellbot.app.on_message(filters.command("clean") & ~Config.BANNED_USERS)
 @AuthWrapper
 async def clean_queue(_, message: Message):
     Queue.clear_queue(message.chat.id)
