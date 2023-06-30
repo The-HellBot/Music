@@ -7,6 +7,15 @@ class TEXTS:
         "**⏳ Duration:** __{4}__ \n\n"
         "**❆** {5}"
     )
+    ABOU_USER = (
+        "**✘ Top User Info:**\n\n"
+        "**💬 Name:** {0}\n"
+        "**💠 ID:** `{1}`\n"
+        "**⚜️ Level:** __{2}__\n"
+        "**🎶 Songs Played:** __{3}__\n"
+        "**〥 Joined Since:** __{4}__\n\n"
+        "**❆** {5}"
+    )
     BOOTED = (
         "#START\n\n"
         "**{0} is alive!**\n\n"

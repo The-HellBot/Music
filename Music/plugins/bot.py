@@ -7,10 +7,12 @@ from pyrogram.types import InlineKeyboardMarkup, Message
 from config import Config
 from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
+from Music.core.database import db
 from Music.core.decorators import UserWrapper, check_mode
 from Music.helpers.buttons import Buttons
 from Music.helpers.formatters import formatter
 from Music.helpers.strings import TEXTS
+from Music.helpers.users import MusicUser
 from Music.utils.youtube import ytube
 
 
@@ -39,6 +41,26 @@ async def start(_, message: Message):
                             results[0]["ch_link"],
                         )
                     ),
+                )
+                return
+            elif deep_cmd.startswith("user"):
+                userid = int(deep_cmd.split("_", 1)[1])
+                userdbs = await db.get_user(userid)
+                usercli = await hellbot.app.get_users(userid)
+                songs = userdbs["songs_played"]
+                level = MusicUser.get_user_level(int(songs))
+                to_send = TEXTS.ABOU_USER.format(
+                    usercli.mention,
+                    usercli.id,
+                    level,
+                    songs,
+                    userdbs["join_date"],
+                    hellbot.app.mention,
+                )
+                await message.reply_text(
+                    to_send,
+                    reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
+                    disable_web_page_preview=True,
                 )
                 return
             elif deep_cmd.startswith("help"):
