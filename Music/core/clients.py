@@ -55,7 +55,7 @@ class HellClient(Client):
         try:
             if file:
                 await self.app.send_document(
-                    Config.LOGGER_ID, file, caption=log_text, disable_web_page_preview=True
+                    Config.LOGGER_ID, file, caption=log_text
                 )
             else:
                 await self.app.send_message(

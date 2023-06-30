@@ -75,6 +75,7 @@ class Leaderboard:
                 chat,
                 text,
                 reply_markup=InlineKeyboardMarkup(buttons),
+                disable_web_page_preview=True,
             )
             return 1, None
         except FloodWait as e:
