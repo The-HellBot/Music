@@ -46,12 +46,11 @@ async def start(_, message: Message):
             elif deep_cmd.startswith("user"):
                 userid = int(deep_cmd.split("_", 1)[1])
                 userdbs = await db.get_user(userid)
-                usercli = await hellbot.app.get_users(userid)
                 songs = userdbs["songs_played"]
                 level = MusicUser.get_user_level(int(songs))
                 to_send = TEXTS.ABOU_USER.format(
-                    usercli.mention,
-                    usercli.id,
+                    userdbs["user_name"],
+                    userdbs["user_id"],
                     level,
                     songs,
                     userdbs["join_date"],

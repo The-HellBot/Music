@@ -41,9 +41,10 @@ class Database(object):
             sys.exit()
 
     # users db #
-    async def add_user(self, user_id: int):
+    async def add_user(self, user_id: int, user_name: str):
         context = {
             "user_id": user_id,
+            "user_name": user_name,
             "join_date": datetime.datetime.now().strftime("%d-%m-%Y %H:%M"),
             "songs_played": 0,
         }

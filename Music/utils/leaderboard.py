@@ -21,8 +21,8 @@ class Leaderboard:
         async for user in users:
             id = int(user["user_id"])
             songs = int(user["songs_played"])
-            joined = user["join_date"]
-            context = {"id": id, "songs": songs, "joined": joined}
+            user_name = user["user_name"]
+            context = {"id": id, "songs": songs, "user": user_name}
             all_guys.append(context)
         all_guys = sorted(all_guys, key=lambda x: x["songs"], reverse=True)
         top_10 = all_guys[:10]
@@ -35,9 +35,8 @@ class Leaderboard:
         hellbot = bot_details["client"]
         for top in top_10:
             index += 1
-            user = (await hellbot.get_users(top["id"])).first_name
             link = f"https://t.me/{bot_details['username']}?start=user_{top['id']}"
-            text += f"**⤷ {'0' if index <= 9 else ''}{index}:** [{user}]({link})\n"
+            text += f"**⤷ {'0' if index <= 9 else ''}{index}:** [{top['user']}]({link})\n"
         text += "\n**🧡 Enjoy Streaming! Have Fun!**"
         return text
 

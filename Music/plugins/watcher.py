@@ -20,7 +20,7 @@ async def new_users(_, msg: Message):
     chat_id = msg.from_user.id
     if not await db.is_user_exist(chat_id):
         BOT_USERNAME = hellbot.app.username
-        await db.add_user(chat_id)
+        await db.add_user(chat_id, msg.from_user.first_name)
         if Config.LOGGER_ID:
             await hellbot.logit(
                 "newuser",
@@ -109,5 +109,5 @@ async def leaderboard():
 
 
 scheduler = AsyncIOScheduler()
-scheduler.add_job(leaderboard, "cron", hour=3, minute=0, timezone=Config.TZ)
+scheduler.add_job(leaderboard, "cron", hour=3, minute=45, timezone=Config.TZ)
 scheduler.start()
