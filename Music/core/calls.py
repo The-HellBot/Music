@@ -127,6 +127,7 @@ class HellMusic(PyTgCalls):
         try:
             get = Queue.get_queue(chat_id)
             if get == []:
+                LOGS.error(">> No Queue Found!")
                 return await self.leave_vc(chat_id)
             loop = await db.get_loop(chat_id)
             if loop == 0:
@@ -134,7 +135,8 @@ class HellMusic(PyTgCalls):
                 self.autoclean(file)
             else:
                 await db.set_loop(chat_id, loop - 1)
-        except:
+        except Exception as e:
+            LOGS.error(e)
             return await self.leave_vc(chat_id)
         get = Queue.get_queue(chat_id)
         if get == []:

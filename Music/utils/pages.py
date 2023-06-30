@@ -141,13 +141,7 @@ class Pages:
                 text += f"    **Requested By:** {que['user']}\n"
                 text += f"    **Duration:** __{que['duration']}__\n\n"
         except IndexError:
-            page = 0
-            for que in grouped[page]:
-                index += 1
-                text += f"**{'0' if index < 10 else ''}{index}:** {que['title']}\n"
-                text += f"    **VC Type:** {que['vc_type']}\n"
-                text += f"    **Requested By:** {que['user']}\n"
-                text += f"    **Duration:** __{que['duration']}__\n\n"
+            return await m.edit_text("**No more tracks in queue!**")
         if edit:
             await m.edit_text(text, reply_markup=InlineKeyboardMarkup(btns))
         else:
