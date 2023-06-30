@@ -147,13 +147,11 @@ async def playing(_, message: Message):
         return await message.reply_text("Nothing is playing here.")
     photo = thumb.generate((359), (297, 302), que["video_id"])
     btns = Buttons.player_markup(chat_id, que["video_id"], hellbot.app.username)
-    played = await hellmusic.played_time(chat_id)
-    to_send = TEXTS.PLAYING2.format(
+    to_send = TEXTS.PLAYING.format(
         hellbot.app.mention,
         que["title"],
         que["duration"],
         que["user"],
-        played,
     )
     if photo:
         sent = await message.reply_photo(photo, caption=to_send, reply_markup=InlineKeyboardMarkup(btns))

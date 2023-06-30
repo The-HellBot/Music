@@ -68,10 +68,6 @@ class HellMusic(PyTgCalls):
         pinged = await self.music.ping
         return pinged
 
-    async def played_time(self, chat_id: int) -> int:
-        played = await self.music.played_time(chat_id)
-        return played or 0
-
     async def vc_participants(self, chat_id: int):
         users = await self.music.get_participants(chat_id)
         return users
@@ -139,7 +135,6 @@ class HellMusic(PyTgCalls):
         try:
             get = Queue.get_queue(chat_id)
             if get == []:
-                LOGS.error(">> No Queue Found!")
                 return await self.leave_vc(chat_id)
             loop = await db.get_loop(chat_id)
             if loop == 0:
