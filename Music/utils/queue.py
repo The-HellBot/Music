@@ -52,10 +52,7 @@ class QueueDB:
         return position
 
     def get_queue(self, chat_id: int) -> list:
-        try:
-            que = self.queue.get(chat_id)
-        except KeyError:
-            que = []
+        que = self.queue.get(chat_id) or []
         return que
 
     def rm_queue(self, chat_id: int, index: int):
