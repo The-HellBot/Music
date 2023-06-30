@@ -7,7 +7,7 @@ class TEXTS:
         "**⏳ Duration:** __{4}__ \n\n"
         "**❆** {5}"
     )
-    ABOU_USER = (
+    ABOUT_USER = (
         "**✘ Top User Info:**\n\n"
         "**💬 Name:** {0}\n"
         "**💠 ID:** `{1}`\n"

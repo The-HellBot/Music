@@ -48,7 +48,7 @@ async def start(_, message: Message):
                 userdbs = await db.get_user(userid)
                 songs = userdbs["songs_played"]
                 level = MusicUser.get_user_level(int(songs))
-                to_send = TEXTS.ABOU_USER.format(
+                to_send = TEXTS.ABOUT_USER.format(
                     userdbs["user_name"],
                     userdbs["user_id"],
                     level,
