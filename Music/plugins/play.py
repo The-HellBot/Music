@@ -1,14 +1,16 @@
+import asyncio
+
 from pyrogram import filters
-from pyrogram.types import Message, InlineKeyboardMarkup, CallbackQuery
-from Music.utils.pages import MakePages
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from config import Config
 from Music.core.clients import hellbot
 from Music.core.database import db
-from Music.core.decorators import PlayWrapper, check_mode, UserWrapper
+from Music.core.decorators import AuthWrapper, PlayWrapper, UserWrapper, check_mode
 from Music.helpers.buttons import Buttons
 from Music.helpers.formatters import formatter
 from Music.helpers.strings import TEXTS
+from Music.utils.pages import MakePages
 from Music.utils.play import player
 from Music.utils.queue import Queue
 from Music.utils.thumbnail import thumb
@@ -175,6 +177,15 @@ async def queued_tracks(_, message: Message):
     if not collection:
         return await hell.edit_text("Nothing is playing here.")
     await MakePages.queue_page(hell, collection, 0, 0, True)
+
+
+@hellbot.app.on_callback_query(filters.command("clean") & ~Config.BANNED_USERS)
+@AuthWrapper
+async def clean_queue(_, message: Message):
+    Queue.clear_queue(message.chat.id)
+    hell = await message.reply_text("**Cleared Queue.**")
+    await asyncio.sleep(10)
+    await hell.delete()
 
 
 @hellbot.app.on_callback_query(filters.regex(r"queue") & ~Config.BANNED_USERS)

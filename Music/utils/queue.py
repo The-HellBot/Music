@@ -61,9 +61,11 @@ class QueueDB:
     def rm_queue(self, chat_id: int, index: int):
         try:
             db = self.queue.get(chat_id)
+            file = db["file"]
             db.pop(index)
+            return file
         except IndexError:
-            pass
+            return None
 
     def clear_queue(self, chat_id: int):
         try:

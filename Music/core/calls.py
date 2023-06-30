@@ -44,16 +44,9 @@ class HellMusic(PyTgCalls):
             else:
                 db.inactive[chat_id] = {}
 
-    def autoclean(self, popped: dict):
+    def autoclean(self, file: str):
         try:
-            file = popped["file"]
-            Config.CACHE.remove(file)
-            count = Config.CACHE.count(file)
-            if count == 0:
-                try:
-                    os.remove(file)
-                except:
-                    pass
+            os.remove(file)
         except:
             pass
 
@@ -131,14 +124,14 @@ class HellMusic(PyTgCalls):
         await self.music.change_stream(chat_id, input_stream)
 
     async def change_vc(self, chat_id: int):
-        get = Queue.get_queue(chat_id)
         try:
+            get = Queue.get_queue(chat_id)
             if get == []:
                 return await self.leave_vc(chat_id)
             loop = await db.get_loop(chat_id)
             if loop == 0:
-                clean = get.pop(0)
-                self.autoclean(clean)
+                file = Queue.rm_queue(chat_id, 0)
+                self.autoclean(file)
             else:
                 await db.set_loop(chat_id, loop - 1)
         except:
@@ -191,6 +184,7 @@ class HellMusic(PyTgCalls):
                         ),
                         reply_markup=InlineKeyboardMarkup(btns),
                     )
+                    os.remove(photo)
                 else:
                     sent = await hellbot.app.send_message(
                         int(chat_id),

@@ -70,7 +70,9 @@ class Player:
                     await message.edit_text("Downloading ...")
                 else:
                     await message.reply_text("Downloading ...")
-                file_path = await ytube.download(video_id, True, True if vc_type == "video" else False)
+                file_path = await ytube.download(
+                    video_id, True, True if vc_type == "video" else False
+                )
             except Exception as e:
                 if edit:
                     await message.edit_text(str(e))
@@ -134,7 +136,7 @@ class Player:
                     pass
             Config.PLAYER_CACHE[chat_id] = sent
         else:
-            await hellbot.app.send_message(
+            sent = await hellbot.app.send_message(
                 chat_id,
                 TEXTS.QUEUE.format(
                     position,
@@ -144,13 +146,19 @@ class Player:
                 ),
                 reply_markup=InlineKeyboardMarkup(Buttons.close_markup()),
             )
+            prev_q = Config.QUEUE_CACHE.get(chat_id)
+            if prev_q:
+                try:
+                    await prev_q.delete()
+                except Exception:
+                    pass
+            Config.QUEUE_CACHE[chat_id] = sent
             return await message.delete()
         await message.delete()
         await db.update_songs_count(1)
         await db.update_user(user_id, "songs_played", 1)
         await hellbot.logit(
-            f"play {vc_type}",
-            f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"
+            f"play {vc_type}", f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"
         )
 
     async def skip(self, chat_id: int, message: Message):
@@ -183,7 +191,7 @@ class Player:
                     hellbot.app.mention,
                     que["title"],
                     que["duration"],
-                    que['user'],
+                    que["user"],
                 ),
                 reply_markup=InlineKeyboardMarkup(btns),
             )
@@ -208,6 +216,92 @@ class Player:
         Config.PLAYER_CACHE[chat_id] = sent
         await message.delete()
 
+    async def playlist(
+        self, message: Message, user_id: int, collection: list, video: bool = False
+    ):
+        hell = await message.reply_text("Setting up favorites play ...")
+        vc_type = "video" if video else "voice"
+        _queue = previously = count = failed = 0
+        if await db.is_active_vc(message.chat.id):
+            await hell.edit_text(
+                "This chat have an active vc. Adding your favorites in the queue... \n\n__This might take some time!__"
+            )
+            previously = len(Queue.get_queue(message.chat.id))
+        for i in collection:
+            try:
+                data = await ytube.get_data(i, True, 1)
+                file_path = data["id"]
+                if count == 0 and previously == 0:
+                    file_path == await ytube.download(data["id"], True, video)
+                    _queue = Queue.put_queue(
+                        message.chat.id,
+                        user_id,
+                        data["duration"],
+                        file_path,
+                        data["title"],
+                        message.from_user.mention,
+                        data["id"],
+                        vc_type,
+                        False,
+                    )
+                    try:
+                        photo = thumb.generate((359), (297, 302), data["id"])
+                        await hellmusic.join_vc(message.chat.id, file_path, video)
+                    except Exception as e:
+                        await hell.edit_text(str(e))
+                        Queue.clear_queue(message.chat.id)
+                        os.remove(file_path)
+                        os.remove(photo)
+                        return
+                    btns = Buttons.player_markup(message.chat.id, data["id"], hellbot.app.username)
+                    if photo:
+                        sent = await hellbot.app.send_photo(
+                            message.chat.id,
+                            photo,
+                            TEXTS.PLAYING.format(
+                                hellbot.app.mention,
+                                data["title"],
+                                data["duration"],
+                                message.from_user.mention,
+                            ),
+                            reply_markup=InlineKeyboardMarkup(btns),
+                        )
+                        os.remove(photo)
+                    else:
+                        sent = await hellbot.app.send_message(
+                            message.chat.id,
+                            TEXTS.PLAYING.format(
+                                hellbot.app.mention,
+                                data["title"],
+                                data["duration"],
+                                message.from_user.mention,
+                            ),
+                            reply_markup=InlineKeyboardMarkup(btns),
+                        )
+                    old = Config.PLAYER_CACHE.get(message.chat.id)
+                    if old:
+                        try:
+                            await old.delete()
+                        except Exception:
+                            pass
+                    Config.PLAYER_CACHE[message.chat.id] = sent
+                    count += 1
+                else:
+                    _queue = Queue.put_queue(
+                        message.chat.id,
+                        user_id,
+                        data["duration"],
+                        file_path,
+                        data["title"],
+                        message.from_user.mention,
+                        data["id"],
+                        vc_type,
+                        False,
+                    )
+                    count += 1
+            except:
+                failed += 1
+        await hell.edit_text(f"**Added all tracks to queue!** \n\n**Total tracks: `{count}`** \n**Failed: `{failed}`**")
 
 
 player = Player()

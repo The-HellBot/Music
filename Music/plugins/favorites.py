@@ -1,15 +1,17 @@
 import datetime
 
 from pyrogram import filters
-from pyrogram.types import CallbackQuery, Message
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from config import Config
 from Music.core.clients import hellbot
 from Music.core.database import db
 from Music.core.decorators import UserWrapper, check_mode
+from Music.helpers.buttons import Buttons
 from Music.helpers.formatters import formatter
 from Music.utils.pages import MakePages
 from Music.utils.youtube import ytube
+from Music.utils.play import player
 
 
 @hellbot.app.on_message(
@@ -63,6 +65,12 @@ async def myfavs_cb(_, cb: CallbackQuery):
     if action == "close":
         await cb.message.delete()
         await cb.answer("Closed!", show_alert=True)
+    elif action == "play":
+        btns = Buttons.playfavs_markup(int(user_id))
+        await cb.message.edit_text(
+            "**❤️ Favorites Play:** \n\n__Choose the stream type to play your favorites list:__",
+            reply_markup=InlineKeyboardMarkup(btns),
+        )
     else:
         collection = await db.get_all_favorites(int(user_id))
         last_page, _ = formatter.group_the_list(collection, 7, length=True)
@@ -79,7 +87,14 @@ async def myfavs_cb(_, cb: CallbackQuery):
         else:
             to_del = True
         await MakePages.favorite_page(
-            cb, collection, int(user_id), cb.from_user.mention, new_page, index, True, to_del
+            cb,
+            collection,
+            int(user_id),
+            cb.from_user.mention,
+            new_page,
+            index,
+            True,
+            to_del,
         )
 
 
@@ -103,3 +118,18 @@ async def delfavs_cb(_, cb: CallbackQuery):
             )
         else:
             await cb.answer("Not in your favorites!", show_alert=True)
+
+
+@hellbot.app.on_callback_query(filters.regex(r"favsplay") & ~Config.BANNED_USERS)
+async def favsplay_cb(_, cb: CallbackQuery):
+    _, action, user_id = cb.data.split("|")
+    if int(user_id) != cb.from_user.id:
+        return await cb.answer("This is not for you!", show_alert=True)
+    if action == "close":
+        await cb.message.delete()
+        return await cb.answer("Closed!", show_alert=True)
+    else:
+        all_tracks = await db.get_all_favorites(int(user_id))
+        video = True if action == "video" else False
+        await player.playlist(cb.message, cb.from_user.id, all_tracks, video)
+        

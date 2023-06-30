@@ -22,7 +22,7 @@ class Config(object):
     BOT_NAME = environ.get("BOT_NAME", "\x40\x4d\x75\x73\x69\x63\x5f\x48\x65\x6c\x6c\x42\x6f\x74")  # dont put fancy texts here.
     BOT_PIC = environ.get("BOT_PIC", "https://te.legra.ph/file/5d5642103804ae180e40b.jpg")          # put direct link to image here
     LYRICS_API = environ.get("LYRICS_API", None)            # from https://docs.genius.com/
-    MAX_FAVORITES = int(environ.get("MAX_FAVORITES", 50))  # max number of favorite tracks
+    MAX_FAVORITES = int(environ.get("MAX_FAVORITES", 30))  # max number of favorite tracks
     PLAY_LIMIT = int(environ.get("PLAY_LIMIT", 0))          # time in minutes. 0 for no limit
     PRIVATE_MODE = environ.get("PRIVATE_MODE", "off")       # "on" or "off" to enable/disable private mode
     SONG_LIMIT = int(environ.get("SONG_LIMIT", 0))          # time in minutes. 0 for no limit
@@ -39,6 +39,7 @@ class Config(object):
     DWL_DIR = "./downloads/"
     GOD_USERS = filters.user()
     PLAYER_CACHE = {}
+    QUEUE_CACHE =  {}
     SONG_CACHE = {}
     SUDO_USERS = filters.user()
 

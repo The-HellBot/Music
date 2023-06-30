@@ -27,6 +27,17 @@ class MakeButtons:
 
         return buttons
 
+    def playfavs_markup(self, user_id: int):
+        buttons = [
+            [
+                InlineKeyboardButton("Audio", callback_data=f"favsplay|audio|{user_id}"),
+                InlineKeyboardButton("Video", callback_data=f"favsplay|video|{user_id}"),
+            ],
+            [
+                InlineKeyboardButton("🗑", callback_data=f"favsplay|close|{user_id}"),
+            ]
+        ]
+
     async def favorite_markup(
         self, collection: list, user_id: int, page: int, index: int, db, delete: bool
     ):
@@ -36,6 +47,9 @@ class MakeButtons:
         if len(collection) != 1:
             nav_btns = [
                 [
+                    InlineKeyboardButton("Play Favorites ❤️", callback_data=f"myfavs|play|{user_id}|0|0"),
+                ],
+                [
                     InlineKeyboardButton("⪨", callback_data=f"myfavs|prev|{user_id}|{page}|{d}"),
                     InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}|{d}"),
                     InlineKeyboardButton("⪩", callback_data=f"myfavs|next|{user_id}|{page}|{d}"),
@@ -43,6 +57,9 @@ class MakeButtons:
             ]
         else:
             nav_btns = [
+                [
+                    InlineKeyboardButton("Play Favorites ❤️", callback_data=f"myfavs|play|{user_id}|0|0"),
+                ],
                 [
                     InlineKeyboardButton("🗑", callback_data=f"myfavs|close|{user_id}|{page}|{d}"),
                 ],
