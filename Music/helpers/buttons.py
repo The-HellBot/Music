@@ -215,6 +215,7 @@ class MakeButtons:
                 InlineKeyboardButton(text="Updates 📣", url="https://t.me/Its_HellBot"),
             ],
             [
+                InlineKeyboardButton(text="🔙", callback_data="help|start"),
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ]
         ]
@@ -264,6 +265,7 @@ class MakeButtons:
                 InlineKeyboardButton(text="➎ Owner", callback_data="help|owner"),
             ],
             [
+                InlineKeyboardButton(text="🔙", callback_data="help|start"),
                 InlineKeyboardButton(text="🗑", callback_data="close"),
             ],
         ]
