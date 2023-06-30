@@ -68,6 +68,10 @@ class HellMusic(PyTgCalls):
         pinged = await self.music.ping
         return pinged
 
+    async def played_time(self, chat_id: int) -> int:
+        played = await self.music.played_time(chat_id)
+        return played or 0
+
     async def vc_participants(self, chat_id: int):
         users = await self.music.get_participants(chat_id)
         return users
