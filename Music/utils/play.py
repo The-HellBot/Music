@@ -222,17 +222,18 @@ class Player:
     ):
         hell = await message.reply_text("Setting up favorites play ...")
         vc_type = "video" if video else "voice"
-        _queue = previously = count = failed = 0
+        count = failed = 0
         if await db.is_active_vc(message.chat.id):
             await hell.edit_text(
                 "This chat have an active vc. Adding your favorites in the queue... \n\n__This might take some time!__"
             )
-            previously = len(Queue.get_queue(message.chat.id))
+        previously = len(Queue.get_queue(message.chat.id))
         for i in collection:
             try:
                 data = (await ytube.get_data(i, True, 1))[0]
                 file_path = data["id"]
                 if count == 0 and previously == 0:
+                    LOGS.info("Playing first song")
                     file_path == await ytube.download(data["id"], True, video)
                     _queue = Queue.put_queue(
                         message.chat.id,
@@ -286,7 +287,6 @@ class Player:
                         except Exception:
                             pass
                     Config.PLAYER_CACHE[message.chat.id] = sent
-                    count += 1
                 else:
                     _queue = Queue.put_queue(
                         message.chat.id,
@@ -299,7 +299,7 @@ class Player:
                         vc_type,
                         False,
                     )
-                    count += 1
+                count += 1
             except Exception as e:
                 LOGS.error(str(e))
                 failed += 1
