@@ -12,6 +12,7 @@ from Music.core.clients import hellbot
 from Music.core.database import db
 from Music.core.decorators import UserWrapper
 from Music.core.users import user_data
+from Music.helpers.broadcast import Gcast
 from Music.helpers.formatters import formatter
 
 
@@ -268,3 +269,30 @@ async def sudoers_list(_, message: Message):
         await message.reply_text("No sudo users found.")
     else:
         await message.reply_text(text)
+
+
+@hellbot.app.on_message(filters.command("gcast") & Config.SUDO_USERS)
+async def gcast(_, message: Message):
+    if message.reply_to_message is None:
+        await message.reply_text("Reply to a message to brodcast it.")
+    else:
+        if len(message.command) == 1:
+            await message.reply_text(
+                "Where to gcast? \n\n"
+                "**With Forward Tag:** `/gcast chats` \n- `/gcast users` \n- `/gcast all`\n\n"
+                "**Without Forward Tag:** `/gcast chats copy` \n- `/gcast users copy` \n- `/gcast all copy`"
+            )
+            return
+        _list = message.text.split(" ")
+        if (_list[1]).lower() == "chats":
+            type = "chats"
+        elif (_list[1]).lower() == "users":
+            type = "users"
+        elif (_list[1]).lower() == "all":
+            type = "all"
+
+        copy = False
+        if len(_list) >= 3:
+            if (_list[2]).lower() == "copy":
+                copy = True
+        await Gcast.broadcast(message, type, copy)

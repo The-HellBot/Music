@@ -21,7 +21,6 @@ class Database(object):
         self.chats = self.db.chats
         self.favorites = self.db.favorites
         self.gban_db = self.db.gban_db
-        self.gcast = self.db.gcast
         self.songsdb = self.db.songsdb
         self.sudousers = self.db.sudousers
         self.users = self.db.users
