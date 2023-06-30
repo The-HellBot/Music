@@ -12,8 +12,8 @@ from aiohttp import client_exceptions
 from html_telegraph_poster import TelegraphPoster
 
 from config import Config
-from Music.version import __start_time__
 from Music.utils.exceptions import CarbonException
+from Music.version import __start_time__
 
 from .tools import colour, themes
 
@@ -193,7 +193,9 @@ class Formatters:
                     json=params,
                 )
             except client_exceptions.ClientConnectorError:
-                raise CarbonException("[CarbonException]: Carbon API is down or shifted to new domain")
+                raise CarbonException(
+                    "[CarbonException]: Carbon API is down or shifted to new domain"
+                )
             resp = await request.read()
             file_name = self.gen_key(f"carbon{user_id}", 4)
             with open(f"cache/{file_name}.jpg", "wb") as f:

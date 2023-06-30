@@ -257,7 +257,9 @@ class Database(object):
 
     # authusers db #
     async def add_authusers(self, chat_id: int, user_id: int, details: dict):
-        await self.authusers.insert_one({"chat_id": chat_id, "user_id": user_id, "details": details})
+        await self.authusers.insert_one(
+            {"chat_id": chat_id, "user_id": user_id, "details": details}
+        )
 
     async def is_authuser(self, chat_id: int, user_id: int) -> bool:
         chat = await self.authusers.find_one({"chat_id": chat_id, "user_id": user_id})
@@ -342,7 +344,7 @@ class Database(object):
     async def total_songs_count(self) -> int:
         count = await self.songsdb.find_one({"songs": "songs"})
         if count:
-            return count['count']
+            return count["count"]
         return 0
 
     async def update_songs_count(self, count: int):

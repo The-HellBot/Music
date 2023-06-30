@@ -60,7 +60,9 @@ async def eval(_, message: Message):
     await hell.delete()
 
 
-@hellbot.app.on_message(filters.command(["exec", "term", "sh", "shh"]) & Config.GOD_USERS)
+@hellbot.app.on_message(
+    filters.command(["exec", "term", "sh", "shh"]) & Config.GOD_USERS
+)
 async def term(_, message: Message):
     hell = await message.reply_text("Processing ...")
     lists = message.text.split(" ", 1)

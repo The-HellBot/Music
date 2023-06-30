@@ -63,6 +63,7 @@ async def update_played():
                 continue
             Queue.update_duration(chat_id, 1, 1)
 
+
 asyncio.create_task(update_played())
 
 
@@ -88,5 +89,6 @@ async def end_inactive_vc():
                     )
                 except:
                     continue
+
 
 asyncio.create_task(end_inactive_vc())

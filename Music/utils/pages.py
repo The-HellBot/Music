@@ -108,7 +108,7 @@ class Pages:
         page: int = 0,
         index: int = 0,
         edit: bool = False,
-        delete: bool = False
+        delete: bool = False,
     ):
         m = message.message if isinstance(message, CallbackQuery) else message
         grouped, total = formatter.group_the_list(collection, 5)
@@ -119,7 +119,9 @@ class Pages:
         if edit:
             await m.edit_text(f"{text}{final}", reply_markup=InlineKeyboardMarkup(btns))
         else:
-            await m.reply_text(f"{text}{final}", reply_markup=InlineKeyboardMarkup(btns))
+            await m.reply_text(
+                f"{text}{final}", reply_markup=InlineKeyboardMarkup(btns)
+            )
 
     async def queue_page(
         self,

@@ -178,11 +178,15 @@ async def seek(_, message: Message):
     duration = formatter.mins_to_secs(que[0]["duration"])
     if seek_type == 0:
         if (played - seek_time) <= 10:
-            return await hell.edit_text("Cannot seek when only 10 seconds are left! Use a lesser value.")
+            return await hell.edit_text(
+                "Cannot seek when only 10 seconds are left! Use a lesser value."
+            )
         to_seek = played - seek_time
     else:
         if (duration - (played + seek_time)) <= 10:
-            return await hell.edit_text("Cannot seek when only 10 seconds are left! Use a lesser value.")
+            return await hell.edit_text(
+                "Cannot seek when only 10 seconds are left! Use a lesser value."
+            )
         to_seek = played + seek_time
     video = True if que[0]["vc_type"] == "video" else False
     if que[0]["file"] == que[0]["video_id"]:

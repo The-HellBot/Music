@@ -61,7 +61,18 @@ class UserModel:
             mention,
         ) = context.values()
         return self.stats.format(
-            users, chats, gbans, blocked, songs, active, core, cpu, disk, ram, uptime, mention
+            users,
+            chats,
+            gbans,
+            blocked,
+            songs,
+            active,
+            core,
+            cpu,
+            disk,
+            ram,
+            uptime,
+            mention,
         )
 
 

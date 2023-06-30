@@ -2,12 +2,12 @@ import os
 
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import InlineKeyboardMarkup, Message
-from Music.core.logger import LOGS
 
 from config import Config
 from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
+from Music.core.logger import LOGS
 from Music.helpers.buttons import Buttons
 from Music.helpers.strings import TEXTS
 
@@ -257,7 +257,9 @@ class Player:
                         os.remove(file_path)
                         os.remove(photo)
                         return
-                    btns = Buttons.player_markup(message.chat.id, data["id"], hellbot.app.username)
+                    btns = Buttons.player_markup(
+                        message.chat.id, data["id"], hellbot.app.username
+                    )
                     if photo:
                         sent = await hellbot.app.send_photo(
                             message.chat.id,
@@ -305,7 +307,9 @@ class Player:
             except Exception as e:
                 LOGS.error(str(e))
                 failed += 1
-        await hell.edit_text(f"**Added all tracks to queue!** \n\n**Total tracks: `{count}`** \n**Failed: `{failed}`**")
+        await hell.edit_text(
+            f"**Added all tracks to queue!** \n\n**Total tracks: `{count}`** \n**Failed: `{failed}`**"
+        )
 
 
 player = Player()

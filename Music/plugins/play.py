@@ -4,7 +4,6 @@ from pyrogram import filters
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from config import Config
-from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
 from Music.core.decorators import AuthWrapper, PlayWrapper, UserWrapper, check_mode
@@ -135,7 +134,9 @@ async def play_music(_, message: Message, context: dict):
     await player.play(hell, context)
 
 
-@hellbot.app.on_message(filters.command(["current", "playing"]) & filters.group & ~Config.BANNED_USERS)
+@hellbot.app.on_message(
+    filters.command(["current", "playing"]) & filters.group & ~Config.BANNED_USERS
+)
 @UserWrapper
 async def playing(_, message: Message):
     chat_id = message.chat.id
@@ -154,9 +155,13 @@ async def playing(_, message: Message):
         que["user"],
     )
     if photo:
-        sent = await message.reply_photo(photo, caption=to_send, reply_markup=InlineKeyboardMarkup(btns))
+        sent = await message.reply_photo(
+            photo, caption=to_send, reply_markup=InlineKeyboardMarkup(btns)
+        )
     else:
-        sent = await message.reply_text(to_send, reply_markup=InlineKeyboardMarkup(btns))
+        sent = await message.reply_text(
+            to_send, reply_markup=InlineKeyboardMarkup(btns)
+        )
     previous = Config.PLAYER_CACHE.get(chat_id)
     if previous:
         try:
@@ -166,7 +171,9 @@ async def playing(_, message: Message):
     Config.PLAYER_CACHE[chat_id] = sent
 
 
-@hellbot.app.on_message(filters.command(["queue", "que", "q"]) & filters.group & ~Config.BANNED_USERS)
+@hellbot.app.on_message(
+    filters.command(["queue", "que", "q"]) & filters.group & ~Config.BANNED_USERS
+)
 @UserWrapper
 async def queued_tracks(_, message: Message):
     hell = await message.reply_text("Getting Queue...")

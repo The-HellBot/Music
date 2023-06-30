@@ -5,7 +5,7 @@ from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import ChatAdminRequired, UserAlreadyParticipant, UserNotParticipant
 from pyrogram.types import InlineKeyboardMarkup
 from pytgcalls import PyTgCalls, StreamType
-from pytgcalls.exceptions import NoActiveGroupCall, AlreadyJoinedError
+from pytgcalls.exceptions import AlreadyJoinedError, NoActiveGroupCall
 from pytgcalls.types import JoinedGroupCallParticipant, LeftGroupCallParticipant, Update
 from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped
 from pytgcalls.types.input_stream.quality import MediumQualityAudio, MediumQualityVideo
@@ -42,7 +42,9 @@ class HellMusic(PyTgCalls):
             if len(users) == 1:
                 get = await hellbot.app.get_users(users[0])
                 if get.id == hellbot.user.id:
-                    db.inactive[chat_id] = datetime.datetime.now() + datetime.timedelta(minutes=5)
+                    db.inactive[chat_id] = datetime.datetime.now() + datetime.timedelta(
+                        minutes=5
+                    )
             else:
                 db.inactive[chat_id] = {}
 
@@ -217,7 +219,7 @@ class HellMusic(PyTgCalls):
                 await db.update_user(user_id, "songs_played", 1)
                 await hellbot.logit(
                     f"play {vc_type}",
-                    f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}"
+                    f"Song: `{title}` \nChat: `{chat_id}` \nUser: {user}",
                 )
             except Exception as e:
                 raise ChangeVCException(f"[ChangeVCException]: {e}")
@@ -250,7 +252,9 @@ class HellMusic(PyTgCalls):
                 await self.leave_vc(chat_id)
                 raise JoinVCException(f"[JoinVCException]: {e}")
         except AlreadyJoinedError:
-            raise UserException(f"[UserException]: Already joined in the voice chat. If this is a mistake then try to restart the voice chat.")
+            raise UserException(
+                f"[UserException]: Already joined in the voice chat. If this is a mistake then try to restart the voice chat."
+            )
         except Exception as e:
             raise UserException(f"[UserException]: {e}")
 
@@ -268,7 +272,10 @@ class HellMusic(PyTgCalls):
                 raise UserException(
                     f"[UserException]: Bot is not admin in chat {chat_id}"
                 )
-            if get.status == ChatMemberStatus.RESTRICTED or get.status == ChatMemberStatus.BANNED:
+            if (
+                get.status == ChatMemberStatus.RESTRICTED
+                or get.status == ChatMemberStatus.BANNED
+            ):
                 raise UserException(
                     f"[UserException]: Assistant is restricted or banned in chat {chat_id}"
                 )

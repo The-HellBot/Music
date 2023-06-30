@@ -63,7 +63,9 @@ async def auth(_, message: Message):
             await message.reply_text("This user is already Authorized in this chat!")
 
 
-@hellbot.app.on_message(filters.command("unauth") & filters.group & ~Config.BANNED_USERS)
+@hellbot.app.on_message(
+    filters.command("unauth") & filters.group & ~Config.BANNED_USERS
+)
 @check_mode
 @AdminWrapper
 async def unauth(_, message: Message):
@@ -91,7 +93,9 @@ async def unauth(_, message: Message):
             await message.reply_text("This user was not Authorized in this chat!")
 
 
-@hellbot.app.on_message(filters.command("authlist") & filters.group & ~Config.BANNED_USERS)
+@hellbot.app.on_message(
+    filters.command("authlist") & filters.group & ~Config.BANNED_USERS
+)
 @check_mode
 async def authusers(_, message: Message):
     all_auths = await db.get_all_authusers(message.chat.id)
@@ -118,7 +122,9 @@ async def authusers(_, message: Message):
         await MakePages.authusers_page(hell, rand_key, 0, 0, True)
 
 
-@hellbot.app.on_message(filters.command("authchat") & filters.group & ~Config.BANNED_USERS)
+@hellbot.app.on_message(
+    filters.command("authchat") & filters.group & ~Config.BANNED_USERS
+)
 @AdminWrapper
 async def settings(_, message: Message):
     is_auth = await db.is_authchat(message.chat.id)
@@ -131,11 +137,15 @@ async def settings(_, message: Message):
             await message.reply_text("AuthChat is already On!")
         else:
             await db.add_authchat(message.chat.id)
-            await message.reply_text("**Turned On AuthChat!** \n\nNow all users can use bot commands in this chat!")
+            await message.reply_text(
+                "**Turned On AuthChat!** \n\nNow all users can use bot commands in this chat!"
+            )
     elif message.command[1] == "off":
         if is_auth:
             await db.remove_authchat(message.chat.id)
-            await message.reply_text("**Turned Off AuthChat!** \n\nNow only Authorized users can use bot commands in this chat!")
+            await message.reply_text(
+                "**Turned Off AuthChat!** \n\nNow only Authorized users can use bot commands in this chat!"
+            )
         else:
             await message.reply_text("AuthChat is already Off!")
     else:
@@ -161,4 +171,3 @@ async def activevc_cb(_, cb: CallbackQuery):
             page = int(page) + 1 if action == "next" else int(page) - 1
         index = page * 6
         await MakePages.authusers_page(cb, rand_key, page, index, True)
-

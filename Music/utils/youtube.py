@@ -5,9 +5,8 @@ import time
 import requests
 import yt_dlp
 from lyricsgenius import Genius
-from youtubesearchpython.__future__ import VideosSearch
-
 from pyrogram.types import CallbackQuery
+from youtubesearchpython.__future__ import VideosSearch
 
 from config import Config
 from Music.core.clients import hellbot

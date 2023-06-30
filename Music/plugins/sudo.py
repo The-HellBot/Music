@@ -49,7 +49,9 @@ async def auto_end_stream(_, message: Message):
 async def gban(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:
-            return await message.reply_text("Reply to a user's message or give their id.")
+            return await message.reply_text(
+                "Reply to a user's message or give their id."
+            )
         user = await hellbot.app.get_users(message.command[1])
         user_id = user.id
         mention = user.mention
@@ -59,12 +61,16 @@ async def gban(_, message: Message):
     if user_id == message.from_user.id:
         return await message.reply_text(f"You can't {message.command[0]} yourself.")
     elif user_id == hellbot.app.id:
-        return await message.reply_text(f"Yo! I'm not stupid to {message.command[0]} myself.")
+        return await message.reply_text(
+            f"Yo! I'm not stupid to {message.command[0]} myself."
+        )
     elif user_id in Config.SUDO_USERS:
         return await message.reply_text(f"I can't {message.command[0]} my sudo users.")
     is_gbanned = await db.is_gbanned_user(user_id)
     if is_gbanned:
-        return await message.reply_text(f"{mention} is already in {message.command[0]} list.")
+        return await message.reply_text(
+            f"{mention} is already in {message.command[0]} list."
+        )
     if user_id not in Config.BANNED_USERS:
         Config.BANNED_USERS.add(user_id)
     if message.command[0] == "gban":
@@ -100,7 +106,9 @@ async def gban(_, message: Message):
 async def gungabn(_, message: Message):
     if not message.reply_to_message:
         if len(message.command) != 2:
-            return await message.reply_text("Reply to a user's message or give their id.")
+            return await message.reply_text(
+                "Reply to a user's message or give their id."
+            )
         user = await hellbot.app.get_users(message.command[1])
         user_id = user.id
         mention = user.mention
@@ -109,7 +117,9 @@ async def gungabn(_, message: Message):
         mention = message.reply_to_message.from_user.mention
     is_gbanned = await db.is_gbanned_user(user_id)
     if not is_gbanned:
-        return await message.reply_text(f"{mention} is not in {message.command[0][2:]} list.")
+        return await message.reply_text(
+            f"{mention} is not in {message.command[0][2:]} list."
+        )
     if user_id in Config.BANNED_USERS:
         Config.BANNED_USERS.remove(user_id)
     if message.command[0] == "ungban":
@@ -258,4 +268,3 @@ async def sudoers_list(_, message: Message):
         await message.reply_text("No sudo users found.")
     else:
         await message.reply_text(text)
-

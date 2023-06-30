@@ -580,10 +580,14 @@ class Thumbnail:
                 width=border_size,
             )
 
-            blurred_border_image = border_image.filter(ImageFilter.GaussianBlur(radius=10))
+            blurred_border_image = border_image.filter(
+                ImageFilter.GaussianBlur(radius=10)
+            )
             border_brightness = ImageEnhance.Brightness(blurred_border_image)
             border_image = border_brightness.enhance(1.5)
-            result_image = Image.alpha_composite(overlay_image.convert("RGBA"), blurred_border_image)
+            result_image = Image.alpha_composite(
+                overlay_image.convert("RGBA"), blurred_border_image
+            )
             result_image = result_image.filter(ImageFilter.SMOOTH)
 
             random.seed(0)

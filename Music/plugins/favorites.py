@@ -10,8 +10,8 @@ from Music.core.decorators import UserWrapper, check_mode
 from Music.helpers.buttons import Buttons
 from Music.helpers.formatters import formatter
 from Music.utils.pages import MakePages
-from Music.utils.youtube import ytube
 from Music.utils.play import player
+from Music.utils.youtube import ytube
 
 
 @hellbot.app.on_message(
