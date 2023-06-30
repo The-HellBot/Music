@@ -171,11 +171,14 @@ class Player:
         que = Queue.get_current(chat_id)
         if not que:
             return await message.edit_text("Nothing is playing to replay")
+        video = True if que["vc_type"] == "video" else False
         photo = thumb.generate((359), (297, 302), que["video_id"])
+        if que["file"] == que["video_id"]:
+            file_path = await ytube.download(que["video_id"], True, video)
+        else:
+            file_path = que["file"]
         try:
-            await hellmusic.replay_vc(
-                chat_id, que["file"], True if que["vc_type"] == "video" else False
-            )
+            await hellmusic.replay_vc(chat_id, file_path, video)
         except Exception as e:
             await message.delete()
             await message.reply_text(str(e))

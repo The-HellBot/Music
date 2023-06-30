@@ -202,4 +202,4 @@ async def queued_tracks_cb(_, cb: CallbackQuery):
     else:
         new_page = key + 1 if action == "next" else key - 1
     index = new_page * 5
-    await MakePages.queue_page(cb, collection, new_page, index, True)
+    await MakePages.queue_page(cb.message, collection, new_page, index, True)

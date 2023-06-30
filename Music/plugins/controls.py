@@ -9,6 +9,7 @@ from Music.core.decorators import AuthWrapper, check_mode
 from Music.helpers.formatters import formatter
 from Music.utils.play import player
 from Music.utils.queue import Queue
+from Music.utils.youtube import ytube
 
 
 @hellbot.app.on_message(
@@ -177,19 +178,24 @@ async def seek(_, message: Message):
     duration = formatter.mins_to_secs(que[0]["duration"])
     if seek_type == 0:
         if (played - seek_time) <= 10:
-            return await hell.edit_text("Cannot seek beyond 10 seconds!")
+            return await hell.edit_text("Cannot seek when only 10 seconds are left! Use a lesser value.")
         to_seek = played - seek_time
     else:
         if (duration - (played + seek_time)) <= 10:
-            return await hell.edit_text("Cannot seek beyond 10 seconds!")
+            return await hell.edit_text("Cannot seek when only 10 seconds are left! Use a lesser value.")
         to_seek = played + seek_time
+    video = True if que[0]["vc_type"] == "video" else False
+    if que[0]["file"] == que[0]["video_id"]:
+        file_path = await ytube.download(que[0]["video_id"], True, video)
+    else:
+        file_path = que[0]["file"]
     try:
         context = {
             "chat_id": que[0]["chat_id"],
-            "file": que[0]["file"],
+            "file": file_path,
             "duration": que[0]["duration"],
             "seek": formatter.secs_to_mins(to_seek),
-            "video": True if que[0]["vc_type"] == "video" else False,
+            "video": video,
         }
         await hellmusic.seek_vc(context)
     except:

@@ -45,8 +45,11 @@ class HellMusic(PyTgCalls):
                 db.inactive[chat_id] = {}
 
     def autoclean(self, file: str):
+        # dirty way. but works :)
         try:
             os.remove(file)
+            os.remove(f"downloads/{file}.webm")
+            os.remove(f"downloads/{file}.mp4")
         except:
             pass
 

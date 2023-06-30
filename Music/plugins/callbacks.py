@@ -11,6 +11,7 @@ from Music.helpers.strings import TEXTS
 from Music.utils.admins import get_auth_users
 from Music.utils.play import player
 from Music.utils.queue import Queue
+from Music.utils.youtube import ytube
 
 
 @hellbot.app.on_callback_query(filters.regex(r"close") & ~Config.BANNED_USERS)
@@ -154,13 +155,18 @@ async def controler_cb(_, cb: CallbackQuery):
         if (played - seek_time) <= 10:
             return await cb.answer("Cannot seek beyond 10 seconds!", show_alert=True)
         to_seek = played - seek_time
+        video = True if que[0]["vc_type"] == "video" else False
+        if que[0]["file"] == que[0]["video_id"]:
+            file_path = await ytube.download(que[0]["video_id"], True, video)
+        else:
+            file_path = que[0]["file"]
         try:
             context = {
                 "chat_id": que[0]["chat_id"],
-                "file": que[0]["file"],
+                "file": file_path,
                 "duration": que[0]["duration"],
                 "seek": formatter.secs_to_mins(to_seek),
-                "video": True if que[0]["vc_type"] == "video" else False,
+                "video": video,
             }
             await hellmusic.seek_vc(context)
         except:
