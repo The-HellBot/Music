@@ -72,7 +72,7 @@ async def ping(_, message: Message):
     hell = await message.reply_text("Pong!")
     calls_ping = await hellmusic.ping()
     stats = await formatter.system_stats()
-    end_time = (datetime.datetime.now() - start_time).seconds / 60
+    end_time = (datetime.datetime.now() - start_time).microseconds / 1000
     await hell.edit_text(
         TEXTS.PING_REPLY.format(end_time, stats["uptime"], calls_ping),
         disable_web_page_preview=True,

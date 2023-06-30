@@ -37,6 +37,7 @@ class MakeButtons:
                 InlineKeyboardButton("🗑", callback_data=f"favsplay|close|{user_id}"),
             ]
         ]
+        return buttons
 
     async def favorite_markup(
         self, collection: list, user_id: int, page: int, index: int, db, delete: bool

@@ -18,17 +18,11 @@ async def start_bot():
 
     LOGS.info("All Checks Completed! Let's Start Hell-Music...")
 
-    try:
-        await user_data.setup()
-    except:
-        pass
-
+    await user_data.setup()
     await hellbot.start()
     await hellmusic.start()
     await hellmusic.decorators()
-
-    if Config.DATABASE_URL:
-        await db.connect()
+    await db.connect()
 
     try:
         if Config.BOT_PIC:
@@ -65,9 +59,9 @@ async def start_bot():
 
     await hellbot.app.send_message(
         Config.LOGGER_ID,
-        f"#STOP \n\n**Mello [{hmusic_version}] is now offline!**",
+        f"#STOP \n\n**Hell-Music [{hmusic_version}] is now offline!**",
     )
-    LOGS.info(f"Mello [{hmusic_version}] is now offline!")
+    LOGS.info(f"Hell-Music [{hmusic_version}] is now offline!")
 
 
 if __name__ == "__main__":
