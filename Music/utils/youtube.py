@@ -163,7 +163,7 @@ class YouTube:
             chat = message.message.chat.title or message.message.chat.first_name
             await hellbot.logit(
                 "Video" if video else "Audio",
-                f"{message.from_user.mention} uploaded a song named [{track['title']}]({track['link']}) in {chat} (`{message.message.chat.id}`)",
+                f"**⤷ User:** {message.from_user.mention} [`{message.from_user.id}`]\n**⤷ Chat:** {chat} [`{message.message.chat.id}`]\n**⤷ Link:** [{track['title']}]({track['link']})",
             )
             await hell.delete()
         except Exception as e:

@@ -67,7 +67,7 @@ async def play_music(_, message: Message, context: dict):
             return await hell.edit(
                 f"Video file size exceeds the size limit of {formatter.bytes_to_mb(Config.TG_VIDEO_SIZE_LIMIT)}MB."
             )
-        time_check = formatter.check_limit(tgaud.duration, play_limit)
+        time_check = formatter.check_limit(tgvid.duration, play_limit)
         if not time_check:
             return await hell.edit(
                 f"Audio duration limit of {Config.PLAY_LIMIT} minutes exceeded."

@@ -67,7 +67,7 @@ async def lyrics(_, message: Message):
         chat = message.chat.title or message.chat.first_name
         await hellbot.logit(
             "lyrics",
-            f"{message.from_user.mention} searched a song lyrics [{title}] in {chat} (`{message.chat.id}`)",
+            f"**⤷ Lyrics:** `{title}`\n**⤷ Chat:** {chat} [`{message.chat.id}`]\n**⤷ User:** {message.from_user.mention} [`{message.from_user.id}`]",
         )
     else:
         await hell.edit_text("Unexpected Error Occured.")

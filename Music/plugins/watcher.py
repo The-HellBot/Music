@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import filters
 from pyrogram.types import Message
 
@@ -9,6 +10,8 @@ from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
 from Music.core.logger import LOGS
+from Music.helpers.buttons import Buttons
+from Music.utils.leaderboard import leaders
 from Music.utils.queue import Queue
 
 
@@ -21,7 +24,7 @@ async def new_users(_, msg: Message):
         if Config.LOGGER_ID:
             await hellbot.logit(
                 "newuser",
-                f"**User:** {msg.from_user.mention(style='md')}\n**ID:** `{msg.from_user.id}`\n__Started @{BOT_USERNAME} !!__",
+                f"**⤷ User:** {msg.from_user.mention(style='md')}\n**⤷ ID:** `{msg.from_user.id}`\n__⤷ Started @{BOT_USERNAME} !!__",
             )
         else:
             LOGS.info(
@@ -39,7 +42,7 @@ async def new_users(_, msg: Message):
         if Config.LOGGER_ID:
             await hellbot.logit(
                 "newchat",
-                f"**Chat Title:** {msg.chat.title} \n**Chat UN:** @{msg.chat.username or None}) \n**Chat ID:** `{chat_id}` \n__ADDED @{BOT_USERNAME} !!__",
+                f"**⤷ Chat Title:** {msg.chat.title} \n**⤷ Chat UN:** @{msg.chat.username or None}) \n**⤷ Chat ID:** `{chat_id}` \n__⤷ ADDED @{BOT_USERNAME} !!__",
             )
         else:
             LOGS.info(
@@ -92,3 +95,19 @@ async def end_inactive_vc():
 
 
 asyncio.create_task(end_inactive_vc())
+
+
+async def leaderboard():
+    context = {
+        "mention": hellbot.app.mention,
+        "username": hellbot.app.username,
+        "client": hellbot.app,
+    }
+    text = await leaders.generate(context)
+    btns = Buttons.close_markup()
+    await leaders.broadcast(hellbot, text, btns)
+
+
+scheduler = AsyncIOScheduler()
+scheduler.add_job(leaderboard, "cron", hour=3, minute=0, timezone=Config.TZ)
+scheduler.start()
