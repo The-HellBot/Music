@@ -28,6 +28,13 @@ class TEXTS:
         "**♪ Duration:** __{2}__\n"
         "**♪ Auxed By:** {3}"
     )
+    PLAYING2 = (
+        "**❆** {0}\n\n"
+        "**♪ Song Name:** __{1}__\n"
+        "**♪ Duration:** __{2}__\n"
+        "**♪ Auxed By:** {3}\n\n"
+        "**Played:** __{4}__\n"
+    )
     PROFILE = (
         "**{0}\nUser Profile**\n\n"
         "**💬 Name:** {1}\n"
@@ -97,6 +104,8 @@ class TEXTS:
         "    __Replay from the beginning of the playing track in the voice chat.__\n\n"
         "**» /seek**\n"
         "    __Seek the playing track in the voice chat. Use [/seek 10] to seek forward and [/seek-10] to seek backwards.__\n\n"
+        "**» /clean**\n"
+        "    __Clear the queue when bot seems to be bugged.__\n\n"
     )
     HELP_USER = (
         "**Normal Users Commands:**\n\n"

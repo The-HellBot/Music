@@ -4,6 +4,7 @@ from pyrogram import filters
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from config import Config
+from Music.core.calls import hellmusic
 from Music.core.clients import hellbot
 from Music.core.database import db
 from Music.core.decorators import AuthWrapper, PlayWrapper, UserWrapper, check_mode
@@ -144,14 +145,16 @@ async def playing(_, message: Message):
     que = Queue.get_current(chat_id)
     if not que:
         return await message.reply_text("Nothing is playing here.")
-    to_send = TEXTS.PLAYING.format(
+    photo = thumb.generate((359), (297, 302), que["video_id"])
+    btns = Buttons.player_markup(chat_id, que["video_id"], hellbot.app.username)
+    played = await hellmusic.played_time(chat_id)
+    to_send = TEXTS.PLAYING2.format(
         hellbot.app.mention,
         que["title"],
         que["duration"],
         que["user"],
+        played,
     )
-    photo = thumb.generate((359), (297, 302), que["video_id"])
-    btns = Buttons.player_markup(chat_id, que["video_id"], hellbot.app.username)
     if photo:
         sent = await message.reply_photo(photo, caption=to_send, reply_markup=InlineKeyboardMarkup(btns))
     else:

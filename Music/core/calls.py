@@ -36,11 +36,13 @@ class HellMusic(PyTgCalls):
             Queue.clear_queue(chat_id)
         await db.remove_active_vc(chat_id)
 
-    async def autoend(self, chat_id: int, users: int):
+    async def autoend(self, chat_id: int, users: list):
         autoend = await db.get_autoend()
         if autoend:
-            if users == 1:
-                db.inactive[chat_id] = datetime.datetime.now() + datetime.timedelta(minutes=5)
+            if len(users) == 1:
+                get = await hellbot.app.get_users(users[0])
+                if get.id == hellbot.user.id:
+                    db.inactive[chat_id] = datetime.datetime.now() + datetime.timedelta(minutes=5)
             else:
                 db.inactive[chat_id] = {}
 
@@ -83,8 +85,11 @@ class HellMusic(PyTgCalls):
         await self.music.resume_stream(chat_id)
 
     async def leave_vc(self, chat_id: int, force: bool = False):
-        await self.__clean__(chat_id, force)
-        await self.music.leave_group_call(chat_id)
+        try:
+            await self.__clean__(chat_id, force)
+            await self.music.leave_group_call(chat_id)
+        except:
+            pass
         previous = Config.PLAYER_CACHE.get(chat_id)
         if previous:
             try:
@@ -236,13 +241,15 @@ class HellMusic(PyTgCalls):
             try:
                 await self.join_gc(chat_id)
             except Exception as e:
+                await self.leave_vc(chat_id)
                 raise JoinGCException(e)
             try:
                 await self.music.join_group_call(
                     chat_id, input_stream, stream_type=StreamType().pulse_stream
                 )
             except Exception as e:
-                raise JoinVCException(f"[JoinVCException]: {e}")    
+                await self.leave_vc(chat_id)
+                raise JoinVCException(f"[JoinVCException]: {e}")
         except AlreadyJoinedError:
             raise UserException(f"[UserException]: Already joined in the voice chat. If this is a mistake then try to restart the voice chat.")
         except Exception as e:
@@ -251,7 +258,8 @@ class HellMusic(PyTgCalls):
         await db.add_active_vc(chat_id, "video" if video else "voice")
         self.audience[chat_id] = {}
         users = await self.vc_participants(chat_id)
-        await self.autoend(chat_id, len(users))
+        user_ids = [user.user_id for user in users]
+        await self.autoend(chat_id, user_ids)
 
     async def join_gc(self, chat_id: int):
         try:
@@ -325,8 +333,9 @@ class HellMusic(PyTgCalls):
                 chat_id = update.chat_id
                 audience = self.audience.get(chat_id)
                 users = await self.vc_participants(chat_id)
+                user_ids = [user.user_id for user in users]
                 if not audience:
-                    await self.autoend(chat_id, len(users))
+                    await self.autoend(chat_id, user_ids)
                 else:
                     new = (
                         audience + 1
@@ -334,7 +343,7 @@ class HellMusic(PyTgCalls):
                         else audience - 1
                     )
                     self.audience[chat_id] = new
-                    await self.autoend(chat_id, len(users))
+                    await self.autoend(chat_id, user_ids)
             except:
                 return
 
