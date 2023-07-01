@@ -11,6 +11,7 @@ class UserModel:
             self.get_user_level_symbol(context["songs_played"]),
             context["mention"],
             context["id"],
+            context["user_type"],
             self.get_user_level(context["songs_played"]),
             context["songs_played"],
             context["join_date"],

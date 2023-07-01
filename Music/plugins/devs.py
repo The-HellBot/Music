@@ -11,7 +11,14 @@ from pyrogram.types import Message
 from config import Config, all_vars
 from Music.core.clients import hellbot
 from Music.core.database import db
-from Music.helpers.tools import aexec
+
+
+async def aexec(code, client, message):
+    exec(
+        "async def __aexec(client, message): "
+        + "".join(f"\n {l_}" for l_ in code.split("\n"))
+    )
+    return await locals()["__aexec"](client, message)
 
 
 @hellbot.app.on_message(filters.command(["eval", "run"]) & Config.GOD_USERS)

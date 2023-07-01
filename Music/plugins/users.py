@@ -8,6 +8,7 @@ from Music.core.decorators import UserWrapper, check_mode
 from Music.helpers.buttons import Buttons
 from Music.helpers.formatters import formatter
 from Music.helpers.users import MusicUser
+from Music.utils.admins import get_user_type
 from Music.utils.leaderboard import leaders
 
 
@@ -30,6 +31,7 @@ async def user_profile(_, message: Message):
         "mention": message.from_user.mention,
         "songs_played": user["songs_played"],
         "join_date": user["join_date"],
+        "user_type": get_user_type(message.chat.id, message.from_user.id),
     }
     await message.reply_text(
         MusicUser.get_profile_text(context, hellbot.app.mention),

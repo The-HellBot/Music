@@ -41,10 +41,11 @@ class TEXTS:
         "**{0}\nUser Profile**\n\n"
         "**💬 Name:** {1}\n"
         "**💠 ID:** `{2}`\n"
-        "**⚜️ Level:** __{3}__\n"
-        "**🎶 Songs Played:** __{4}__\n"
-        "**〥 Joined Since:** __{5}__\n\n"
-        "**❆** {6}"
+        "**📝 User Type:** __{3}__\n"
+        "**⚜️ Level:** __{4}__\n"
+        "**🎶 Songs Played:** __{5}__\n"
+        "**〥 Joined Since:** __{6}__\n\n"
+        "**❆** {7}"
     )
     QUEUE = (
         "**Added to Queue (#{0})** \n\n"

@@ -1,5 +1,4 @@
 import datetime
-import os
 import random
 import re
 import string
@@ -8,26 +7,15 @@ import time
 import aiohttp
 import psutil
 import pytz
-from aiohttp import client_exceptions
 from html_telegraph_poster import TelegraphPoster
 
 from config import Config
-from Music.utils.exceptions import CarbonException
 from Music.version import __start_time__
-
-from .tools import colour, themes
 
 
 class Formatters:
     def __init__(self) -> None:
         self.time_zone = pytz.timezone(Config.TZ)
-        self.carb_font = "JetBrains Mono"
-        self.carb_lang = "auto"
-        self.drop_shadow = True
-        self.drop_shadow_blur = "68px"
-        self.drop_shadow_offset = "20px"
-        self.watermark = False
-        self.width_adjustment = True
 
     def check_limit(self, check: int, config: int) -> bool:
         if config == 0:
@@ -74,18 +62,6 @@ class Formatters:
         ping_time += ":".join(time_list)
         return ping_time
 
-    def get_local_time(self) -> str:
-        time_now = (
-            datetime.datetime.now().astimezone(self.time_zone).strftime("%H:%M:%S")
-        )
-        return time_now
-
-    def get_local_date(self) -> str:
-        date_now = (
-            datetime.datetime.now().astimezone(self.time_zone).strftime("%d/%m/%Y")
-        )
-        return date_now
-
     def bytes_to_mb(self, size: int) -> int:
         mega_bytes = int(round(size / 1024 / 1024, 2))
         return mega_bytes
@@ -104,14 +80,6 @@ class Formatters:
         if length:
             kbs = len(kbs)
         return kbs, total
-
-    def check_duration(self, duration: str, limit: str) -> bool:
-        duration = self.mins_to_secs(duration)
-        limit = self.mins_to_secs(limit)
-        if duration > limit:
-            return False
-        else:
-            return True
 
     async def system_stats(self) -> dict:
         bot_uptime = int(time.time() - __start_time__)
@@ -170,37 +138,6 @@ class Formatters:
             return
         link = BASE + resp["message"]
         return link
-
-    async def carbon(self, text: str, user_id: int):
-        async with aiohttp.ClientSession(
-            headers={"Content-Type": "application/json"},
-        ) as session:
-            params = {
-                "code": text,
-            }
-            params["backgroundColor"] = random.choice(colour)
-            params["theme"] = random.choice(themes)
-            params["dropShadow"] = self.drop_shadow
-            params["dropShadowOffsetY"] = self.drop_shadow_offset
-            params["dropShadowBlurRadius"] = self.drop_shadow_blur
-            params["fontFamily"] = self.carb_font
-            params["language"] = self.carb_lang
-            params["watermark"] = self.watermark
-            params["widthAdjustment"] = self.width_adjustment
-            try:
-                request = await session.post(
-                    "https://carbonara.solopov.dev/api/cook",
-                    json=params,
-                )
-            except client_exceptions.ClientConnectorError:
-                raise CarbonException(
-                    "[CarbonException]: Carbon API is down or shifted to new domain"
-                )
-            resp = await request.read()
-            file_name = self.gen_key(f"carbon{user_id}", 4)
-            with open(f"cache/{file_name}.jpg", "wb") as f:
-                f.write(resp)
-            return os.path.realpath(f.name)
 
 
 formatter = Formatters()
