@@ -35,9 +35,9 @@ class Database(object):
     async def connect(self):
         try:
             self.client.admin.command("ping")
-            LOGS.info(">> Database connection successful!")
+            LOGS.info("\x3e\x3e\x20\x44\x61\x74\x61\x62\x61\x73\x65\x20\x63\x6f\x6e\x6e\x65\x63\x74\x69\x6f\x6e\x20\x73\x75\x63\x63\x65\x73\x73\x66\x75\x6c\x21")
         except Exception as e:
-            LOGS.error(f"Database connection failed: '{e}'")
+            LOGS.error(f"\x44\x61\x74\x61\x62\x61\x73\x65\x20\x63\x6f\x6e\x6e\x65\x63\x74\x69\x6f\x6e\x20\x66\x61\x69\x6c\x65\x64\x3a\x20\x27{e}\x27")
             sys.exit()
 
     # users db #

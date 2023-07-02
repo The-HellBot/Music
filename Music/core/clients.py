@@ -26,7 +26,7 @@ class HellClient(Client):
         )
 
     async def start(self):
-        LOGS.info(">> Booting up HellMusic...")
+        LOGS.info("\x3e\x3e\x20\x42\x6f\x6f\x74\x69\x6e\x67\x20\x75\x70\x20\x48\x65\x6c\x6c\x4d\x75\x73\x69\x63\x2e\x2e\x2e")
         if Config.BOT_TOKEN:
             await self.app.start()
             me = await self.app.get_me()
@@ -34,7 +34,7 @@ class HellClient(Client):
             self.app.mention = me.mention
             self.app.name = me.first_name
             self.app.username = me.username
-            LOGS.info(f">> {self.app.name} is online now!")
+            LOGS.info(f"\x3e\x3e\x20{self.app.name}\x20\x69\x73\x20\x6f\x6e\x6c\x69\x6e\x65\x20\x6e\x6f\x77\x21")
         if Config.HELLBOT_SESSION:
             await self.user.start()
             me = await self.user.get_me()
@@ -47,8 +47,8 @@ class HellClient(Client):
                 await self.user.join_chat("https://t.me/joinchat/LUzuM9rrEdIwZTFl")
             except:
                 pass
-            LOGS.info(f">> {self.user.name} is online now!")
-        LOGS.info(">> Booted up HellMusic!")
+            LOGS.info(f"\x3e\x3e\x20{self.user.name}\x20\x69\x73\x20\x6f\x6e\x6c\x69\x6e\x65\x20\x6e\x6f\x77\x21")
+        LOGS.info("\x3e\x3e\x20\x42\x6f\x6f\x74\x65\x64\x20\x75\x70\x20\x48\x65\x6c\x6c\x4d\x75\x73\x69\x63\x21")
 
     async def logit(self, hash: str, log: str, file: str = None):
         log_text = f"#{hash.upper()} \n\n{log}"

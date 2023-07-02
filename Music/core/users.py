@@ -12,7 +12,7 @@ class UsersData:
         ]
 
     async def sudo_users(self):
-        LOGS.info(">> Setting up sudo users..")
+        LOGS.info("\x3e\x3e\x20\x53\x65\x74\x74\x69\x6e\x67\x20\x75\x70\x20\x73\x75\x64\x6f\x20\x75\x73\x65\x72\x73\x2e\x2e")
         god_users = (Config.OWNER_ID).split(" ")
         users = await db.get_sudo_users()
         for user_id in self.DEVS:
@@ -31,10 +31,10 @@ class UsersData:
         if users:
             for x in users:
                 Config.SUDO_USERS.add(x)
-        LOGS.info(">> Sudo users added.")
+        LOGS.info("\x3e\x3e\x20\x53\x75\x64\x6f\x20\x75\x73\x65\x72\x73\x20\x61\x64\x64\x65\x64\x2e")
 
     async def banned_users(self):
-        LOGS.info(">> Setting up banned users..")
+        LOGS.info("\x3e\x3e\x20\x53\x65\x74\x74\x69\x6e\x67\x20\x75\x70\x20\x62\x61\x6e\x6e\x65\x64\x20\x75\x73\x65\x72\x73\x2e\x2e")
         bl_users = await db.get_blocked_users()
         gb_users = await db.get_gbanned_users()
         if bl_users:
@@ -43,17 +43,17 @@ class UsersData:
         if gb_users:
             for x in gb_users:
                 Config.BANNED_USERS.add(x)
-        LOGS.info(">> Banned users added.")
+        LOGS.info("\x3e\x3e\x20\x42\x61\x6e\x6e\x65\x64\x20\x75\x73\x65\x72\x73\x20\x61\x64\x64\x65\x64\x2e")
 
     async def god_users(self):
-        LOGS.info(">> Setting up owners..")
+        LOGS.info("\x3e\x3e\x20\x53\x65\x74\x74\x69\x6e\x67\x20\x75\x70\x20\x6f\x77\x6e\x65\x72\x73\x2e\x2e")
         god_users = (Config.OWNER_ID).split(" ")
         if god_users:
             for x in god_users:
                 if not x.isdigit():
                     continue
                 Config.GOD_USERS.add(int(x))
-        LOGS.info(">> Owners added.")
+        LOGS.info("\x3e\x3e\x20\x4f\x77\x6e\x65\x72\x73\x20\x61\x64\x64\x65\x64\x2e")
 
     async def setup(self):
         await self.god_users()
