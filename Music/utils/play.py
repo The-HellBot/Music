@@ -160,7 +160,7 @@ class Player:
         await db.update_user(user_id, "songs_played", 1)
         chat_name = (await hellbot.app.get_chat(chat_id)).title
         await hellbot.logit(
-            f"play {vc_type}"
+            f"play {vc_type}",
             f"**⤷ Song:** `{title}` \n**⤷ Chat:** {chat_name} [`{chat_id}`] \n**⤷ User:** {user}",
         )
 
