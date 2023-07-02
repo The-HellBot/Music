@@ -15,7 +15,7 @@ from .formatters import formatter
 
 class Broadcast:
     def __init__(self) -> None:
-        pass
+        self.file_name = "broadcast_{0}.txt"
 
     async def send_msg(self, user_id: int, message: Message, copy: bool):
         try:
@@ -63,7 +63,7 @@ class Broadcast:
         done = 0
         failed = 0
         success = 0
-        file_name = f"broadcast_{round(time.time())}.txt"
+        file_name = self.file_name.format(round(time.time()))
         async with aiofiles.open(file_name, "w") as broadcast_log_file:
             for target in targets:
                 async for user in target:

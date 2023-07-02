@@ -69,8 +69,12 @@ async def start(_, message: Message):
                 )
                 return
         await message.reply_text(
-            TEXTS.START_PM.format(hellbot.app.mention),
-            reply_markup=InlineKeyboardMarkup(Buttons.start_pm_markup()),
+            TEXTS.START_PM.format(
+                message.from_user.first_name,
+                hellbot.app.mention,
+                hellbot.app.username,
+            ),
+            reply_markup=InlineKeyboardMarkup(Buttons.start_pm_markup(hellbot.app.username)),
             disable_web_page_preview=True,
         )
     elif message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:

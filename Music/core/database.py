@@ -217,7 +217,7 @@ class Database(object):
         )
         return True
 
-    async def total_block_count(self):
+    async def total_block_count(self) -> int:
         count = await self.get_blocked_users()
         return len(count)
 
@@ -251,7 +251,7 @@ class Database(object):
         else:
             return False
 
-    async def total_gbans_count(self):
+    async def total_gbans_count(self) -> int:
         count = await self.get_gbanned_users()
         return len(count)
 

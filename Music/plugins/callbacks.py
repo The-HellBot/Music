@@ -243,8 +243,12 @@ async def help_cb(_, cb: CallbackQuery):
         )
     elif data == "start":
         return await cb.message.edit_text(
-            TEXTS.START_PM.format(hellbot.app.mention),
-            reply_markup=InlineKeyboardMarkup(Buttons.start_pm_markup()),
+            TEXTS.START_PM.format(
+                cb.from_user.first_name,
+                hellbot.app.mention,
+                hellbot.app.username,
+            ),
+            reply_markup=InlineKeyboardMarkup(Buttons.start_pm_markup(hellbot.app.username)),
             disable_web_page_preview=True,
         )
 

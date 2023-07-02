@@ -31,7 +31,7 @@ async def user_profile(_, message: Message):
         "mention": message.from_user.mention,
         "songs_played": user["songs_played"],
         "join_date": user["join_date"],
-        "user_type": get_user_type(message.chat.id, message.from_user.id),
+        "user_type": await get_user_type(message.chat.id, message.from_user.id),
     }
     await message.reply_text(
         MusicUser.get_profile_text(context, hellbot.app.mention),

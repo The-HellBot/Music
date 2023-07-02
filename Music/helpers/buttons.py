@@ -230,11 +230,14 @@ class MakeButtons:
         ]
         return buttons
 
-    def start_pm_markup(self):
+    def start_pm_markup(self, username: str):
         buttons = [
             [
                 self.ikb(text="Help ⚙️", callback_data="help|back"),
                 self.ikb(text="Source 📦", callback_data="source"),
+            ],
+            [
+                self.ikb(text="Add Me To Group 👥", url=f"https://t.me/{username}?startgroup=true"),
             ],
             [
                 self.ikb(text="🗑", callback_data="close"),
