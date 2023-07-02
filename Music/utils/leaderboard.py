@@ -8,12 +8,27 @@ import aiofiles
 from pyrogram.errors import FloodWait, PeerIdInvalid
 from pyrogram.types import InlineKeyboardMarkup
 
+from config import Config
 from Music.core.database import db
 
 
 class Leaderboard:
     def __init__(self) -> None:
         self.file_name = "leaderboard.txt"
+
+    def get_hrs(self) -> int:
+        try:
+            hrs = int(Config.LEADERBOARD_TIME.split(":")[0])
+        except:
+            hrs = 3
+        return hrs
+
+    def get_min(self) -> int:
+        try:
+            mins = int(Config.LEADERBOARD_TIME.split(":")[1])
+        except:
+            mins = 0
+        return mins
 
     async def get_top_10(self) -> list:
         users = await db.get_all_users()

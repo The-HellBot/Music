@@ -107,7 +107,9 @@ async def leaderboard():
     btns = Buttons.close_markup()
     await leaders.broadcast(hellbot, text, btns)
 
+hrs = leaders.get_hrs()
+min = leaders.get_min()
 
 scheduler = AsyncIOScheduler()
-scheduler.add_job(leaderboard, "cron", hour=3, minute=45, timezone=Config.TZ)
+scheduler.add_job(leaderboard, "cron", hour=hrs, minute=min, timezone=Config.TZ)
 scheduler.start()

@@ -6,7 +6,7 @@ from pytgcalls.__version__ import __version__ as pytgcalls_version
 
 # versions dictionary
 __version__ = {
-    "Hell Music": "0.0.6",
+    "Hell Music": "0.0.7",
     "Python": platform.python_version(),
     "Pyrogram": pyro_version,
     "PyTgCalls": pytgcalls_version,
