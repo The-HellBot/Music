@@ -542,8 +542,13 @@ class Thumbnail:
 
             base_image = Image.open(BytesIO(xcb_tmx))
             draw = ImageDraw.Draw(base_image)
+
+            text_length = draw.textlength(Config.BOT_NAME, font=font_ext)
+            img_width, _ = base_image.size
+            cent_x = (img_width - text_length) // 2
+
             draw.text(
-                (500, 740),
+                (cent_x, 740),
                 Config.BOT_NAME,
                 font=font_ext,
                 fill=(51, 255, 224),
