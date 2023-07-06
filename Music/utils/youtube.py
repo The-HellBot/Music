@@ -60,7 +60,7 @@ class YouTube:
             LOGS.warning(f"[Exception in Lyrics API]: {e}")
             self.client = None
 
-    async def check(self, link: str):
+    def check(self, link: str):
         return bool(re.match(self.regex, link))
 
     async def format_link(self, link: str, video_id: bool) -> str:
