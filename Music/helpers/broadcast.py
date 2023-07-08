@@ -109,7 +109,6 @@ class Broadcast:
                 document=file_name,
                 caption=success_text + f"\n\n**Error log:** [here]({link})",
                 quote=True,
-                disable_web_page_preview=True,
             )
         os.remove(file_name)
 
