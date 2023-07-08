@@ -18,18 +18,24 @@ from Music.utils.queue import Queue
 @hellbot.app.on_message(filters.private, group=2)
 async def new_users(_, msg: Message):
     chat_id = msg.from_user.id
+    user_name = msg.from_user.first_name
     if not await db.is_user_exist(chat_id):
         BOT_USERNAME = hellbot.app.username
-        await db.add_user(chat_id, msg.from_user.first_name)
+        await db.add_user(chat_id, user_name)
         if Config.LOGGER_ID:
             await hellbot.logit(
                 "newuser",
-                f"**⤷ User:** {msg.from_user.mention(style='md')}\n**⤷ ID:** `{msg.from_user.id}`\n__⤷ Started @{BOT_USERNAME} !!__",
+                f"**⤷ User:** {msg.from_user.mention(style='md')}\n**⤷ ID:** `{chat_id}`\n__⤷ Started @{BOT_USERNAME} !!__",
             )
         else:
             LOGS.info(
-                f"#NewUser: \n\nName: {msg.from_user.first_name} \nID: {msg.from_user.id}"
+                f"#NewUser: \n\nName: {user_name} \nID: {chat_id}"
             )
+    else:
+        try:
+            await db.update_user(chat_id, "user_name", user_name)
+        except:
+            pass
     await msg.continue_propagation()
 
 
