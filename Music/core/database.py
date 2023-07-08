@@ -69,9 +69,10 @@ class Database(object):
         count = await self.users.count_documents({})
         return count
 
-    async def update_user(self, user_id: int, key: str, value: int):
-        prev = await self.users.find_one({"user_id": user_id})
-        value = prev[key] + value
+    async def update_user(self, user_id: int, key: str, value):
+        if key == "songs_played":
+            prev = await self.users.find_one({"user_id": user_id})
+            value = prev[key] + value
         await self.users.update_one({"user_id": user_id}, {"$set": {key: value}})
 
     # chat db #
