@@ -21,8 +21,7 @@ async def get_auth_users(chat_id: int):
         auth_users.append(x.user.id)
     users = await db.get_all_authusers(chat_id)
     if users:
-        auth_list = list(users[chat_id].keys())
-        auth_users.extend(auth_list)
+        auth_users.extend(users)
     return auth_users
 
 
