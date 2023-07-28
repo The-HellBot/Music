@@ -48,7 +48,7 @@ class HellMusic(PyTgCalls):
             else:
                 db.inactive[chat_id] = {}
 
-    def autoclean(self, file: str):
+    async def autoclean(self, file: str):
         # dirty way. but works :)
         try:
             os.remove(file)
@@ -141,7 +141,7 @@ class HellMusic(PyTgCalls):
             loop = await db.get_loop(chat_id)
             if loop == 0:
                 file = Queue.rm_queue(chat_id, 0)
-                self.autoclean(file)
+                await self.autoclean(file)
             else:
                 await db.set_loop(chat_id, loop - 1)
         except Exception as e:
