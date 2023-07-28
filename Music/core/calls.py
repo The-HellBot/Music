@@ -314,8 +314,8 @@ class HellMusic(PyTgCalls):
                     raise UserException(f"[UserException]: {e}")
 
     async def decorators(self):
-        @self.music.on_closed_voice_chat()
         @self.music.on_kicked()
+        @self.music.on_closed_voice_chat()
         @self.music.on_left()
         async def end_(_, chat_id: int):
             await self.leave_vc(chat_id)

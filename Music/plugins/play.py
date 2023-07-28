@@ -1,4 +1,5 @@
 import asyncio
+import random
 
 from pyrogram import filters
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, Message
@@ -100,7 +101,15 @@ async def play_music(_, message: Message, context: dict):
         if not ytube.check(url):
             return await hell.edit("Invalid YouTube URL.")
         if "playlist" in url:
-            return await hell.edit("Playlist links are not supported yet.")
+            await hell.edit("Processing the playlist ...")
+            song_list = await ytube.get_playlist(url)
+            random.shuffle(song_list)
+            context = {
+                "user_id": message.from_user.id,
+                "user_mention": message.from_user.mention,
+            }
+            await player.playlist(hell, context, song_list, video)
+            return
         try:
             await hell.edit("Searching ...")
             result = await ytube.get_data(url, False)
@@ -194,7 +203,7 @@ async def queued_tracks(_, message: Message):
     await MakePages.queue_page(hell, collection, 0, 0, True)
 
 
-@hellbot.app.on_message(filters.command("clean") & ~Config.BANNED_USERS)
+@hellbot.app.on_message(filters.command(["clean", "reload"]) & ~Config.BANNED_USERS)
 @AuthWrapper
 async def clean_queue(_, message: Message):
     Queue.clear_queue(message.chat.id)

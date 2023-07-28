@@ -130,8 +130,12 @@ async def favsplay_cb(_, cb: CallbackQuery):
         await cb.message.delete()
         return await cb.answer("Closed!", show_alert=True)
     else:
+        await cb.message.edit_text("Playing your favorites")
         all_tracks = await db.get_all_favorites(int(user_id))
         random.shuffle(all_tracks)
         video = True if action == "video" else False
-        await cb.message.edit_text("Playing your favorites")
-        await player.playlist(cb.message, cb.from_user.id, all_tracks, video)
+        context = {
+            "user_id": cb.from_user.id,
+            "user_mention": cb.from_user.mention,
+        }
+        await player.playlist(cb.message, context, all_tracks, video)

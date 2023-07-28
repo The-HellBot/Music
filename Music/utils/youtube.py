@@ -50,6 +50,9 @@ class YouTube:
             "quiet": True,
             "no_warnings": True,
         }
+        self.yt_playlist_opts = {
+            "exctract_flat": True,
+        }
         self.lyrics = Config.LYRICS_API
         try:
             if self.lyrics:
@@ -98,6 +101,13 @@ class YouTube:
             }
             collection.append(context)
         return collection[:limit]
+
+    async def get_playlist(self, link: str) -> list:
+        yt_url = await self.format_link(link, False)
+        with yt_dlp.YoutubeDL(self.yt_playlist_opts) as ydl:
+            results = ydl.extract_info(yt_url, False)
+            playlist = [video['id'] for video in results['entries']]
+        return playlist
 
     async def download(self, link: str, video_id: bool, video: bool = False) -> str:
         yt_url = await self.format_link(link, video_id)
