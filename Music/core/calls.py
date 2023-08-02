@@ -24,17 +24,18 @@ from .database import db
 from .logger import LOGS
 
 
+async def __clean__(chat_id: int, force: bool):
+    if force:
+        Queue.rm_queue(chat_id, 0)
+    else:
+        Queue.clear_queue(chat_id)
+    await db.remove_active_vc(chat_id)
+
+
 class HellMusic(PyTgCalls):
     def __init__(self):
         self.music = PyTgCalls(hellbot.user)
         self.audience = {}
-
-    async def __clean__(self, chat_id: int, force: bool):
-        if force:
-            Queue.rm_queue(chat_id, 0)
-        else:
-            Queue.clear_queue(chat_id)
-        await db.remove_active_vc(chat_id)
 
     async def autoend(self, chat_id: int, users: list):
         autoend = await db.get_autoend()
@@ -88,7 +89,7 @@ class HellMusic(PyTgCalls):
 
     async def leave_vc(self, chat_id: int, force: bool = False):
         try:
-            await self.__clean__(chat_id, force)
+            await __clean__(chat_id, force)
             await self.music.leave_group_call(chat_id)
         except:
             pass

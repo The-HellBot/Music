@@ -120,7 +120,7 @@ async def controler_cb(_, cb: CallbackQuery):
         await db.set_loop(cb.message.chat.id, final)
         await cb.answer(f"Loop set to {final}", show_alert=True)
         return await cb.message.reply_text(
-            f"__Loop set to {final}__ by: {cb.from_user.mention}\n\Previous loop was {is_loop}"
+            f"__Loop set to {final}__ by: {cb.from_user.mention}\n\nPrevious loop was {is_loop}"
         )
     elif action == "replay":
         hell = await cb.message.reply_text("Processing ...")
