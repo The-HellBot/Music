@@ -57,7 +57,17 @@ async def new_users(_, msg: Message):
     await msg.continue_propagation()
 
 
-@hellmusic.music.on_closed_voice_chat()
+@hellbot.app.on_message(filters.video_chat_ended, group=4)
+async def vc_end(_, msg: Message):
+    chat_id = msg.chat.id
+    try:
+        await hellmusic.leave_vc(chat_id)
+        await db.set_loop(chat_id, 0)
+    except:
+        pass
+    await msg.continue_propagation()
+
+
 @hellmusic.music.on_kicked()
 @hellmusic.music.on_left()
 async def end_streaming(_, chat_id: int):
