@@ -2,19 +2,26 @@ import datetime
 import os
 
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import ChatAdminRequired, UserAlreadyParticipant, UserNotParticipant
+from pyrogram.errors import (
+    ChatAdminRequired,
+    UserAlreadyParticipant,
+    UserNotParticipant,
+)
 from pyrogram.types import InlineKeyboardMarkup
 from pytgcalls import PyTgCalls, StreamType
 from pytgcalls.exceptions import AlreadyJoinedError, NoActiveGroupCall
-from pytgcalls.types import JoinedGroupCallParticipant, LeftGroupCallParticipant, Update
 from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped
 from pytgcalls.types.input_stream.quality import MediumQualityAudio, MediumQualityVideo
-from pytgcalls.types.stream import StreamAudioEnded
 
 from config import Config
 from Music.helpers.buttons import Buttons
 from Music.helpers.strings import TEXTS
-from Music.utils.exceptions import ChangeVCException, JoinGCException, JoinVCException, UserException
+from Music.utils.exceptions import (
+    ChangeVCException,
+    JoinGCException,
+    JoinVCException,
+    UserException,
+)
 from Music.utils.queue import Queue
 from Music.utils.thumbnail import thumb
 from Music.utils.youtube import ytube
@@ -59,12 +66,18 @@ class HellMusic(PyTgCalls):
             pass
 
     async def start(self):
-        LOGS.info("\x3e\x3e\x20\x42\x6f\x6f\x74\x69\x6e\x67\x20\x50\x79\x54\x67\x43\x61\x6c\x6c\x73\x20\x43\x6c\x69\x65\x6e\x74\x2e\x2e\x2e")
+        LOGS.info(
+            "\x3e\x3e\x20\x42\x6f\x6f\x74\x69\x6e\x67\x20\x50\x79\x54\x67\x43\x61\x6c\x6c\x73\x20\x43\x6c\x69\x65\x6e\x74\x2e\x2e\x2e"
+        )
         if Config.HELLBOT_SESSION:
             await self.music.start()
-            LOGS.info("\x3e\x3e\x20\x42\x6f\x6f\x74\x65\x64\x20\x50\x79\x54\x67\x43\x61\x6c\x6c\x73\x20\x43\x6c\x69\x65\x6e\x74\x21")
+            LOGS.info(
+                "\x3e\x3e\x20\x42\x6f\x6f\x74\x65\x64\x20\x50\x79\x54\x67\x43\x61\x6c\x6c\x73\x20\x43\x6c\x69\x65\x6e\x74\x21"
+            )
         else:
-            LOGS.error("\x3e\x3e\x20\x50\x79\x54\x67\x43\x61\x6c\x6c\x73\x20\x43\x6c\x69\x65\x6e\x74\x20\x6e\x6f\x74\x20\x62\x6f\x6f\x74\x65\x64\x21")
+            LOGS.error(
+                "\x3e\x3e\x20\x50\x79\x54\x67\x43\x61\x6c\x6c\x73\x20\x43\x6c\x69\x65\x6e\x74\x20\x6e\x6f\x74\x20\x62\x6f\x6f\x74\x65\x64\x21"
+            )
             quit(1)
 
     async def ping(self):
@@ -313,47 +326,6 @@ class HellMusic(PyTgCalls):
                     pass
                 except Exception as e:
                     raise UserException(f"[UserException]: {e}")
-
-    async def decorators(self):
-        @self.music.on_kicked()
-        @self.music.on_closed_voice_chat()
-        @self.music.on_left()
-        async def end_(_, chat_id: int):
-            await self.leave_vc(chat_id)
-
-        @self.music.on_group_call_invite()
-        async def invite_(_, chat_id: int):
-            await self.invited_vc(chat_id)
-
-        @self.music.on_stream_end()
-        async def update_(_, update: Update):
-            if not isinstance(update, StreamAudioEnded):
-                return
-            await self.change_vc(update.chat_id)
-
-        @self.music.on_participants_change()
-        async def members_(_, update: Update):
-            if not isinstance(update, JoinedGroupCallParticipant) and not isinstance(
-                update, LeftGroupCallParticipant
-            ):
-                return
-            try:
-                chat_id = update.chat_id
-                audience = self.audience.get(chat_id)
-                users = await self.vc_participants(chat_id)
-                user_ids = [user.user_id for user in users]
-                if not audience:
-                    await self.autoend(chat_id, user_ids)
-                else:
-                    new = (
-                        audience + 1
-                        if isinstance(update, JoinedGroupCallParticipant)
-                        else audience - 1
-                    )
-                    self.audience[chat_id] = new
-                    await self.autoend(chat_id, user_ids)
-            except:
-                return
 
 
 hellmusic = HellMusic()

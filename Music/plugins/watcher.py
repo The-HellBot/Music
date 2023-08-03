@@ -4,6 +4,8 @@ import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import filters
 from pyrogram.types import Message
+from pytgcalls.types import JoinedGroupCallParticipant, LeftGroupCallParticipant, Update
+from pytgcalls.types.stream import StreamAudioEnded
 
 from config import Config
 from Music.core.calls import hellmusic
@@ -28,9 +30,7 @@ async def new_users(_, msg: Message):
                 f"**⤷ User:** {msg.from_user.mention(style='md')}\n**⤷ ID:** `{chat_id}`\n__⤷ Started @{BOT_USERNAME} !!__",
             )
         else:
-            LOGS.info(
-                f"#NewUser: \n\nName: {user_name} \nID: {chat_id}"
-            )
+            LOGS.info(f"#NewUser: \n\nName: {user_name} \nID: {chat_id}")
     else:
         try:
             await db.update_user(chat_id, "user_name", user_name)
@@ -55,6 +55,45 @@ async def new_users(_, msg: Message):
                 f"#NEWCHAT: \n\nChat Title: {msg.chat.title} \nChat UN: @{msg.chat.username}) \nChat ID: {chat_id} \n\nADDED @{BOT_USERNAME} !!",
             )
     await msg.continue_propagation()
+
+
+@hellmusic.music.on_closed_voice_chat()
+@hellmusic.music.on_kicked()
+@hellmusic.music.on_left()
+async def end_streaming(_, chat_id: int):
+    await hellmusic.leave_vc(chat_id)
+    await db.set_loop(chat_id, 0)
+
+
+@hellmusic.music.on_stream_end()
+async def changed(_, update: Update):
+    if isinstance(update, StreamAudioEnded):
+        await hellmusic.change_vc(update.chat_id)
+
+
+@hellmusic.music.on_participants_change()
+async def members_change(_, update: Update):
+    if not isinstance(update, JoinedGroupCallParticipant) and not isinstance(
+        update, LeftGroupCallParticipant
+    ):
+        return
+    try:
+        chat_id = update.chat_id
+        audience = hellmusic.audience.get(chat_id)
+        users = await hellmusic.vc_participants(chat_id)
+        user_ids = [user.user_id for user in users]
+        if not audience:
+            await hellmusic.autoend(chat_id, user_ids)
+        else:
+            new = (
+                audience + 1
+                if isinstance(update, JoinedGroupCallParticipant)
+                else audience - 1
+            )
+            hellmusic.audience[chat_id] = new
+            await hellmusic.autoend(chat_id, user_ids)
+    except:
+        return
 
 
 async def update_played():
@@ -112,6 +151,7 @@ async def leaderboard():
     text = await leaders.generate(context)
     btns = Buttons.close_markup()
     await leaders.broadcast(hellbot, text, btns)
+
 
 hrs = leaders.get_hrs()
 min = leaders.get_min()

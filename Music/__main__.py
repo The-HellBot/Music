@@ -23,7 +23,6 @@ async def start_bot():
     await user_data.setup()
     await hellbot.start()
     await hellmusic.start()
-    await hellmusic.decorators()
     await db.connect()
 
     try:
